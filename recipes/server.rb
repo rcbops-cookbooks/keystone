@@ -199,31 +199,6 @@ keystone_register "Register Identity Service" do
   action :create_service
 end
 
-keystone_register "Register Compute Service" do
-  auth_host node["keystone"]["api_ipaddress"]
-  auth_port node["keystone"]["admin_port"]
-  auth_protocol "http"
-  api_ver "/v2.0"
-  auth_token node["keystone"]["admin_token"]
-  service_name "nova"
-  service_type "compute"
-  service_description "Nova Compute Service"
-  action :create_service
-end
-
-keystone_register "Register EC2 Service" do
-  auth_host node["keystone"]["api_ipaddress"]
-  auth_port node["keystone"]["admin_port"]
-  auth_protocol "http"
-  api_ver "/v2.0"
-  auth_token node["keystone"]["admin_token"]
-  service_name "ec2"
-  service_type "ec2"
-  service_description "EC2 Compatibility Layer"
-  action :create_service
-end
-
-
 ## Add Endpoints ##
 
 node["keystone"]["adminURL"] = "http://#{node["keystone"]["api_ipaddress"]}:#{node["keystone"]["admin_port"]}/v2.0"
@@ -247,38 +222,3 @@ keystone_register "Register Identity Endpoint" do
   endpoint_publicurl node["keystone"]["publicURL"]
   action :create_endpoint
 end
-
-node["nova"]["adminURL"] = "http://#{node["nova"]["api_ipaddress"]}:8774/v1.1/%(tenant_id)s"
-node["nova"]["internalURL"] = node["nova"]["adminURL"]
-node["nova"]["publicURL"] = node["nova"]["adminURL"]
-
-keystone_register "Register Compute Endpoint" do
-  auth_host node["keystone"]["api_ipaddress"]
-  auth_port node["keystone"]["admin_port"]
-  auth_protocol "http"
-  api_ver "/v2.0"
-  auth_token node["keystone"]["admin_token"]
-  service_type "compute"
-  endpoint_region "RegionOne"
-  endpoint_adminurl node["nova"]["adminURL"]
-  endpoint_internalurl node["nova"]["internalURL"]
-  endpoint_publicurl node["nova"]["publicURL"]
-  action :create_endpoint
-end
-
-
-## Create EC2 credentials ##
-
-##execute "Keystone: ec2-credentials create --user admin --tenant_id openstack" do
-##  cmd = Chef::ShellOut.new("#{keystone_cmd} tenant-list | grep openstack | awk '{print $2}'")
-##  tmp = cmd.run_command
-##  tenant_uuid = tmp.stdout.chomp
-#  Chef::Log.info "Tenant ID: #{tenant_uuid}"
-##  cmd = Chef::ShellOut.new("#{keystone_cmd} user-list | grep admin | awk '{print $2}'")
-##  tmp = cmd.run_command
-##  user_uuid = tmp.stdout.chomp
-#  Chef::Log.info "User ID: #{user_uuid}"
-##  command "#{keystone_cmd} ec2-credentials-create --user #{user_uuid} --tenant_id #{tenant_uuid}"
-##  action :run
-##  not_if "#{keystone_cmd} ec2-credentials-list --user #{user_uuid} | grep 'admin'"
-##end
