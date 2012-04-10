@@ -37,7 +37,7 @@ action :create_ec2 do
     cred_container = "credentials"
     cred_key = "tenant_id"
     cred_path = "/#{new_resource.api_ver}/users/#{user_uuid}/credentials/OS-EC2"
-    cred_tenant_uuid, cred_error = _find_id(http, cred_path, headers, cred_container, cred_key, tenant_uuid)
+    cred_tenant_uuid, cred_error = _find_cred_id(http, cred_path, headers, cred_container, cred_key, tenant_uuid)
     Chef::Log.error("There was an error looking up EC2 Credentials for User '#{new_resource.user_name}' and Tenant '#{new_resource.tenant_name}'") if cred_error
 
     error = (tenant_error or user_error or cred_error)
@@ -89,6 +89,26 @@ def _find_id(http, path, headers, container, key, match_value)
     return uuid,error
 end
 
+
+private
+def _find_cred_id(http, path, headers, container, key, match_value)
+    uuid = nil
+    error = false
+    resp = http.request_get(path, headers)
+    if resp.is_a?(Net::HTTPOK)
+        data = JSON.parse(resp.body)
+        data[container].each do |obj|
+            uuid = obj['tenant_id'] if obj[key] == match_value
+            break if uuid
+        end
+    else
+        Chef::Log.error("Unknown response from the Keystone Server")
+        Chef::Log.error("Response Code: #{resp.code}")
+        Chef::Log.error("Response Message: #{resp.message}")
+        error = true
+    end
+    return uuid,error
+end
 
 private
 def _build_credentials_obj(tenant_uuid)
