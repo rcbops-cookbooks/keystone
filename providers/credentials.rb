@@ -15,7 +15,7 @@ action :create_ec2 do
     headers = _build_headers(new_resource.auth_token)
 
     # lookup tenant_uuid
-    Chef::Log.debug("Looking up Tenant_UUID for Tenant_Name: #{new_resource.tenant_name}"
+    Chef::Log.debug("Looking up Tenant_UUID for Tenant_Name: #{new_resource.tenant_name}")
     tenant_container = "tenants"
     tenant_key = "name"
     tenant_path = "/#{new_resource.api_ver}/tenants"
@@ -23,7 +23,7 @@ action :create_ec2 do
     Chef::Log.error("There was an error looking up Tenant '#{new_resource.tenant_name}'") if tenant_error
 
     # lookup user_uuid
-    Chef::Log.debug("Looking up User_UUID for User_Name: #{new_resource.user_name}"
+    Chef::Log.debug("Looking up User_UUID for User_Name: #{new_resource.user_name}")
     user_container = "users"
     user_key = "name"
     user_path = "/#{new_resource.api_ver}/tenants/#{tenant_uuid}/users"
