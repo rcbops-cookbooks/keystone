@@ -126,36 +126,23 @@ execute "Keystone: sleep" do
   action :run
 end
 
-token = node["keystone"]["admin_token"]
-admin_url = "http://#{node["keystone"]["api_ipaddress"]}:#{node["keystone"]["admin_port"]}/v2.0"
-keystone_cmd = "keystone --token #{token} --endpoint #{admin_url}"
+#token = node["keystone"]["admin_token"]
+#admin_url = "http://#{node["keystone"]["api_ipaddress"]}:#{node["keystone"]["admin_port"]}/v2.0"
+#keystone_cmd = "keystone --token #{token} --endpoint #{admin_url}"
 
-
-## Add openstack tenant ##
-keystone_register "Register 'openstack' Tenant" do
-  auth_host node["keystone"]["api_ipaddress"]
-  auth_port node["keystone"]["admin_port"]
-  auth_protocol "http"
-  api_ver "/v2.0"
-  auth_token node["keystone"]["admin_token"]
-  tenant_name "openstack"
-  tenant_description "Default Tenant"
-  tenant_enabled "true" # Not required as this is the default
-  action :create_tenant
-end
-
-## Add admin user ##
-keystone_register "Register 'admin' User" do
-  auth_host node["keystone"]["api_ipaddress"]
-  auth_port node["keystone"]["admin_port"]
-  auth_protocol "http"
-  api_ver "/v2.0"
-  auth_token node["keystone"]["admin_token"]
-  tenant_name "openstack"
-  user_name "admin"
-  user_pass "secrete"
-  user_enabled "true" # Not required as this is the default
-  action :create_user
+node["keystone"]["tenants"].each do |tenant_name|
+  ## Add openstack tenant ##
+  keystone_register "Register '#{tenant_name}' Tenant" do
+    auth_host node["keystone"]["api_ipaddress"]
+    auth_port node["keystone"]["admin_port"]
+    auth_protocol "http"
+    api_ver "/v2.0"
+    auth_token node["keystone"]["admin_token"]
+    tenant_name tenant_name
+    tenant_description "#{tenant_name} Tenant"
+    tenant_enabled "true" # Not required as this is the default
+    action :create_tenant
+  end
 end
 
 ## Add Roles ##
@@ -171,18 +158,36 @@ node["keystone"]["roles"].each do |role_key|
   end
 end
 
+node["keystone"]["users"].each do |username, user_info|
+  keystone_register "Register '#{username}' User" do
+    auth_host node["keystone"]["api_ipaddress"]
+    auth_port node["keystone"]["admin_port"]
+    auth_protocol "http"
+    api_ver "/v2.0"
+    auth_token node["keystone"]["admin_token"]
+    user_name username
+    user_pass user_info["password"]
+    tenant_name user_info["default_tenant"]
+    user_enabled "true" # Not required as this is the default
+    action :create_user
+  end
 
-## Add Admin role to admin user ##
-keystone_register "Grant 'admin' Role to 'admin' User" do
-  auth_host node["keystone"]["api_ipaddress"]
-  auth_port node["keystone"]["admin_port"]
-  auth_protocol "http"
-  api_ver "/v2.0"
-  auth_token node["keystone"]["admin_token"]
-  tenant_name "openstack"
-  user_name "admin"
-  role_name "admin"
-  action :grant_role
+  user_info["roles"].each do |rolename, tenant_list|
+    tenant_list.each do |tenantname|
+      keystone_register "Grant '#{rolename}' Role to '#{username}' User in '#{tenant}' Tenant" do
+        auth_host node["keystone"]["api_ipaddress"]
+        auth_port node["keystone"]["admin_port"]
+        auth_protocol "http"
+        api_ver "/v2.0"
+        auth_token node["keystone"]["admin_token"]
+        user_name username
+        role_name rolename
+        tenant_name tenantname
+        action :grant_role
+      end
+    end
+
+  end
 end
 
 ## Add Services ##

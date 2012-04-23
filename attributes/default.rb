@@ -15,6 +15,28 @@ default["keystone"]["service_port"] = "5000"
 default["keystone"]["admin_port"] = "35357"
 default["keystone"]["admin_token"] = "999888777666"
 
-default["nova"]["api_ipaddress"] = node["controller_ipaddress"]
+# default["keystone"]["roles"] = [ "admin", "Member", "KeystoneAdmin", "KeystoneServiceAdmin", "sysadmin", "netadmin" ]
+default["keystone"]["roles"] = [ "admin", "Member", "KeystoneAdmin", "KeystoneServiceAdmin" ]
 
-default["keystone"]["roles"] = [ "admin", "Member", "KeystoneAdmin", "KeystoneServiceAdmin", "sysadmin", "netadmin" ]
+default["keystone"]["tenants"] = [ "admin", "demo"]
+default["keystone"]["users"] = { 
+    "admin" => {
+        "password" => "secrete",
+        "default_tenant" => "admin",
+        "roles" => {
+            "admin" => [ "admin", "demo" ],
+            "KeystoneAdmin" => [ "admin" ],
+            "KeystoneServiceAdmin" => [ "admin" ]
+        }
+    },
+    "demo" => {
+        "password" => "secrete",
+        "default_tenant" => "demo",
+        "roles" => {
+            "Member" => [ "demo" ]
+        }
+    },
+}
+
+
+default["nova"]["api_ipaddress"] = node["controller_ipaddress"]
