@@ -5,7 +5,7 @@ long_description  IO.read(File.join(File.dirname(__FILE__), 'README.md'))
 version           "1.0.0"
 recipe            "keystone::server", "Installs packages required for a keystone server"
 
-%w{ ubuntu }.each do |os|
+%w{ ubuntu fedora }.each do |os|
   supports os
 end
 
