@@ -174,7 +174,7 @@ node["keystone"]["users"].each do |username, user_info|
 
   user_info["roles"].each do |rolename, tenant_list|
     tenant_list.each do |tenantname|
-      keystone_register "Grant '#{rolename}' Role to '#{username}' User in '#{tenant}' Tenant" do
+      keystone_register "Grant '#{rolename}' Role to '#{username}' User in '#{tenantname}' Tenant" do
         auth_host node["keystone"]["api_ipaddress"]
         auth_port node["keystone"]["admin_port"]
         auth_protocol "http"
