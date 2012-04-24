@@ -263,7 +263,8 @@ action :grant_role do
     # lookup user_uuid
     user_container = "users"
     user_key = "name"
-    user_path = "/#{new_resource.api_ver}/tenants/#{tenant_uuid}/users"
+    # user_path = "/#{new_resource.api_ver}/tenants/#{tenant_uuid}/users"
+    user_path = "/#{new_resource.api_ver}/users"
     user_uuid, user_error = _find_id(http, user_path, headers, user_container, user_key, new_resource.user_name)
     Chef::Log.error("There was an error looking up User '#{new_resource.user_name}'") if user_error
 
