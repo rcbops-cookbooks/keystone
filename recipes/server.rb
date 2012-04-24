@@ -34,7 +34,24 @@ else
   keystone_package_options = "-o Dpkg::Options::='--force-confold' --force-yes"
 end
 
-connection_info = {:host => node["keystone"]["db_ipaddress"], :username => "root", :password => node["mysql"]["server_root_password"]}
+if Chef::Config[:solo]
+  Chef::Log.warn("This recipe uses search. Chef Solo does not support search.")
+else
+  # Lookup mysql ip address
+  mysql_server, something, arbitary_value = Chef::Search::Query.new.search(:node, "roles:mysql-master AND chef_environment:#{node.chef_environment}")
+  if mysql_server.length > 0
+    Chef::Log.info("mysql: using search")
+    db_ip_address = mysql_server[0]['mysql']['bind_address']
+    db_root_password = mysql_server[0]['mysql']['server_root_password']
+  else
+    Chef::Log.info("mysql: NOT using search")
+    db_ip_address = node['mysql']['bind_address']
+    db_root_password = node['mysql']['server_root_password']
+  end
+end
+
+connection_info = {:host => db_ip_address, :username => "root", :password => db_root_password}
+
 mysql_database "create keystone database" do
   connection connection_info
   database_name node["keystone"]["db"]
@@ -105,7 +122,7 @@ template "/etc/keystone/keystone.conf" do
             :passwd => node["keystone"]["db_passwd"],
             :ip_address => node["keystone"]["api_ipaddress"],
             :db_name => node["keystone"]["db"],
-            :db_ipaddress => node["keystone"]["db_ipaddress"],
+            :db_ipaddress => db_ip_address,
             :service_port => node["keystone"]["service_port"],
             :admin_port => node["keystone"]["admin_port"],
             :admin_token => node["keystone"]["admin_token"]
