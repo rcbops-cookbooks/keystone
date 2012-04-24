@@ -228,12 +228,15 @@ keystone_register "Register Identity Endpoint" do
   action :create_endpoint
 end
 
-keystone_credentials "Create EC2 credentials for 'admin' user" do
-  auth_host node["keystone"]["api_ipaddress"]
-  auth_port node["keystone"]["admin_port"]
-  auth_protocol "http"
-  api_ver "/v2.0"
-  auth_token node["keystone"]["admin_token"]
-  user_name "admin"
-  tenant_name "openstack"
+
+node["keystone"]["users"].each do |username, user_info|
+  keystone_credentials "Create EC2 credentials for '#{username}' user" do
+    auth_host node["keystone"]["api_ipaddress"]
+    auth_port node["keystone"]["admin_port"]
+    auth_protocol "http"
+    api_ver "/v2.0"
+    auth_token node["keystone"]["admin_token"]
+    user_name username
+    tenant_name user_info["default_tenant"]
+  end
 end
