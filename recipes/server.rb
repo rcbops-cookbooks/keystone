@@ -86,6 +86,11 @@ package keystone_package do
   options keystone_package_options
 end
 
+execute "Keystone: sleep" do
+  command "sleep 10s"
+  action :nothing
+end
+
 service keystone_service do
   supports :status => true, :restart => true
   action [ :enable, :start ]
@@ -137,11 +142,6 @@ template "/etc/keystone/logging.conf" do
   group "root"
   mode "0644"
   notifies :restart, resources(:service => keystone_service), :immediately
-end
-
-execute "Keystone: sleep" do
-  command "sleep 10s"
-  action :nothing
 end
 
 #token = node["keystone"]["admin_token"]
