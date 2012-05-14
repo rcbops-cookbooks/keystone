@@ -89,6 +89,7 @@ end
 service keystone_service do
   supports :status => true, :restart => true
   action [ :enable, :start ]
+  notifies :run, resources(:execute => "Keystone: sleep"), :immediately
 end
 
 directory "/etc/keystone" do
@@ -140,7 +141,7 @@ end
 
 execute "Keystone: sleep" do
   command "sleep 10s"
-  action :run
+  action :nothing
 end
 
 #token = node["keystone"]["admin_token"]
