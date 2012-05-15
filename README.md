@@ -1,7 +1,7 @@
 Description
 ===========
 
-Installs the OpenStack Identity Service (codename: keystone) from packages. Creates default user, tenant, and roles. Registers identity service, and identity endpoint.
+This cookbook installs the OpenStack Identity Service (codename: keystone) from packages, creating default user, tenant, and roles. It also registers the identity service and identity endpoint.
 
 http://keystone.openstack.org/
 
@@ -78,7 +78,7 @@ Register users, tenants, roles, services, and endpoints with Keystone
 
 - role_name: Name of the role to grant
 - user_name: User name to grant the role to
-- tenant_name: Name of tenant with user
+- tenant_name: Name of tenant to grant role in
 
 ### :create_service Specific Attributes
 
@@ -178,14 +178,14 @@ Register users, tenants, roles, services, and endpoints with Keystone
       action :create_endpoint
     end
 
-`credentials`
--------------
+credentials
+-----------
 
 Create EC2 credentials for a given user in the specified tenant
 
 ### Actions
 
-- :create_ec2: create ec2 credentials
+- :create_ec2: create EC2 credentials
 
 ### General Attributes
 
@@ -219,12 +219,12 @@ Recipes
 default
 -------
 
-The default recipe will install Keystone Server
+The default recipe will install the Keystone Server
 
 server
 ------
 
-The default recipe will install Keystone Server
+Installs the Keystone Server
 
 Data Bags
 =========
@@ -235,11 +235,11 @@ Attributes
 * `keystone["db"]` - Name of keystone database
 * `keystone["db_user"]` - Username for keystone database access
 * `keystone["db_passwd"]` - Password for keystone database access
-* `keystone["db_ipaddress"]` - Ip address of the keystone database
-* `keystone["api_ipaddress"]` - Ip address for the keystone api to bind to. _TODO_: Rename to bind_address
-* `keystone["verbose"]` - Enables/disables verbose output for keystone api server
-* `keystone["debug"]` - Enables/disables debug output for keystone api server
-* `keystone["service_port"]` - Port for the keystone service api to bind to
+* `keystone["db_ipaddress"]` - IP address of the keystone database
+* `keystone["api_ipaddress"]` - IP address for the keystone API to bind to. _TODO_: Rename to bind_address
+* `keystone["verbose"]` - Enables/disables verbose output for keystone API server
+* `keystone["debug"]` - Enables/disables debug output for keystone API server
+* `keystone["service_port"]` - Port for the keystone service API to bind to
 * `keystone["admin_port"]` - Port for the keystone admin service to bind to
 * `keystone["admin_token"]` - Admin token for bootstraping keystone server
 * `keystone["roles"]` - Array of roles to create in the keystone server
