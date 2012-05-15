@@ -90,9 +90,10 @@ Register users, tenants, roles, services, and endpoints with Keystone
 ### :create_endpoint Specific Attributes
 
 - endpoint_region: Default value is "RegionOne"
-- endpoint_adminurl: 
-- endpoint_internalurl: 
-- endpoint_publicurl: 
+- endpoint_adminurl: URL to admin endpoint (using admin port)
+- endpoint_internalurl: URL to service endpoint (using service port)
+- endpoint_publicurl: URL to public endpoint
+ - Default is same as endpoint_internalURL
 - service_type: Type of service to create endpoint for
  - Accepted values are [ "image", "identity", "compute", "storage", "ec2", "volume" ]
 
