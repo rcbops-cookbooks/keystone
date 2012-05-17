@@ -1,4 +1,4 @@
-# Adding these as blank 
+# Adding these as blank
 # this needs to be here for the initial deep-merge to work
 default["credentials"]["EC2"]["admin"]["access"] = ""
 default["credentials"]["EC2"]["admin"]["secret"] = ""
@@ -17,8 +17,11 @@ default["keystone"]["admin_token"] = "999888777666"
 default["keystone"]["roles"] = [ "admin", "Member", "KeystoneAdmin", "KeystoneServiceAdmin" ]
 
 default["keystone"]["tenants"] = [ "admin", "demo"]
-default["keystone"]["users"] = { 
-    "admin" => {
+
+default["keystone"]["admin_user"] = "admin"
+
+default["keystone"]["users"] = {
+   node["keystone"]["admin_user"]  => {
         "password" => "secrete",
         "default_tenant" => "admin",
         "roles" => {
