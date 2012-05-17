@@ -17,7 +17,17 @@
 # limitations under the License.
 #
 
+::Chef::Recipe.send(:include, Opscode::OpenSSL::Password)
 include_recipe "mysql::client"
+
+# Allow for using a well known db password
+if node["developer_mode"]
+  node.set_unless["keystone"]["db"]["password"] = "keystone"
+  node.set_unless["keystone"]["admin_token"] = "999888777666"
+else
+  node.set_unless["keystone"]["db"]["password"] = secure_password
+  node.set_unless["keystone"]["admin_token"] = secure_password
+end
 
 # Distribution specific settings go here
 if platform?(%w{fedora})
@@ -52,22 +62,22 @@ end
 
 connection_info = {:host => db_ip_address, :username => "root", :password => db_root_password}
 
-mysql_database "create keystone database" do
+mysql_database "create #{node['keystone']['db']['name']} database" do
   connection connection_info
-  database_name node["keystone"]["db"]
+  database_name node["keystone"]["db"]["name"]
   action :create
 end
 
-mysql_database_user node["keystone"]["db_user"] do
+mysql_database_user node["keystone"]["db"]["username"] do
   connection connection_info
-  password node["keystone"]["db_passwd"]
+  password node["keystone"]["db"]["password"]
   action :create
 end
 
-mysql_database_user node["keystone"]["db_user"] do
+mysql_database_user node["keystone"]["db"]["username"] do
   connection connection_info
-  password node["keystone"]["db_passwd"]
-  database_name node["keystone"]["db"]
+  password node["keystone"]["db"]["password"]
+  database_name node["keystone"]["db"]["name"]
   host '%'
   privileges [:all]
   action :grant 
@@ -124,10 +134,10 @@ template "/etc/keystone/keystone.conf" do
   variables(
             :debug => node["keystone"]["debug"],
             :verbose => node["keystone"]["verbose"],
-            :user => node["keystone"]["db_user"],
-            :passwd => node["keystone"]["db_passwd"],
+            :user => node["keystone"]["db"]["username"],
+            :passwd => node["keystone"]["db"]["password"],
             :ip_address => node["keystone"]["api_ipaddress"],
-            :db_name => node["keystone"]["db"],
+            :db_name => node["keystone"]["db"]["name"],
             :db_ipaddress => db_ip_address,
             :service_port => node["keystone"]["service_port"],
             :admin_port => node["keystone"]["admin_port"],
