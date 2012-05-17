@@ -22,7 +22,7 @@ default["keystone"]["admin_user"] = "admin"
 
 default["keystone"]["users"] = {
     default["keystone"]["admin_user"]  => {
-        "password" => "dsecrete",
+        "password" => "secrete",
         "default_tenant" => "admin",
         "roles" => {
             "admin" => [ "admin", "demo" ],
