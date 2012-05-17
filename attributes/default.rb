@@ -21,8 +21,8 @@ default["keystone"]["tenants"] = [ "admin", "demo"]
 default["keystone"]["admin_user"] = "admin"
 
 default["keystone"]["users"] = {
-   node["keystone"]["admin_user"]  => {
-        "password" => "secrete",
+    default["keystone"]["admin_user"]  => {
+        "password" => "dsecrete",
         "default_tenant" => "admin",
         "roles" => {
             "admin" => [ "admin", "demo" ],
