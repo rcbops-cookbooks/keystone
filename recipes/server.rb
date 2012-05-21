@@ -97,9 +97,6 @@ directory "/etc/keystone" do
   owner "root"
   group "root"
   mode "0755"
-  not_if do
-    File.exists?("/etc/keystone")
-  end
 end
 
 file "/var/lib/keystone/keystone.db" do
