@@ -21,8 +21,6 @@
 include_recipe "mysql::client"
 include_recipe "osops-utils"
 
-platform_options = node["keystone"]["platform"]
-
 # Allow for using a well known db password
 if node["developer_mode"]
   node.set_unless["keystone"]["db"]["password"] = "keystone"
@@ -32,6 +30,7 @@ else
   node.set_unless["keystone"]["admin_token"] = secure_password
 end
 
+platform_options = node["keystone"]["platform"]
 mysql_info = get_settings_by_role("mysql-master", "mysql")
 
 db_ip_address = mysql_info["bind_address"]
@@ -67,13 +66,13 @@ end
 # https://bugs.launchpad.net/ubuntu/+source/keystone/+bug/931236
 ################
 
-platform_options["mysql_python_package"].each do |pkg|
+platform_options["mysql_python_packages"].each do |pkg|
   package pkg do
     action :install
   end
 end
 
-platform_options["keystone_package"].each do |pkg|
+platform_options["keystone_packages"].each do |pkg|
   package pkg do
     action :upgrade
     options platform_options["package_options"]
@@ -108,6 +107,10 @@ execute "keystone-manage db_sync" do
   action :nothing
 end
 
+ks_admin_endpoint = get_bind_endpoint("keystone", "admin-api")
+ks_service_endpoint = get_bind_endpoint("keystone", "service-api")
+
+
 template "/etc/keystone/keystone.conf" do
   source "keystone.conf.erb"
   owner "root"
@@ -118,11 +121,11 @@ template "/etc/keystone/keystone.conf" do
             :verbose => node["keystone"]["verbose"],
             :user => node["keystone"]["db"]["username"],
             :passwd => node["keystone"]["db"]["password"],
-            :ip_address => node["keystone"]["api_ipaddress"],
+            :ip_address => ks_admin_endpoint["host"],
             :db_name => node["keystone"]["db"]["name"],
             :db_ipaddress => db_ip_address,
-            :service_port => node["keystone"]["service_port"],
-            :admin_port => node["keystone"]["admin_port"],
+            :service_port => ks_service_endpoint["port"],
+            :admin_port => ks_admin_endpoint["port"],
             :admin_token => node["keystone"]["admin_token"]
             )
   notifies :run, resources(:execute => "keystone-manage db_sync"), :immediately
@@ -136,9 +139,6 @@ template "/etc/keystone/logging.conf" do
   mode "0644"
   notifies :restart, resources(:service => "keystone"), :immediately
 end
-
-ks_admin_endpoint = get_bind_endpoint("keystone", "admin-api")
-ks_service_endpoint = get_bind_endpoint("keystone", "service-api")
 
 node["keystone"]["tenants"].each do |tenant_name|
   ## Add openstack tenant ##
