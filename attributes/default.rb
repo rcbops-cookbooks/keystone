@@ -8,11 +8,21 @@ default["keystone"]["db"]["username"] = "keystone"
 # Replacing with OpenSSL::Password in recipes/server.rb
 # default["keystone"]["db"]["password"] = "keystone"
 
-default["keystone"]["api_ipaddress"] = node["ipaddress"]
 default["keystone"]["verbose"] = "False"
 default["keystone"]["debug"] = "False"
-default["keystone"]["service_port"] = "5000"
-default["keystone"]["admin_port"] = "35357"
+
+# new endpoint location stuff
+default["keystone"]["services"]["admin-api"]["scheme"] = "http"
+default["keystone"]["services"]["admin-api"]["network"] = "nova"
+default["keystone"]["services"]["admin-api"]["port"] = "35357"
+default["keystone"]["services"]["admin-api"]["path"] = "/v2.0"
+
+default["keystone"]["services"]["service-api"]["scheme"] = "http"
+default["keystone"]["services"]["service-api"]["network"] = "public"
+default["keystone"]["services"]["service-api"]["port"] = "5000"
+default["keystone"]["services"]["service-api"]["path"] = "/v2.0"
+
+
 # Replacing with OpenSSL::Password in recipes/server.rb
 # default["keystone"]["admin_token"] = "999888777666"
 
@@ -41,3 +51,23 @@ default["keystone"]["users"] = {
         }
     },
 }
+
+
+# platform defaults
+case platform
+when "fedora"
+  default["keystone"]["platform"] = {
+    "mysql_python_packages" => [ "MySQL-python" ],
+    "keystone_packages" => [ "openstack-keystone" ],
+    "keystone_service" => "openstack-keystone",
+    "package_options" => ""
+  }
+when "ubuntu"
+  default["keystone"]["platform"] = {
+    "mysql_python_packages" => [ "python-mysqldb" ],
+    "keystone_packages" => [ "keystone" ],
+    "keystone_service" => "keystone",
+    "package_options" => "-o Dpkg::Options::='--force-confold' -o Dpkg::Options::='--force-confdef'"
+  }
+end
+
