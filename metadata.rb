@@ -2,13 +2,13 @@ maintainer        "Rackspace Hosting, Inc."
 license           "Apache 2.0"
 description       "Installs and configures the Keystone Identity Service"
 long_description  IO.read(File.join(File.dirname(__FILE__), 'README.md'))
-version           "1.0.3"
+version           "1.0.4"
 recipe            "keystone::server", "Installs packages required for a keystone server"
 
 %w{ ubuntu fedora }.each do |os|
   supports os
 end
 
-%w{ database mysql osops-utils }.each do |dep|
+%w{ database mysql osops-utils monit }.each do |dep|
   depends dep
 end
