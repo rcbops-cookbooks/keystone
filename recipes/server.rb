@@ -250,3 +250,10 @@ node["keystone"]["users"].each do |username, user_info|
     tenant_name user_info["default_tenant"]
   end
 end
+
+include_recipe "monit::server"
+monit_procmon "keystone" do
+  process_name "keystone-all"
+  start_cmd "/etc/init.d/keystone start"
+  stop_cmd "/etc/init.d/keystone stop"
+end
