@@ -88,7 +88,7 @@ service "keystone" do
   service_name platform_options["keystone_service"]
   supports :status => true, :restart => true
   action [ :enable, :start ]
-  notifies :run, resources(:execute => "Keystone: sleep"), :immediately
+  notifies :run, resources(:execute => "Keystone: sleep"), :delayed
 end
 
 directory "/etc/keystone" do
