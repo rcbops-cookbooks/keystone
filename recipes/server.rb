@@ -88,7 +88,7 @@ service "keystone" do
   service_name platform_options["keystone_service"]
   supports :status => true, :restart => true
   action [ :enable, :start ]
-  notifies :run, resources(:execute => "Keystone: sleep"), :immediately
+  notifies :run, resources(:execute => "Keystone: sleep"), :delayed
 end
 
 directory "/etc/keystone" do
@@ -254,6 +254,6 @@ end
 include_recipe "monit::server"
 monit_procmon "keystone" do
   process_name "keystone-all"
-  start_cmd "/etc/init.d/keystone start"
-  stop_cmd "/etc/init.d/keystone stop"
+  start_cmd platform_options["monit_commands"]["start"]
+  stop_cmd platform_options["monit_commands"]["stop"]
 end
