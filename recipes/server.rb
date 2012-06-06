@@ -79,16 +79,16 @@ platform_options["keystone_packages"].each do |pkg|
   end
 end
 
+execute "Keystone: sleep" do
+  command "sleep 10s"
+  action :nothing
+end
+
 service "keystone" do
   service_name platform_options["keystone_service"]
   supports :status => true, :restart => true
   action [ :enable ]
-end
-
-execute "Keystone: sleep" do
-  command "sleep 10s"
-  action :nothing
-  subscribes :restart, resources(:service => "keystone"), :immediately
+  notifies :run, resources(:execute => "Keystone: sleep"), :immediately
 end
 
 directory "/etc/keystone" do
