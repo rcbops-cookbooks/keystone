@@ -17,46 +17,48 @@
 # limitations under the License.
 #
 
-ks_service_endpoint = get_bind_endpoint("keystone", "service-api")
-keystone = get_settings_by_roles("keystone", "keystone")
-keystone_admin_user = keystone["admin_user"]
-keystone_admin_password = keystone["users"][keystone_admin_user]["password"]
-keystone_admin_tenant = keystone["users"][keystone_admin_user]["default_tenant"]
-
 ########################################
 # BEGIN COLLECTD SECTION
-# TODO(shep): This needs to be encased in an if block for the collectd_enabled environment toggle
+# Allow for enable/disable of collectd
+if node["enable_collectd"]
+  include_recipe "collectd-graphite::collectd-client"
 
-include_recipe "collectd-graphite::collectd-client"
+  ks_service_endpoint = get_bind_endpoint("keystone", "service-api")
+  keystone = get_settings_by_roles("keystone", "keystone")
+  keystone_admin_user = keystone["admin_user"]
+  keystone_admin_password = keystone["users"][keystone_admin_user]["password"]
+  keystone_admin_tenant = keystone["users"][keystone_admin_user]["default_tenant"]
 
-cookbook_file File.join(node['collectd']['plugin_dir'], "keystone_plugin.py") do
-  source "keystone_plugin.py"
-  owner "root"
-  group "root"
-  mode "0644"
-end
+  cookbook_file File.join(node['collectd']['plugin_dir'], "keystone_plugin.py") do
+    source "keystone_plugin.py"
+    owner "root"
+    group "root"
+    mode "0644"
+  end
 
-collectd_python_plugin "keystone_plugin" do
-  options(
-    "Username"=>keystone_admin_user,
-    "Password"=>keystone_admin_password,
-    "TenantName"=>keystone_admin_tenant,
-    "AuthURL"=>ks_service_endpoint["uri"]
-  )
+  collectd_python_plugin "keystone_plugin" do
+    options(
+      "Username"=>keystone_admin_user,
+      "Password"=>keystone_admin_password,
+      "TenantName"=>keystone_admin_tenant,
+      "AuthURL"=>ks_service_endpoint["uri"]
+    )
+  end
 end
 ########################################
 
 
 ########################################
 # BEGIN MONIT SECTION
-# TODO(shep): This needs to be encased in an if block for the monit_enabled environment toggle
+# Allow for enable/disable of monit
+if node["enable_monit"]
+  include_recipe "monit::server"
+  platform_options = node["nova"]["platform"]
 
-include_recipe "monit::server"
-platform_options = node["nova"]["platform"]
-
-monit_procmon "keystone" do
-  process_name "keystone-all"
-  start_cmd platform_options["monit_commands"]["start"]
-  stop_cmd platform_options["monit_commands"]["stop"]
+  monit_procmon "keystone" do
+    process_name "keystone-all"
+    start_cmd platform_options["monit_commands"]["start"]
+    stop_cmd platform_options["monit_commands"]["stop"]
+  end
 end
 ########################################

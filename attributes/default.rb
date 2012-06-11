@@ -1,3 +1,10 @@
+########################################################################
+# Toggles - These can be overridden at the environment level
+default["enable_monit"] = True  # OS provides packages
+default["enable_collectd"] = False  # OS does not provide packages
+default["developer_mode"] = False  # we want secure passwords by default
+########################################################################
+
 # Adding these as blank
 # this needs to be here for the initial deep-merge to work
 default["credentials"]["EC2"]["admin"]["access"] = ""
@@ -23,13 +30,10 @@ default["keystone"]["services"]["service-api"]["port"] = "5000"
 default["keystone"]["services"]["service-api"]["path"] = "/v2.0"
 
 
-# Replacing with OpenSSL::Password in recipes/server.rb
-# default["keystone"]["admin_token"] = "999888777666"
-
 # default["keystone"]["roles"] = [ "admin", "Member", "KeystoneAdmin", "KeystoneServiceAdmin", "sysadmin", "netadmin" ]
 default["keystone"]["roles"] = [ "admin", "Member", "KeystoneAdmin", "KeystoneServiceAdmin" ]
 
-default["keystone"]["tenants"] = [ "admin", "demo"]
+default["keystone"]["tenants"] = [ "admin", "demo", "service"]
 
 default["keystone"]["admin_user"] = "admin"
 
@@ -50,6 +54,13 @@ default["keystone"]["users"] = {
             "Member" => [ "demo" ]
         }
     },
+    "monitoring" => {
+        "password" => "secrete",
+        "default_tenant" => "service",
+        "roles" => {
+            "Member" => [ "demo", "admin" ]
+        }
+    }
 }
 
 
@@ -61,7 +72,10 @@ when "fedora"
     "keystone_packages" => [ "openstack-keystone" ],
     "keystone_service" => "openstack-keystone",
     "package_options" => "",
-    "monit_commands" => { "start" => "/bin/systemctl start openstack-keystone.service", "stop" => "/bin/systemctl stop openstack-keystone.service" }
+    "monit_commands" => {
+      "start" => "/bin/systemctl start openstack-keystone.service",
+      "stop" => "/bin/systemctl stop openstack-keystone.service"
+    }
   }
 when "ubuntu"
   default["keystone"]["platform"] = {
@@ -69,7 +83,10 @@ when "ubuntu"
     "keystone_packages" => [ "keystone" ],
     "keystone_service" => "keystone",
     "package_options" => "-o Dpkg::Options::='--force-confold' -o Dpkg::Options::='--force-confdef'",
-    "monit_commands" => { "start" => "/etc/init.d/keystone start", "stop" => "/etc/init.d/keystone stop" }
+    "monit_commands" => {
+      "start" => "/etc/init.d/keystone start",
+      "stop" => "/etc/init.d/keystone stop"
+    }
   }
 end
 
