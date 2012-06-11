@@ -251,9 +251,6 @@ node["keystone"]["users"].each do |username, user_info|
   end
 end
 
-include_recipe "monit::server"
-monit_procmon "keystone" do
-  process_name "keystone-all"
-  start_cmd platform_options["monit_commands"]["start"]
-  stop_cmd platform_options["monit_commands"]["stop"]
-end
+# TODO(shep): this needs to be if blocked on env collectd toggle
+# Include recipe(nova::network-monitoring)
+include_recipe "keystone::server-monitoring"
