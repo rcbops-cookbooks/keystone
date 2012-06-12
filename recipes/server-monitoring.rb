@@ -53,7 +53,7 @@ end
 # Allow for enable/disable of monit
 if node["enable_monit"]
   include_recipe "monit::server"
-  platform_options = node["nova"]["platform"]
+  platform_options = node["keystone"]["platform"]
 
   monit_procmon "keystone" do
     process_name "keystone-all"
