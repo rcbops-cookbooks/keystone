@@ -57,8 +57,8 @@ if node["enable_monit"]
 
   monit_procmon "keystone" do
     process_name "keystone-all"
-    start_cmd platform_options["monit_commands"]["start"]
-    stop_cmd platform_options["monit_commands"]["stop"]
+    start_cmd "/usr/sbin/service " + platform_options["keystone_service"] + " start"
+    stop_cmd "/usr/sbin/service " + platform_options["keystone_service"] + " stop"
   end
 end
 ########################################

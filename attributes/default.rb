@@ -71,22 +71,14 @@ when "fedora"
     "mysql_python_packages" => [ "MySQL-python" ],
     "keystone_packages" => [ "openstack-keystone" ],
     "keystone_service" => "openstack-keystone",
-    "package_options" => "",
-    "monit_commands" => {
-      "start" => "/bin/systemctl start openstack-keystone.service",
-      "stop" => "/bin/systemctl stop openstack-keystone.service"
-    }
+    "package_options" => ""
   }
 when "ubuntu"
   default["keystone"]["platform"] = {
     "mysql_python_packages" => [ "python-mysqldb" ],
     "keystone_packages" => [ "keystone" ],
     "keystone_service" => "keystone",
-    "package_options" => "-o Dpkg::Options::='--force-confold' -o Dpkg::Options::='--force-confdef'",
-    "monit_commands" => {
-      "start" => "/etc/init.d/keystone start",
-      "stop" => "/etc/init.d/keystone stop"
-    }
+    "package_options" => "-o Dpkg::Options::='--force-confold' -o Dpkg::Options::='--force-confdef'"
   }
 end
 
