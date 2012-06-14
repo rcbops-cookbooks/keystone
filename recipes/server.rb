@@ -35,7 +35,6 @@ platform_options = node["keystone"]["platform"]
 #creates db and user, returns connection info, defined in osops-utils/libraries
 mysql_info = create_db_and_user("mysql",
                                 node["keystone"]["db"]["name"],
-                                node["keystone"]["db"]["name"],
                                 node["keystone"]["db"]["username"],
                                 node["keystone"]["db"]["password"])
 
