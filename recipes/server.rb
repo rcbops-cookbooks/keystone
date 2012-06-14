@@ -31,36 +31,12 @@ else
 end
 
 platform_options = node["keystone"]["platform"]
-mysql_info = get_settings_by_role("mysql-master", "mysql")
 
-db_ip_address = mysql_info["bind_address"]
-db_root_password = mysql_info["server_root_password"]
-
-connection_info = {
-  :host => mysql_info["bind_address"],
-  :username => "root",
-  :password => mysql_info["server_root_password"]}
-
-mysql_database "create #{node['keystone']['db']['name']} database" do
-  connection connection_info
-  database_name node["keystone"]["db"]["name"]
-  action :create
-end
-
-mysql_database_user node["keystone"]["db"]["username"] do
-  connection connection_info
-  password node["keystone"]["db"]["password"]
-  action :create
-end
-
-mysql_database_user node["keystone"]["db"]["username"] do
-  connection connection_info
-  password node["keystone"]["db"]["password"]
-  database_name node["keystone"]["db"]["name"]
-  host '%'
-  privileges [:all]
-  action :grant
-end
+#creates db and user, returns connection info, defined in osops-utils/libraries
+mysql_info = create_db_and_user("mysql",
+                                node["keystone"]["db"]["name"],
+                                node["keystone"]["db"]["username"],
+                                node["keystone"]["db"]["password"])
 
 ##### NOTE #####
 # https://bugs.launchpad.net/ubuntu/+source/keystone/+bug/931236
@@ -123,7 +99,7 @@ template "/etc/keystone/keystone.conf" do
             :passwd => node["keystone"]["db"]["password"],
             :ip_address => ks_admin_endpoint["host"],
             :db_name => node["keystone"]["db"]["name"],
-            :db_ipaddress => db_ip_address,
+            :db_ipaddress => mysql_info["bind_address"],
             :service_port => ks_service_endpoint["port"],
             :admin_port => ks_admin_endpoint["port"],
             :admin_token => node["keystone"]["admin_token"]
