@@ -17,14 +17,16 @@
 # limitations under the License.
 #
 
+# include_recipe "osops-utils"
+
 ########################################
 # BEGIN COLLECTD SECTION
 # Allow for enable/disable of collectd
-if node["enable_collectd"]
+if get_settings_by_role("collectd-server", "roles") and node["roles"].include?("collectd-client")
   include_recipe "collectd-graphite::collectd-client"
 
   ks_service_endpoint = get_bind_endpoint("keystone", "service-api")
-  keystone = get_settings_by_roles("keystone", "keystone")
+  keystone = get_settings_by_role("keystone", "keystone")
   keystone_admin_user = keystone["admin_user"]
   keystone_admin_password = keystone["users"][keystone_admin_user]["password"]
   keystone_admin_tenant = keystone["users"][keystone_admin_user]["default_tenant"]
