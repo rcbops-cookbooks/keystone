@@ -6,15 +6,23 @@ bind_host = <%= @ip_address %>
 compute_port = 8774
 verbose = True
 debug = True
+<% if @use_syslog == True %>
 # log_config = /etc/keystone/logging.conf
+<% else %>
+log_config = /etc/keystone/logging.conf
+<% end %>
 
 # ================= Syslog Options ============================
 # Send logs to syslog (/dev/log) instead of to file specified
 # by `log-file`
-use_syslog = True
+use_syslog = <%= @use_syslog %>
 
 # Facility to use. If unset defaults to LOG_USER.
+<% if @use_syslog == True %>
 syslog_log_facility = LOG_LOCAL3
+<% else %>
+# syslog_log_facility = LOG_USER
+<% end %>
 
 [sql]
 connection = mysql://<%= @user %>:<%= @passwd %>@<%= @db_ipaddress %>/<%= @db_name %>
