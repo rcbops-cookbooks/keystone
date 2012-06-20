@@ -28,6 +28,9 @@ default["keystone"]["services"]["service-api"]["network"] = "public"
 default["keystone"]["services"]["service-api"]["port"] = "5000"
 default["keystone"]["services"]["service-api"]["path"] = "/v2.0"
 
+# Logging stuff
+default["keystone"]["syslog"]["use"] = True
+default["keystone"]["syslog"]["facility"] = "LOG_LOCAL3"
 
 # default["keystone"]["roles"] = [ "admin", "Member", "KeystoneAdmin", "KeystoneServiceAdmin", "sysadmin", "netadmin" ]
 default["keystone"]["roles"] = [ "admin", "Member", "KeystoneAdmin", "KeystoneServiceAdmin" ]
