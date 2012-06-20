@@ -16,13 +16,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-template "/etc/rsyslog.d/23-keystone.conf" do
-    source "23-keystone.conf.erb"
-    owner "root"
-    group "root"
-    mode "0644"
-    variables(
-        "use_syslog" => node["glance"]["syslog"]["use"],
-        "log_facility" => node["glance"]["syslog"]["facility"]
-    )
+if node["keystone"]["syslog"]["use"]
+    template "/etc/rsyslog.d/23-keystone.conf" do
+        source "23-keystone.conf.erb"
+        owner "root"
+        group "root"
+        mode "0644"
+        variables(
+            "use_syslog" => node["glance"]["syslog"]["use"],
+            "log_facility" => node["glance"]["syslog"]["facility"]
+        )
+    end
 end
