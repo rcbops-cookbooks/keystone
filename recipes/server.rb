@@ -18,6 +18,7 @@
 #
 
 ::Chef::Recipe.send(:include, Opscode::OpenSSL::Password)
+include_recipe "keystone::keystone-rsyslog"
 include_recipe "mysql::client"
 include_recipe "osops-utils"
 
