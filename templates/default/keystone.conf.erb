@@ -6,7 +6,7 @@ bind_host = <%= @ip_address %>
 compute_port = 8774
 verbose = True
 debug = True
-<% if @use_syslog == True %>
+<% if @use_syslog == true %>
 # log_config = /etc/keystone/logging.conf
 <% else %>
 log_config = /etc/keystone/logging.conf
@@ -18,7 +18,7 @@ log_config = /etc/keystone/logging.conf
 use_syslog = <%= @use_syslog %>
 
 # Facility to use. If unset defaults to LOG_USER.
-<% if @use_syslog == True %>
+<% if @use_syslog == true %>
 syslog_log_facility = LOG_LOCAL3
 <% else %>
 # syslog_log_facility = LOG_USER
