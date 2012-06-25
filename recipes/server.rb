@@ -21,6 +21,7 @@
 include_recipe "keystone::keystone-rsyslog"
 include_recipe "mysql::client"
 include_recipe "osops-utils"
+include_recipe "monitoring"
 
 # Allow for using a well known db password
 if node["developer_mode"]
@@ -67,6 +68,15 @@ service "keystone" do
   action [ :enable ]
   notifies :run, resources(:execute => "Keystone: sleep"), :immediately
 end
+
+monitoring_procmon "keystone" do
+  procname=platform_options["keystone_service"]
+
+  process_name procname
+  start_cmd "/usr/sbin/service #{procname} start"
+  stop_cmd "/usr/sbin/service #{procname} stop"
+end
+
 
 directory "/etc/keystone" do
   action :create
@@ -229,6 +239,13 @@ node["keystone"]["users"].each do |username, user_info|
   end
 end
 
-# TODO(shep): this needs to be if blocked on env collectd toggle
-# Include recipe(nova::network-monitoring)
-include_recipe "keystone::server-monitoring"
+# Add keystone monitoring metrics
+monitoring_metric "keystone" do
+  keystone_admin_user = node["keystone"]["admin_user"]
+  type "pyscript"
+  script "keystone_plugin.py"
+  options("Username"=>keystone_admin_user,
+          "Password"=>node["keystone"]["users"][keystone_admin_user]["password"],
+          "TenantName"=>node["keystone"]["users"][keystone_admin_user]["default_tenant"],
+          "AuthURL"=>ks_service_endpoint["uri"])
+end
