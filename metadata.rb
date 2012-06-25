@@ -9,6 +9,6 @@ recipe            "keystone::server", "Installs packages required for a keystone
   supports os
 end
 
-%w{ database collectd-graphite monit mysql osops-utils }.each do |dep|
+%w{ database monitoring mysql osops-utils }.each do |dep|
   depends dep
 end
