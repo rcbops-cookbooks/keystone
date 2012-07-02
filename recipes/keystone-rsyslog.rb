@@ -23,8 +23,8 @@ if node["keystone"]["syslog"]["use"]
         group "root"
         mode "0644"
         variables(
-            "use_syslog" => node["glance"]["syslog"]["use"],
-            "log_facility" => node["glance"]["syslog"]["facility"]
+            "use_syslog" => node["keystone"]["syslog"]["use"],
+            "log_facility" => node["keystone"]["syslog"]["facility"]
         )
     end
 end
