@@ -67,7 +67,7 @@ default["keystone"]["users"] = {
 
 # platform defaults
 case platform
-when "fedora"
+when "fedora", "redhat"
   default["keystone"]["platform"] = {
     "mysql_python_packages" => [ "MySQL-python" ],
     "keystone_packages" => [ "openstack-keystone" ],
