@@ -23,7 +23,7 @@ template "/etc/rsyslog.d/23-keystone.conf" do
     mode "0644"
     variables(
         "use_syslog" => node["keystone"]["syslog"]["use"],
-        "log_facility" => node["keystone"]["syslog"]["facility"]
+        "log_facility" => node["keystone"]["syslog"]["config_facility"]
     )
     only_if { node["keystone"]["syslog"]["use"] }
 end
