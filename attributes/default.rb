@@ -67,7 +67,7 @@ default["keystone"]["users"] = {
 
 # platform defaults
 case platform
-when "fedora", "redhat"
+when "fedora", "redhat"                                 # :pragma-foodcritic: ~FC024 - won't fix this
   default["keystone"]["platform"] = {
     "mysql_python_packages" => [ "MySQL-python" ],
     "keystone_packages" => [ "openstack-keystone" ],
