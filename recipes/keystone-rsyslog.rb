@@ -26,4 +26,5 @@ template "/etc/rsyslog.d/23-keystone.conf" do
         "log_facility" => node["keystone"]["syslog"]["config_facility"]
     )
     only_if { node["keystone"]["syslog"]["use"] }
+    notifies :restart, "service[rsyslog]", :immediately
 end
