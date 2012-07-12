@@ -2,8 +2,9 @@ from keystoneclient.v2_0 import Client as KeystoneClient
 
 import collectd
 
-global OS_USERNAME, OS_PASSWORD, OS_TENANT_NAME, OS_AUTH_URL, VERBOSE_LOGGING
+global NAME, OS_USERNAME, OS_PASSWORD, OS_TENANT_NAME, OS_AUTH_URL, VERBOSE_LOGGING
 
+NAME = "keystone_plugin"
 OS_USERNAME = "username"
 OS_PASSWORD = "password"
 OS_TENANT_NAME = "tenantname"
