@@ -27,9 +27,11 @@ include_recipe "monitoring"
 if node["developer_mode"]
   node.set_unless["keystone"]["db"]["password"] = "keystone"
   node.set_unless["keystone"]["admin_token"] = "999888777666"
+  node.set_unless["keystone"]["users"]["monitoring"]["password"] = "monitoring"
 else
   node.set_unless["keystone"]["db"]["password"] = secure_password
   node.set_unless["keystone"]["admin_token"] = secure_password
+  node.set_unless["keystone"]["users"]["monitoring"]["password"] = secure_password
 end
 
 platform_options = node["keystone"]["platform"]
