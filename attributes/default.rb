@@ -35,6 +35,7 @@ default["keystone"]["syslog"]["config_facility"] = "local3"
 # default["keystone"]["roles"] = [ "admin", "Member", "KeystoneAdmin", "KeystoneServiceAdmin", "sysadmin", "netadmin" ]
 default["keystone"]["roles"] = [ "admin", "Member", "KeystoneAdmin", "KeystoneServiceAdmin" ]
 
+#TODO(shep): this should probably be derived from keystone.users hash keys
 default["keystone"]["tenants"] = [ "admin", "service"]
 
 default["keystone"]["admin_user"] = "admin"

@@ -130,6 +130,7 @@ template "/etc/keystone/logging.conf" do
   notifies :restart, resources(:service => "keystone"), :immediately
 end
 
+#TODO(shep): this should probably be derived from keystone.users hash keys
 node["keystone"]["tenants"].each do |tenant_name|
   ## Add openstack tenant ##
   keystone_register "Register '#{tenant_name}' Tenant" do
