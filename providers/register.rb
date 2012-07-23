@@ -69,7 +69,6 @@ action :create_endpoint do
     unless service_uuid or service_error
         Chef::Log.error("Unable to find service type '#{new_resource.service_type}'")
         new_resource.updated_by_last_action(false)
-        return
     end
 
     # Make sure this endpoint does not already exist
@@ -218,7 +217,6 @@ action :create_user do
     unless tenant_uuid
         Chef::Log.error("Unable to find tenant '#{new_resource.tenant_name}'")
         new_resource.updated_by_last_action(false)
-        return
     end
 
     # Construct the extension path using the found tenant_uuid
