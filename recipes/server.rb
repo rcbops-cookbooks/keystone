@@ -77,8 +77,15 @@ monitoring_procmon "keystone" do
   process_name procname
   start_cmd "/usr/sbin/service #{procname} start"
   stop_cmd "/usr/sbin/service #{procname} stop"
+
 end
 
+monitoring_metric "keystone-proc" do
+  type "proc"
+  proc_name "keystone"
+  proc_regex platform_options["keystone_service"]
+  alarms(:failure_min => 2.0)
+end
 
 directory "/etc/keystone" do
   action :create
@@ -247,8 +254,8 @@ monitoring_metric "keystone" do
   keystone_admin_user = node["keystone"]["admin_user"]
   type "pyscript"
   script "keystone_plugin.py"
-  options("Username"=>keystone_admin_user,
-          "Password"=>node["keystone"]["users"][keystone_admin_user]["password"],
-          "TenantName"=>node["keystone"]["users"][keystone_admin_user]["default_tenant"],
-          "AuthURL"=>ks_service_endpoint["uri"])
+  options("Username" => keystone_admin_user,
+          "Password" => node["keystone"]["users"][keystone_admin_user]["password"],
+          "TenantName" => node["keystone"]["users"][keystone_admin_user]["default_tenant"],
+          "AuthURL" => ks_service_endpoint["uri"])
 end
