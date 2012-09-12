@@ -74,11 +74,8 @@ end
 
 monitoring_procmon "keystone" do
   procname=platform_options["keystone_service"]
-
   process_name procname
-  start_cmd "/usr/sbin/service #{procname} start"
-  stop_cmd "/usr/sbin/service #{procname} stop"
-
+  script_name procname
 end
 
 monitoring_metric "keystone-proc" do
