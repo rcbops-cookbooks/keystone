@@ -74,7 +74,8 @@ end
 
 monitoring_procmon "keystone" do
   procname=platform_options["keystone_service"]
-  process_name procname
+  sname=platform_options["keystone_process_name"]
+  process_name sname
   script_name procname
 end
 
