@@ -67,6 +67,7 @@ when "fedora", "redhat", "centos"                                 # :pragma-food
     "mysql_python_packages" => [ "MySQL-python" ],
     "keystone_packages" => [ "openstack-keystone" ],
     "keystone_service" => "openstack-keystone",
+    "keystone_process_name" => "keystone-all",
     "package_options" => ""
   }
 when "ubuntu"
@@ -74,6 +75,7 @@ when "ubuntu"
     "mysql_python_packages" => [ "python-mysqldb" ],
     "keystone_packages" => [ "keystone" ],
     "keystone_service" => "keystone",
+    "keystone_process_name" => "keystone-all",
     "package_options" => "-o Dpkg::Options::='--force-confold' -o Dpkg::Options::='--force-confdef'"
   }
 end
