@@ -5,42 +5,42 @@ default["developer_mode"] = false  # we want secure passwords by default
 
 # Adding these as blank
 # this needs to be here for the initial deep-merge to work
-default["credentials"]["EC2"]["admin"]["access"] = ""
-default["credentials"]["EC2"]["admin"]["secret"] = ""
+default["credentials"]["EC2"]["admin"]["access"] = ""                       # node_attribute
+default["credentials"]["EC2"]["admin"]["secret"] = ""                       # node_attribute
 
-default["keystone"]["db"]["name"] = "keystone"
-default["keystone"]["db"]["username"] = "keystone"
+default["keystone"]["db"]["name"] = "keystone"                              # node_attribute
+default["keystone"]["db"]["username"] = "keystone"                          # node_attribute
 # Replacing with OpenSSL::Password in recipes/server.rb
 # default["keystone"]["db"]["password"] = "keystone"
 
-default["keystone"]["verbose"] = "False"
-default["keystone"]["debug"] = "False"
+default["keystone"]["verbose"] = "False"                                    # node_attribute
+default["keystone"]["debug"] = "False"                                      # node_attribute
 
 # new endpoint location stuff
-default["keystone"]["services"]["admin-api"]["scheme"] = "http"
-default["keystone"]["services"]["admin-api"]["network"] = "nova"
-default["keystone"]["services"]["admin-api"]["port"] = "35357"
-default["keystone"]["services"]["admin-api"]["path"] = "/v2.0"
+default["keystone"]["services"]["admin-api"]["scheme"] = "http"             # node_attribute
+default["keystone"]["services"]["admin-api"]["network"] = "nova"            # node_attribute
+default["keystone"]["services"]["admin-api"]["port"] = "35357"              # node_attribute
+default["keystone"]["services"]["admin-api"]["path"] = "/v2.0"              # node_attribute
 
-default["keystone"]["services"]["service-api"]["scheme"] = "http"
-default["keystone"]["services"]["service-api"]["network"] = "public"
-default["keystone"]["services"]["service-api"]["port"] = "5000"
-default["keystone"]["services"]["service-api"]["path"] = "/v2.0"
+default["keystone"]["services"]["service-api"]["scheme"] = "http"           # node_attribute
+default["keystone"]["services"]["service-api"]["network"] = "public"        # node_attribute
+default["keystone"]["services"]["service-api"]["port"] = "5000"             # node_attribute
+default["keystone"]["services"]["service-api"]["path"] = "/v2.0"            # node_attribute
 
 # Logging stuff
-default["keystone"]["syslog"]["use"] = true
-default["keystone"]["syslog"]["facility"] = "LOG_LOCAL3"
-default["keystone"]["syslog"]["config_facility"] = "local3"
+default["keystone"]["syslog"]["use"] = true                                 # node_attribute
+default["keystone"]["syslog"]["facility"] = "LOG_LOCAL3"                    # node_attribute
+default["keystone"]["syslog"]["config_facility"] = "local3"                 # node_attribute
 
 # default["keystone"]["roles"] = [ "admin", "Member", "KeystoneAdmin", "KeystoneServiceAdmin", "sysadmin", "netadmin" ]
-default["keystone"]["roles"] = [ "admin", "Member", "KeystoneAdmin", "KeystoneServiceAdmin" ]
+default["keystone"]["roles"] = [ "admin", "Member", "KeystoneAdmin", "KeystoneServiceAdmin" ] # node_attribute
 
 #TODO(shep): this should probably be derived from keystone.users hash keys
-default["keystone"]["tenants"] = [ "admin", "service"]
+default["keystone"]["tenants"] = [ "admin", "service"]                      # node_attribute
 
-default["keystone"]["admin_user"] = "admin"
+default["keystone"]["admin_user"] = "admin"                                 # node_attribute
 
-default["keystone"]["users"] = {
+default["keystone"]["users"] = {                                            # node_attribute
     default["keystone"]["admin_user"]  => {
         "password" => "secrete",
         "default_tenant" => "admin",
@@ -63,7 +63,7 @@ default["keystone"]["users"] = {
 # platform defaults
 case platform
 when "fedora", "redhat", "centos"                                 # :pragma-foodcritic: ~FC024 - won't fix this
-  default["keystone"]["platform"] = {
+  default["keystone"]["platform"] = {                                       # node_attribute
     "mysql_python_packages" => [ "MySQL-python" ],
     "keystone_packages" => [ "openstack-keystone" ],
     "keystone_service" => "openstack-keystone",
@@ -71,7 +71,7 @@ when "fedora", "redhat", "centos"                                 # :pragma-food
     "package_options" => ""
   }
 when "ubuntu"
-  default["keystone"]["platform"] = {
+  default["keystone"]["platform"] = {                                       # node_attribute
     "mysql_python_packages" => [ "python-mysqldb" ],
     "keystone_packages" => [ "keystone" ],
     "keystone_service" => "keystone",
