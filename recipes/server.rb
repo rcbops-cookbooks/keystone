@@ -53,6 +53,7 @@ platform_options["mysql_python_packages"].each do |pkg|
   end
 end
 
+
 platform_options["keystone_packages"].each do |pkg|
   package pkg do
     action :upgrade
@@ -93,10 +94,6 @@ directory "/etc/keystone" do
   mode "0755"
 end
 
-file "/var/lib/keystone/keystone.db" do
-  action :delete
-end
-
 execute "keystone-manage db_sync" do
   command "keystone-manage db_sync"
   action :nothing
@@ -127,6 +124,13 @@ template "/etc/keystone/keystone.conf" do
   notifies :run, resources(:execute => "keystone-manage db_sync"), :immediately
   notifies :restart, resources(:service => "keystone"), :immediately
 end
+
+
+file "/var/lib/keystone/keystone.db" do
+  action :delete
+end
+
+
 
 template "/etc/keystone/logging.conf" do
   source "keystone-logging.conf.erb"
