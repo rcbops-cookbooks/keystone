@@ -44,7 +44,8 @@ mysql_info = create_db_and_user("mysql",
                                 node["keystone"]["db"]["password"])
 
 ##### NOTE #####
-# https://bugs.launchpad.net/ubuntu/+source/keystone/+bug/931236
+# https://bugs.launchpad.net/ubuntu/+source/keystone/+bug/931236 (Resolved)
+# https://bugs.launchpad.net/ubuntu/+source/keystone/+bug/1073273
 ################
 
 platform_options["mysql_python_packages"].each do |pkg|
