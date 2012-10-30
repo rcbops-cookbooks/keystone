@@ -73,7 +73,7 @@ when "fedora", "redhat", "centos"                                 # :pragma-food
 when "ubuntu"
   default["keystone"]["platform"] = {                                       # node_attribute
     "mysql_python_packages" => [ "python-mysqldb" ],
-    "keystone_packages" => [ "keystone" ],
+    "keystone_packages" => [ "keystone", "python-keystone", "python-keystoneclient" ],
     "keystone_service" => "keystone",
     "keystone_process_name" => "keystone-all",
     "package_options" => "-o Dpkg::Options::='--force-confold' -o Dpkg::Options::='--force-confdef'"
