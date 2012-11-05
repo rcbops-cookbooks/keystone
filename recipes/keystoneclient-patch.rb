@@ -27,6 +27,5 @@ template "/usr/share/pyshared/keystoneclient/v2_0/client.py" do
   owner "root"
   group "root"
   mode "0644"
-  notifies :restart, resources(:service => "nova-scheduler"), :immediately
   only_if { ::Chef::Recipe::Patch.check_package_version("python-keystoneclient","1:0.1.3.37+git201210301431~precise-0ubuntu1",node) }
 end
