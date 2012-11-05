@@ -269,3 +269,5 @@ monitoring_metric "keystone" do
           "TenantName" => node["keystone"]["users"][keystone_admin_user]["default_tenant"],
           "AuthURL" => ks_service_endpoint["uri"])
 end
+
+include_recipe "keystone::keystoneclient-patch"
