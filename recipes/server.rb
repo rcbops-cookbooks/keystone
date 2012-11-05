@@ -44,7 +44,8 @@ mysql_info = create_db_and_user("mysql",
                                 node["keystone"]["db"]["password"])
 
 ##### NOTE #####
-# https://bugs.launchpad.net/ubuntu/+source/keystone/+bug/931236
+# https://bugs.launchpad.net/ubuntu/+source/keystone/+bug/931236 (Resolved)
+# https://bugs.launchpad.net/ubuntu/+source/keystone/+bug/1073273
 ################
 
 platform_options["mysql_python_packages"].each do |pkg|
@@ -103,9 +104,9 @@ ks_admin_endpoint = get_bind_endpoint("keystone", "admin-api")
 ks_service_endpoint = get_bind_endpoint("keystone", "service-api")
 
 if not node['package_component'].nil?
-    release = node['package_component']
+  release = node['package_component']
 else
-    release = "essex-final"
+  release = "essex-final"
 end
 
 template "/etc/keystone/keystone.conf" do
