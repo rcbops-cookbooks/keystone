@@ -16,6 +16,34 @@ default["keystone"]["db"]["username"] = "keystone"                          # no
 default["keystone"]["verbose"] = "False"                                    # node_attribute
 default["keystone"]["debug"] = "False"                                      # node_attribute
 
+# ldap - base configuration
+default["keystone"]["ldap"]["enable"] == false				    # node_attribute
+default["keystone"]["ldap"]["url"] = ""					    
+default["keystone"]["ldap"]["user"] = ""
+default["keystone"]["ldap"]["password"] = ""
+default["keystone"]["ldap"]["backend_entities"] = ['Tenant', 'User', 'UserRoleAssociation', 'Role'] 
+default["keystone"]["ldap"]["suffix"] = ""
+default["keystone"]["ldap"]["user_dumb_member"] = false
+
+# ldap - User tree setup, dependant on ldap schema
+default["keystone"]["ldap"]["user_tree_dn"] = ""
+default["keystone"]["ldap"]["user_objectclass"] = "inetOrgPerson"
+default["keystone"]["ldap"]["user_id_attribute"] = "cn"
+default["keystone"]["ldap"]["user_name_attribute"] = "sn"
+
+# ldap - Role tree setup, dependant on ldap schema. Can also use keystone db to manage roles
+default["keystone"]["ldap"]["role_tree_dn"] = ""
+default["keystone"]["ldap"]["role_objectclass"] = "organizationalRole"
+default["keystone"]["ldap"]["role_id_attribute"] = "cn"
+default["keystone"]["ldap"]["role_member_attribute"] = "roleOccupant"
+
+# ldap - Tenant tree setup, dependant on ldap schema. Can also use keystone db to manage tenants
+default["keystone"]["ldap"]["tenant_tree_dn"] = ""
+default["keystone"]["ldap"]["tenant_objectclass"] = "groupOfNames"
+default["keystone"]["ldap"]["tenant_id_attribute"] = "cn"
+default["keystone"]["ldap"]["tenant_member_attribute"] = "member"
+default["keystone"]["ldap"]["tenant_name_attribute"] = "ou"
+
 # new endpoint location stuff
 default["keystone"]["services"]["admin-api"]["scheme"] = "http"             # node_attribute
 default["keystone"]["services"]["admin-api"]["network"] = "nova"            # node_attribute
