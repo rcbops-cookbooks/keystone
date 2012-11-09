@@ -19,6 +19,7 @@ default["keystone"]["debug"] = "False"                                      # no
 # ldap - base configuration
 default["keystone"]["ldap"]["enable"] == false				    # node_attribute
 default["keystone"]["ldap"]["url"] = ""					    
+default["keystone"]["ldap"]["tree_dn"] = ""
 default["keystone"]["ldap"]["user"] = ""
 default["keystone"]["ldap"]["password"] = ""
 default["keystone"]["ldap"]["backend_entities"] = ['Tenant', 'User', 'UserRoleAssociation', 'Role'] 
