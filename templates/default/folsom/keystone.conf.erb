@@ -37,39 +37,40 @@ max_pool_size = 10
 pool_timeout = 200
 
 [identity]
-<% if @use_ldap == true %>
+<% if @ldap_options["enable"] == true %>
 driver = keystone.identity.backends.ldap.Identity
 
 [ldap]
 # Base Config
-url = ldap://<% @ldap_url %>
-user = <% @ldap_user %>
-password = <% @ldap_password %>
-backend_entities = <% @ldap_backend_entities %>
-suffix = <% @ldap_suffix %>
-user_dumb_member = <% @ldap_user_dumb_member %>
+url = ldap://<% @ldap_options["url"] %>
+tree_dn = <% @ldap_options["tree_dn"] %>
+user = <% @ldap_options["user"] %>
+password = <% @ldap_options["password"] %>
+backend_entities = <% @ldap_options["backend_entities"] %>
+suffix = <% @ldap_options["suffix"] %>
+user_dumb_member = <% @ldap_options["user_dumb_member"] %>
 
 # User Schema
-user_tree_dn = <% @ldap_user_tree_dn %>
-user_objectclass = <% @ldap_user_objectclass %>
-user_id_attribute = <% @ldap_user_id_attribute %>
-user_name_attribute = <% @ldap_user_name_attribute %>
+user_tree_dn = <% @ldap_options["user_tree_dn"] %>
+user_objectclass = <% @ldap_options["user_objectclass"] %>
+user_id_attribute = <% @ldap_options["user_id_attribute"] %>
+user_name_attribute = <% @ldap_options["user_name_attribute"] %>
 
-<% if @ldap_role_tree_dn != "" %>
+<% if @ldap_options["role_tree_dn"] %>
 # Role Schema - Do not complete if you prefer keystone tenants to be stored outside of ldap
-role_tree_dn = <% @ldap_role_tree_dn %>
-role_objectclass = <% @ldap_role_objectclass %>
-role_id_attribute = <% @ldap_role_id_attribute %>
-role_member_attribute = <% @ldap_role_member_attribute %>
+role_tree_dn = <% @ldap_options["role_tree_dn"] %>
+role_objectclass = <% @ldap_options["role_objectclass"] %>
+role_id_attribute = <% @ldap_options["role_id_attribute"] %>
+role_member_attribute = <% @ldap_options["role_member_attribute"] %>
 <% end %>
 
-<% if @ldap_tenant_tree_dn != "" %>
+<% if @ldap_options["tenant_tree_dn"] %>
 # Tenant Schema - Do not complete if you prefer keystone tenants to be stored outside of ldap
-tenant_tree_dn = <% @ldap_tenant_tree_dn %>
-tenant_objectclass = <% @ldap_tenant_objectclass %>
-tenant_id_attribute = <% @ldap_tenant_id_attribute %>
-tenant_member_attribute = <% @ldap_tenant_member_attribute %>
-tenant_name_attribute = <% @ldap_tenant_name_attribute %>
+tenant_tree_dn = <% @ldap_options["tenant_tree_dn"] %>
+tenant_objectclass = <% @ldap_options["tenant_objectclass"] %>
+tenant_id_attribute = <% @ldap_options["tenant_id_attribute"] %>
+tenant_member_attribute = <% @ldap_options["tenant_member_attribute"] %>
+tenant_name_attribute = <% @ldap_options["tenant_name_attribute"] %>
 <% end %>
 
 <% else %>
