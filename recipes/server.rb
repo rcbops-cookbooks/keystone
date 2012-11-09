@@ -114,6 +114,7 @@ template "/etc/keystone/keystone.conf" do
   owner "root"
   group "root"
   mode "0644"
+  
   variables(
             :debug => node["keystone"]["debug"],
             :verbose => node["keystone"]["verbose"],
@@ -126,7 +127,8 @@ template "/etc/keystone/keystone.conf" do
             :admin_port => ks_admin_endpoint["port"],
             :admin_token => node["keystone"]["admin_token"],
             :use_syslog => node["keystone"]["syslog"]["use"],
-            :log_facility => node["keystone"]["syslog"]["facility"]
+            :log_facility => node["keystone"]["syslog"]["facility"],
+	    :ldap_options => node["keystone"]["ldap"]
             )
   notifies :run, resources(:execute => "keystone-manage db_sync"), :immediately
   notifies :restart, resources(:service => "keystone"), :immediately
