@@ -62,6 +62,13 @@ platform_options["keystone_packages"].each do |pkg|
   end
 end
 
+platform_options["keystone_ldap_packages"].each do |pkg|
+  package pkg do
+    action :upgrade
+    options platform_options["package_options"]
+  end
+end
+
 execute "Keystone: sleep" do
   command "sleep 10s"
   action :nothing
