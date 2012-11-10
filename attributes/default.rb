@@ -24,7 +24,7 @@ default["keystone"]["ldap"]["user"] = ""
 default["keystone"]["ldap"]["password"] = ""
 default["keystone"]["ldap"]["backend_entities"] = ['Tenant', 'User', 'UserRoleAssociation', 'Role'] 
 default["keystone"]["ldap"]["suffix"] = ""
-default["keystone"]["ldap"]["user_dumb_member"] = false
+default["keystone"]["ldap"]["user_dumb_member"] = "False"
 
 # ldap - User tree setup, dependant on ldap schema
 default["keystone"]["ldap"]["user_tree_dn"] = ""
@@ -102,6 +102,7 @@ when "fedora", "redhat", "centos"                                 # :pragma-food
 when "ubuntu"
   default["keystone"]["platform"] = {                                       # node_attribute
     "mysql_python_packages" => [ "python-mysqldb" ],
+    "keystone_ldap_packages" => [ "python-ldap" ],
     "keystone_packages" => [ "keystone", "python-keystone", "python-keystoneclient" ],
     "keystone_service" => "keystone",
     "keystone_process_name" => "keystone-all",
