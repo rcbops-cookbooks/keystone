@@ -96,7 +96,7 @@ case platform
 when "fedora", "redhat", "centos"                                 # :pragma-foodcritic: ~FC024 - won't fix this
   default["keystone"]["platform"] = {                                       # node_attribute
     "mysql_python_packages" => [ "MySQL-python" ],
-    "keystone_packages" => [ "openstack-keystone" ],
+    "keystone_packages" => [ "openstack-keystone", "python-iso8601" ],
     "keystone_service" => "openstack-keystone",
     "keystone_process_name" => "keystone-all",
     "package_options" => ""
