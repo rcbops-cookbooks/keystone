@@ -37,7 +37,7 @@ max_pool_size = 10
 pool_timeout = 200
 
 [identity]
-<% if @ldap_options["enable"] == true %>
+<% if @auth_type == "ldap" %>
 driver = keystone.identity.backends.ldap.Identity
 
 [ldap]
