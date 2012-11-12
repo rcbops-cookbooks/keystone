@@ -37,7 +37,10 @@ max_pool_size = 10
 pool_timeout = 200
 
 [identity]
-<% if @auth_type == "ldap" %>
+<% if @auth_type == "sql" %>
+driver = keystone.identity.backends.sql.Identity
+
+<% elsif @auth_type == "ldap" %>
 driver = keystone.identity.backends.ldap.Identity
 
 [ldap]
@@ -73,8 +76,6 @@ tenant_tree_dn = <%= @ldap_options["tenant_tree_dn"] %>
 # tenant_name_attribute = <%= @ldap_options["tenant_name_attribute"] %>
 <% end %>
 
-<% else %>
-driver = keystone.identity.backends.sql.Identity
 <% end %>
 
 [catalog]
