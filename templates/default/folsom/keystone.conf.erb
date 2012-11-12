@@ -52,25 +52,25 @@ user_dumb_member = <%= @ldap_options["user_dumb_member"] %>
 
 # User Schema
 user_tree_dn = <%= @ldap_options["user_tree_dn"] %>
-user_objectclass = <%= @ldap_options["user_objectclass"] %>
-user_id_attribute = <%= @ldap_options["user_id_attribute"] %>
-user_name_attribute = <%= @ldap_options["user_name_attribute"] %>
+# user_objectclass = <%= @ldap_options["user_objectclass"] %>
+# user_id_attribute = <%= @ldap_options["user_id_attribute"] %>
+# user_name_attribute = <%= @ldap_options["user_name_attribute"] %>
 
 <% if @ldap_options["role_tree_dn"] %>
 # Role Schema - Do not complete if you prefer keystone tenants to be stored outside of ldap
 role_tree_dn = <%= @ldap_options["role_tree_dn"] %>
-role_objectclass = <%= @ldap_options["role_objectclass"] %>
-role_id_attribute = <%= @ldap_options["role_id_attribute"] %>
-role_member_attribute = <%= @ldap_options["role_member_attribute"] %>
+# role_objectclass = <%= @ldap_options["role_objectclass"] %>
+# role_id_attribute = <%= @ldap_options["role_id_attribute"] %>
+# role_member_attribute = <%= @ldap_options["role_member_attribute"] %>
 <% end %>
 
 <% if @ldap_options["tenant_tree_dn"] %>
 # Tenant Schema - Do not complete if you prefer keystone tenants to be stored outside of ldap
 tenant_tree_dn = <%= @ldap_options["tenant_tree_dn"] %>
-tenant_objectclass = <%= @ldap_options["tenant_objectclass"] %>
-tenant_id_attribute = <%= @ldap_options["tenant_id_attribute"] %>
-tenant_member_attribute = <%= @ldap_options["tenant_member_attribute"] %>
-tenant_name_attribute = <%= @ldap_options["tenant_name_attribute"] %>
+# tenant_objectclass = <%= @ldap_options["tenant_objectclass"] %>
+# tenant_id_attribute = <%= @ldap_options["tenant_id_attribute"] %>
+# tenant_member_attribute = <%= @ldap_options["tenant_member_attribute"] %>
+# tenant_name_attribute = <%= @ldap_options["tenant_name_attribute"] %>
 <% end %>
 
 <% else %>
