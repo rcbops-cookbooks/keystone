@@ -16,8 +16,10 @@ default["keystone"]["db"]["username"] = "keystone"                          # no
 default["keystone"]["verbose"] = "False"                                    # node_attribute
 default["keystone"]["debug"] = "False"                                      # node_attribute
 
+# Auth type = sql or ldap
+default["keystone"]["auth_type"] == "sql"				    # node_attribute
+
 # ldap - base configuration
-default["keystone"]["ldap"]["enable"] == false				    # node_attribute
 default["keystone"]["ldap"]["url"] = ""					    
 default["keystone"]["ldap"]["tree_dn"] = ""
 default["keystone"]["ldap"]["user"] = ""
