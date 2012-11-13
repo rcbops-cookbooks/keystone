@@ -36,18 +36,47 @@ min_pool_size = 5
 max_pool_size = 10
 pool_timeout = 200
 
-[ldap]
-#url = ldap://localhost
-#tree_dn = dc=example,dc=com
-#user_tree_dn = ou=Users,dc=example,dc=com
-#role_tree_dn = ou=Roles,dc=example,dc=com
-#tenant_tree_dn = ou=Groups,dc=example,dc=com
-#user = dc=Manager,dc=example,dc=com
-#password = freeipa4all
-#suffix = cn=example,cn=com
-
 [identity]
+<% if @auth_type == "ldap" %>
+driver = keystone.identity.backends.ldap.Identity
+
+[ldap]
+# Base Config
+url = ldap://<%= @ldap_options["url"] %>
+tree_dn = <%= @ldap_options["tree_dn"] %>
+user = <%= @ldap_options["user"] %>
+password = <%= @ldap_options["password"] %>
+backend_entities = <%= @ldap_options["backend_entities"] %>
+suffix = <%= @ldap_options["suffix"] %>
+user_dumb_member = <%= @ldap_options["user_dumb_member"] %>
+
+# User Schema
+user_tree_dn = <%= @ldap_options["user_tree_dn"] %>
+user_objectclass = <%= @ldap_options["user_objectclass"] %>
+user_id_attribute = <%= @ldap_options["user_id_attribute"] %>
+user_name_attribute = <%= @ldap_options["user_name_attribute"] %>
+
+<% if @ldap_options["role_tree_dn"] %>
+# Role Schema 
+role_tree_dn = <%= @ldap_options["role_tree_dn"] %>
+role_objectclass = <%= @ldap_options["role_objectclass"] %>
+role_id_attribute = <%= @ldap_options["role_id_attribute"] %>
+role_member_attribute = <%= @ldap_options["role_member_attribute"] %>
+<% end %>
+
+<% if @ldap_options["tenant_tree_dn"] %>
+# Tenant Schema 
+tenant_tree_dn = <%= @ldap_options["tenant_tree_dn"] %>
+tenant_objectclass = <%= @ldap_options["tenant_objectclass"] %>
+tenant_id_attribute = <%= @ldap_options["tenant_id_attribute"] %>
+tenant_member_attribute = <%= @ldap_options["tenant_member_attribute"] %>
+tenant_name_attribute = <%= @ldap_options["tenant_name_attribute"] %>
+<% end %>
+
+<% else %>
 driver = keystone.identity.backends.sql.Identity
+
+<% end %>
 
 [catalog]
 driver = keystone.catalog.backends.sql.Catalog
