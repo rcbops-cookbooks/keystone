@@ -62,6 +62,13 @@ platform_options["keystone_packages"].each do |pkg|
   end
 end
 
+platform_options["keystone_ldap_packages"].each do |pkg|
+  package pkg do
+    action :upgrade
+    options platform_options["package_options"]
+  end
+end
+
 execute "Keystone: sleep" do
   command "sleep 10s"
   action :nothing
@@ -114,6 +121,7 @@ template "/etc/keystone/keystone.conf" do
   owner "root"
   group "root"
   mode "0644"
+  
   variables(
             :debug => node["keystone"]["debug"],
             :verbose => node["keystone"]["verbose"],
@@ -126,7 +134,9 @@ template "/etc/keystone/keystone.conf" do
             :admin_port => ks_admin_endpoint["port"],
             :admin_token => node["keystone"]["admin_token"],
             :use_syslog => node["keystone"]["syslog"]["use"],
-            :log_facility => node["keystone"]["syslog"]["facility"]
+            :log_facility => node["keystone"]["syslog"]["facility"],
+	    :auth_type => node["keystone"]["auth_type"],
+	    :ldap_options => node["keystone"]["ldap"]
             )
   notifies :run, resources(:execute => "keystone-manage db_sync"), :immediately
   notifies :restart, resources(:service => "keystone"), :immediately
