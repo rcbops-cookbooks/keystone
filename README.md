@@ -246,6 +246,63 @@ Attributes
 * `keystone["roles"]` - Array of roles to create in the keystone server
 * `keystone["users"]` - Array of users to create in the keystone server
 
+
+LDAP Support
+=============
+Begininng with the folsom version of the cookbooks we have added support for using LDAP as a keystone backend. In order to enable this functionality the following attributes must be set, in your chef environment, to match the ldap schema.
+
+Base Configuration
+-----------
+* default["keystone"]["auth_type"] == "ldap"
+    - set to sql by default
+* default["keystone"]["ldap"]["url"] = """
+    - the address/name of the ldap server
+* default["keystone"]["ldap"]["tree_dn"] = ""
+    - the toplevel tree distinguished name.
+* default["keystone"]["ldap"]["user"] = ""
+    - a user with administrative privileges to ldap
+* default["keystone"]["ldap"]["password"] = ""
+    - the password for the above user.
+* default["keystone"]["ldap"]["suffix"] = ""
+    - the ldap suffix (dc=example, dc=com)
+
+
+User Configuration
+-----------
+
+* default["keystone"]["ldap"]["user_tree_dn"] = ""
+    - the distinguished name of the user tree (e.g. ou=Users,dc=example,dc=com)
+* default["keystone"]["ldap"]["user_objectclass"] = "inetOrgPerson"
+    - the objectclass for users created by keystone. Should match common ldap schema, inetOrgPerson by default.
+* default["keystone"]["ldap"]["user_id_attribute"] = "cn"
+    - the user id attribute for users created by keystone.Should match common ldap schema, cn by default.
+* default["keystone"]["ldap"]["user_name_attribute"] = "sn"
+    - the user name attribute for users created by keystone. Should match common ldap schema, sn by default.
+
+Role Configuration
+------------------
+* default["keystone"]["ldap"]["role_tree_dn"] = ""
+    - the distinguished name of the user tree (e.g. ou=Roles,dc=example,dc=com)
+* default["keystone"]["ldap"]["role_objectclass"] = "organizationalRole"
+    - the objectclass for roles created by keystone. Should match common ldap schema, organizationalRole by default.
+* default["keystone"]["ldap"]["role_id_attribute"] = "cn"
+    - the role id attribute for roles created by keystone. Should match common ldap schema, cn by default.
+* default["keystone"]["ldap"]["role_member_attribute"] = "roleOccupant"
+    - the attribute for a member of a role. Should match common ldap schema, roleOccupant by default.
+
+Tenant Configuration
+---------------------------
+* default["keystone"]["ldap"]["tenant_tree_dn"] = ""
+    - the distinguished name of the tenant tree (e.g. ou=Groups,dc=example,dc=com)
+* default["keystone"]["ldap"]["tenant_objectclass"] = "groupOfNames"
+    - the objectclass for the tenants created by keystone. Should match common ldap schema, groupOfNames by default.
+* default["keystone"]["ldap"]["tenant_id_attribute"] = "cn"
+    - the tenant id attribute for tenants created by keystone. Should match common ldap schema, cn by default.
+* default["keystone"]["ldap"]["tenant_member_attribute"] = "member"
+    - the tenant member attribute for tenants created by keystone. Should match common ldap schema, member by default.
+* default["keystone"]["ldap"]["tenant_name_attribute"] = "ou"
+    - the tenant name attribute for tenants creatsd by keystone. Should match common ldap schema, ou by default.
+
 Usage
 =====
 
