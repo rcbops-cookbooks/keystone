@@ -249,7 +249,7 @@ Attributes
 
 LDAP Support
 =============
-Begininng with the folsom version of the cookbooks we have added support for using LDAP as a keystone backend. In order to enable this functionality the following attributes must be set, in your chef environment, to match the ldap schema.
+Begininng with the folsom version of the cookbooks we have added support for using LDAP as a keystone backend. In order to enable this functionality the following attributes must be set, in your chef environment, to match your ldap schema.
 
 Base Configuration
 -----------
