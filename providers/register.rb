@@ -28,7 +28,7 @@ action :create_service do
 
     # Build out the required header info
     headers = _build_headers(new_resource.auth_token)
-    
+
     # Construct the extension path
     path = "/#{new_resource.api_ver}/OS-KSADM/services"
 
@@ -62,6 +62,53 @@ action :create_service do
 end
 
 
+action :delete_service do
+    # construct a HTTP object
+    http = Net::HTTP.new(new_resource.auth_host, new_resource.auth_port)
+
+    # Check to see if connection is http or https
+    if new_resource.auth_protocol == "https"
+        http.use_ssl = true
+    end
+
+    # Build out the required header info
+    headers = _build_headers(new_resource.auth_token)
+
+    # Construct the extension path
+    path = "/#{new_resource.api_ver}/OS-KSADM/services"
+
+    # lookup service_uuid
+    service_container = "OS-KSADM:services"
+    service_key = "type"
+    service_path = "/#{new_resource.api_ver}/OS-KSADM/services"
+    service_uuid, service_error = _find_id(http, service_path, headers, service_container, service_key, new_resource.service_type)
+    Chef::Log.error("There was an error looking up Service '#{new_resource.service_type}'") if service_error
+
+    # See if the service exists yet
+    if service_uuid
+        unless service_error
+            path = "#{path}/#{service_uuid}"
+            # Service does not exist yet
+            #payload = _build_service_object(new_resource.service_type, new_resource.service_name, new_resource.service_description)
+            #resp = http.send_request('DELETE', path, JSON.generate(payload), headers)
+            resp = http.delete(path, headers)
+            if resp.is_a?(Net::HTTPNoContent)
+                Chef::Log.info("Deleted service '#{new_resource.service_name}'")
+                new_resource.updated_by_last_action(true)
+            else
+                Chef::Log.error("Unable to delete service '#{new_resource.service_name}'")
+                Chef::Log.error("Response Code: #{resp.code}")
+                Chef::Log.error("Response Message: #{resp.message}")
+                new_resource.updated_by_last_action(false)
+            end
+        end
+    else
+        Chef::Log.info("Service Type '#{new_resource.service_type}' does not exist.. Can't delete.") if not service_uuid
+        Chef::Log.error("There was an error looking up '#{new_resource.role_name}'") if service_error
+        new_resource.updated_by_last_action(false)
+    end
+end
+
 action :create_endpoint do
     # construct a HTTP object
     http = Net::HTTP.new(new_resource.auth_host, new_resource.auth_port)
@@ -73,7 +120,7 @@ action :create_endpoint do
 
     # Build out the required header info
     headers = _build_headers(new_resource.auth_token)
-    
+
     # Construct the extension path
     path = "/#{new_resource.api_ver}/endpoints"
 
@@ -130,6 +177,88 @@ action :create_endpoint do
     end
 end
 
+
+action :delete_endpoint do
+    # construct a HTTP object
+    http = Net::HTTP.new(new_resource.auth_host, new_resource.auth_port)
+
+    # Check to see if connection is http or https
+    if new_resource.auth_protocol == "https"
+        http.use_ssl = true
+    end
+
+    # Build out the required header info
+    headers = _build_headers(new_resource.auth_token)
+
+    # Construct the extension path
+    path = "/#{new_resource.api_ver}/endpoints"
+
+    # lookup service_uuid
+    service_container = "OS-KSADM:services"
+    service_key = "type"
+    service_path = "/#{new_resource.api_ver}/OS-KSADM/services"
+    service_uuid, service_error = _find_id(http, service_path, headers, service_container, service_key, new_resource.service_type)
+    Chef::Log.error("There was an error looking up Service '#{new_resource.service_type}'") if service_error
+
+    unless service_uuid or service_error
+        Chef::Log.error("Unable to find service type '#{new_resource.service_type}'")
+        new_resource.updated_by_last_action(false)
+    end
+
+    # lookup endpoint_uuid
+    endpoint_container = "endpoints"
+    endpoint_key = "service_id"
+    endpoint_path = "/#{new_resource.api_ver}/endpoints"
+    endpoint_uuid, endpoint_error = _find_id(http, endpoint_path, headers, endpoint_container, endpoint_key, service_uuid)
+    Chef::Log.error("There was an error looking up endpoint for Service '#{new_resource.service_type}'") if endpoint_error
+    Chef::Log.error("service_uuid is '#{service_uuid}'") if endpoint_error
+
+    unless endpoint_uuid or endpoint_error
+        Chef::Log.error("Unable to find endpoint for service type '#{new_resource.service_type}'")
+        new_resource.updated_by_last_action(false)
+    end
+
+
+    # Make sure this endpoint does already exist
+    resp = http.request_get(path, headers)
+    if resp.is_a?(Net::HTTPOK)
+        endpoint_exists = false
+        data = JSON.parse(resp.body)
+        data['endpoints'].each do |endpoint|
+            if endpoint['service_id'] == service_uuid
+                # Match found
+                endpoint_exists = true
+                break
+            end
+        end
+        if endpoint_exists
+            #Chef::Log.info("Endpoint already exists for Service Type '#{new_resource.service_type}' already exists.. Not creating.")
+            #new_resource.updated_by_last_action(false)
+            path = "#{path}/#{endpoint_uuid}"
+            resp = http.delete(path, headers)
+            if resp.is_a?(Net::HTTPNoContent)
+                Chef::Log.info("deleted endpoint for service type '#{new_resource.service_type}'")
+                new_resource.updated_by_last_action(true)
+            else
+                Chef::Log.error("Unable to delete endpoint for service type '#{new_resource.service_type}'")
+                Chef::Log.error("Response Code: #{resp.code}")
+                Chef::Log.error("Response Message: #{resp.message}")
+                new_resource.updated_by_last_action(false)
+            end
+        else
+            Chef::Log.info("Endpoint does not exist for Service Type '#{new_resource.service_type}'... Not attempting delete")
+            new_resource.updated_by_last_action(false)
+
+        end
+    else
+        Chef::Log.error("Unknown response from the Keystone Server")
+        Chef::Log.error("Response Code: #{resp.code}")
+        Chef::Log.error("Response Message: #{resp.message}")
+        new_resource.updated_by_last_action(false)
+    end
+end
+
+
 action :create_tenant do
     # construct a HTTP object
     http = Net::HTTP.new(new_resource.auth_host, new_resource.auth_port)
@@ -141,7 +270,7 @@ action :create_tenant do
 
     # Build out the required header info
     headers = _build_headers(new_resource.auth_token)
-    
+
     # Construct the extension path
     path = "/#{new_resource.api_ver}/tenants"
 
@@ -184,7 +313,7 @@ action :create_role do
 
     # Build out the required header info
     headers = _build_headers(new_resource.auth_token)
-    
+
     # Construct the extension path
     path = "/#{new_resource.api_ver}/OS-KSADM/roles"
 
@@ -224,7 +353,7 @@ action :create_user do
 
     # Build out the required header info
     headers = _build_headers(new_resource.auth_token)
-    
+
     # lookup tenant_uuid
     tenant_container = "tenants"
     tenant_key = "name"
@@ -368,7 +497,6 @@ def _find_id(http, path, headers, container, key, match_value)
     end
     return uuid,error
 end
-
 
 private
 def _build_service_object(type, name, description)
