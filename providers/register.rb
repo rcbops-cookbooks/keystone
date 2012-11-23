@@ -294,7 +294,7 @@ action :recreate_endpoint do
         val, error = _find_value(http, endpoint_path, headers, endpoint_container, endpoint_key, service_uuid, v)
         Chef::Log.error("There was an error looking up endpoint for Service '#{new_resource.service_type}'") if error
         Chef::Log.error("service_uuid is '#{service_uuid}'") if error
-        urls[v] = "#{val}"
+        urls[v] = val
         unless v or error
             Chef::Log.error("Unable to find #{v} value for service type '#{new_resource.service_type}'")
             new_resource.updated_by_last_action(false)
