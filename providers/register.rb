@@ -287,16 +287,16 @@ action :recreate_endpoint do
 
     # lookup current publicurl, internalurl, adminurl
     urls = {}
-    ["publicurl", "internalurl", "adminurl"].each do |v|
+    ["publicurl", "internalurl", "adminurl"].each do |url|
         endpoint_container = "endpoints"
         endpoint_key = "service_id"
         endpoint_path = "/#{new_resource.api_ver}/endpoints"
-        val, error = _find_value(http, endpoint_path, headers, endpoint_container, endpoint_key, service_uuid, v)
+        val, error = _find_value(http, endpoint_path, headers, endpoint_container, endpoint_key, service_uuid, url)
         Chef::Log.error("There was an error looking up endpoint for Service '#{new_resource.service_type}'") if error
         Chef::Log.error("service_uuid is '#{service_uuid}'") if error
-        urls[v] = val
-        unless v or error
-            Chef::Log.error("Unable to find #{v} value for service type '#{new_resource.service_type}'")
+        urls[url] = val
+        unless url or error
+            Chef::Log.error("Unable to find #{url} value for service type '#{new_resource.service_type}'")
             new_resource.updated_by_last_action(false)
         end
     end
@@ -307,8 +307,8 @@ action :recreate_endpoint do
     new_urls["internalurl"] = new_resource.endpoint_internalurl
     new_urls["adminurl"] = new_resource.endpoint_adminurl
 
-    Chef::Log.info("existing urls are: #{urls}")
-    Chef::Log.info("new urls would be: #{new_urls}")
+    Chef::Log.debug("existing urls are: #{urls}")
+    Chef::Log.debug("new urls would be: #{new_urls}")
 
     # test to see if our new values are different - if not, do nothing
     if urls == new_urls
@@ -332,43 +332,37 @@ action :recreate_endpoint do
         end
 
         # Make sure we have something to delete
-        resp = http.request_get(path, headers)
-        if resp.is_a?(Net::HTTPOK)
-            if endpoint_exists
-                path = "#{path}/#{endpoint_uuid}"
-                resp = http.delete(path, headers)
-                if resp.is_a?(Net::HTTPNoContent)
-                    Chef::Log.info("deleted endpoint for service type '#{new_resource.service_type}'")
-                    new_resource.updated_by_last_action(true)
-                else
-                    Chef::Log.error("Unable to delete endpoint for service type '#{new_resource.service_type}'")
-                    Chef::Log.error("Response Code: #{resp.code}")
-                    Chef::Log.error("Response Message: #{resp.message}")
-                    new_resource.updated_by_last_action(false)
-                end
+        if endpoint_exists
+            endpoint_path = "#{path}/#{endpoint_uuid}"
+            resp = http.delete(endpoint_path, headers)
+            if resp.is_a?(Net::HTTPNoContent)
+                Chef::Log.info("deleted endpoint for service type '#{new_resource.service_type}'")
             else
-                Chef::Log.info("Endpoint does not exist for Service Type '#{new_resource.service_type}'... Not attempting delete")
-                new_resource.updated_by_last_action(false)
-            end
-            # and now create it with our new values
-            payload = _build_endpoint_object(
-                      new_resource.endpoint_region,
-                      service_uuid,
-                      new_resource.endpoint_publicurl,
-                      new_resource.endpoint_internalurl,
-                      new_resource.endpoint_adminurl)
-            resp = http.send_request('POST', path, JSON.generate(payload), headers)
-            if resp.is_a?(Net::HTTPOK)
-                Chef::Log.info("Created endpoint for service type '#{new_resource.service_type}'")
-                new_resource.updated_by_last_action(true)
-            else
-                Chef::Log.error("Unable to create endpoint for service type '#{new_resource.service_type}'")
+                Chef::Log.error("Unable to delete endpoint for service type '#{new_resource.service_type}'")
                 Chef::Log.error("Response Code: #{resp.code}")
                 Chef::Log.error("Response Message: #{resp.message}")
                 new_resource.updated_by_last_action(false)
             end
         else
-            Chef::Log.error("Unknown response from the Keystone Server")
+            Chef::Log.info("Endpoint does not exist for Service Type '#{new_resource.service_type}'... Not attempting delete")
+            new_resource.updated_by_last_action(false)
+        end
+
+        # and now create it with our new values
+        payload = _build_endpoint_object(
+                  new_resource.endpoint_region,
+                  service_uuid,
+                  new_resource.endpoint_publicurl,
+                  new_resource.endpoint_internalurl,
+                  new_resource.endpoint_adminurl)
+        Chef::Log::debug("payload contains: #{payload}")
+        Chef::Log::debug("path is: #{path}")
+        resp = http.send_request('POST', path, JSON.generate(payload), headers)
+        if resp.is_a?(Net::HTTPOK)
+            Chef::Log.info("Created endpoint for service type '#{new_resource.service_type}'")
+            new_resource.updated_by_last_action(true)
+        else
+            Chef::Log.error("Unable to create endpoint for service type '#{new_resource.service_type}'")
             Chef::Log.error("Response Code: #{resp.code}")
             Chef::Log.error("Response Message: #{resp.message}")
             new_resource.updated_by_last_action(false)
@@ -616,6 +610,7 @@ def _find_id(http, path, headers, container, key, match_value)
 end
 
 
+#TODO(mancdaz): convert all lookups to use _find_value instead of _find_id
 private
 def _find_value(http, path, headers, container, key, match_value, value)
     val = nil
