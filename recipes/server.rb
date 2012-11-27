@@ -121,7 +121,7 @@ template "/etc/keystone/keystone.conf" do
   owner "root"
   group "root"
   mode "0644"
-  
+
   variables(
             :debug => node["keystone"]["debug"],
             :verbose => node["keystone"]["verbose"],
@@ -160,16 +160,16 @@ end
 #TODO(shep): this should probably be derived from keystone.users hash keys
 node["keystone"]["tenants"].each do |tenant_name|
   ## Add openstack tenant ##
-  keystone_register "Register '#{tenant_name}' Tenant" do
+  keystone_tenant "Register '#{tenant_name}' Tenant" do
     auth_host ks_admin_endpoint["host"]
     auth_port ks_admin_endpoint["port"]
-    auth_protocol ks_admin_endpoint["schema"]
+    auth_protocol ks_admin_endpoint["scheme"]
     api_ver ks_admin_endpoint["path"]
     auth_token node["keystone"]["admin_token"]
     tenant_name tenant_name
     tenant_description "#{tenant_name} Tenant"
     tenant_enabled "true" # Not required as this is the default
-    action :create_tenant
+    action :create
   end
 end
 
@@ -178,7 +178,7 @@ node["keystone"]["roles"].each do |role_key|
   keystone_register "Register '#{role_key.to_s}' Role" do
     auth_host ks_admin_endpoint["host"]
     auth_port ks_admin_endpoint["port"]
-    auth_protocol ks_admin_endpoint["schema"]
+    auth_protocol ks_admin_endpoint["scheme"]
     api_ver ks_admin_endpoint["path"]
     auth_token node["keystone"]["admin_token"]
     role_name role_key
@@ -190,7 +190,7 @@ node["keystone"]["users"].each do |username, user_info|
   keystone_register "Register '#{username}' User" do
     auth_host ks_admin_endpoint["host"]
     auth_port ks_admin_endpoint["port"]
-    auth_protocol ks_admin_endpoint["schema"]
+    auth_protocol ks_admin_endpoint["scheme"]
     api_ver ks_admin_endpoint["path"]
     auth_token node["keystone"]["admin_token"]
     user_name username
@@ -205,7 +205,7 @@ node["keystone"]["users"].each do |username, user_info|
       keystone_register "Grant '#{rolename}' Role to '#{username}' User in '#{tenantname}' Tenant" do
         auth_host ks_admin_endpoint["host"]
         auth_port ks_admin_endpoint["port"]
-        auth_protocol ks_admin_endpoint["schema"]
+        auth_protocol ks_admin_endpoint["scheme"]
         api_ver ks_admin_endpoint["path"]
         auth_token node["keystone"]["admin_token"]
         user_name username
@@ -220,16 +220,16 @@ end
 
 ## Add Services ##
 
-keystone_register "Register Identity Service" do
+keystone_service "Register Identity Service" do
   auth_host ks_admin_endpoint["host"]
   auth_port ks_admin_endpoint["port"]
-  auth_protocol ks_admin_endpoint["schema"]
+  auth_protocol ks_admin_endpoint["scheme"]
   api_ver ks_admin_endpoint["path"]
   auth_token node["keystone"]["admin_token"]
   service_name "keystone"
   service_type "identity"
   service_description "Keystone Identity Service"
-  action :create_service
+  action :create
 end
 
 ## Add Endpoints ##
@@ -242,10 +242,10 @@ Chef::Log.info "Keystone AdminURL: #{ks_admin_endpoint["uri"]}"
 Chef::Log.info "Keystone InternalURL: #{ks_service_endpoint["uri"]}"
 Chef::Log.info "Keystone PublicURL: #{ks_service_endpoint["uri"]}"
 
-keystone_register "Register Identity Endpoint" do
+keystone_endpoint "Register Identity Endpoint" do
   auth_host ks_admin_endpoint["host"]
   auth_port ks_admin_endpoint["port"]
-  auth_protocol ks_admin_endpoint["schema"]
+  auth_protocol ks_admin_endpoint["scheme"]
   api_ver ks_admin_endpoint["path"]
   auth_token node["keystone"]["admin_token"]
   service_type "identity"
@@ -253,7 +253,7 @@ keystone_register "Register Identity Endpoint" do
   endpoint_adminurl node["keystone"]["adminURL"]
   endpoint_internalurl node["keystone"]["internalURL"]
   endpoint_publicurl node["keystone"]["publicURL"]
-  action :create_endpoint
+  action :create
 end
 
 
@@ -261,7 +261,7 @@ node["keystone"]["users"].each do |username, user_info|
   keystone_credentials "Create EC2 credentials for '#{username}' user" do
     auth_host ks_admin_endpoint["host"]
     auth_port ks_admin_endpoint["port"]
-    auth_protocol ks_admin_endpoint["schema"]
+    auth_protocol ks_admin_endpoint["scheme"]
     api_ver ks_admin_endpoint["path"]
     auth_token node["keystone"]["admin_token"]
     user_name username
