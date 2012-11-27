@@ -187,7 +187,7 @@ node["keystone"]["roles"].each do |role_key|
 end
 
 node["keystone"]["users"].each do |username, user_info|
-  keystone_register "Register '#{username}' User" do
+  keystone_user "Register '#{username}' User" do
     auth_host ks_admin_endpoint["host"]
     auth_port ks_admin_endpoint["port"]
     auth_protocol ks_admin_endpoint["scheme"]
@@ -197,7 +197,7 @@ node["keystone"]["users"].each do |username, user_info|
     user_pass user_info["password"]
     tenant_name user_info["default_tenant"]
     user_enabled "true" # Not required as this is the default
-    action :create_user
+    action :create
   end
 
   user_info["roles"].each do |rolename, tenant_list|
