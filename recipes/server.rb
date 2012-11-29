@@ -160,7 +160,7 @@ end
 #TODO(shep): this should probably be derived from keystone.users hash keys
 node["keystone"]["tenants"].each do |tenant_name|
   ## Add openstack tenant ##
-  keystone_tenant "Register '#{tenant_name}' Tenant" do
+  keystone_tenant "Create '#{tenant_name}' Tenant" do
     auth_host ks_admin_endpoint["host"]
     auth_port ks_admin_endpoint["port"]
     auth_protocol ks_admin_endpoint["scheme"]
@@ -175,19 +175,19 @@ end
 
 ## Add Roles ##
 node["keystone"]["roles"].each do |role_key|
-  keystone_register "Register '#{role_key.to_s}' Role" do
+  keystone_role "Create '#{role_key.to_s}' Role" do
     auth_host ks_admin_endpoint["host"]
     auth_port ks_admin_endpoint["port"]
     auth_protocol ks_admin_endpoint["scheme"]
     api_ver ks_admin_endpoint["path"]
     auth_token node["keystone"]["admin_token"]
     role_name role_key
-    action :create_role
+    action :create
   end
 end
 
 node["keystone"]["users"].each do |username, user_info|
-  keystone_user "Register '#{username}' User" do
+  keystone_user "Create '#{username}' User" do
     auth_host ks_admin_endpoint["host"]
     auth_port ks_admin_endpoint["port"]
     auth_protocol ks_admin_endpoint["scheme"]
@@ -214,13 +214,13 @@ node["keystone"]["users"].each do |username, user_info|
         action :grant_role
       end
     end
-
   end
+
 end
 
 ## Add Services ##
 
-keystone_service "Register Identity Service" do
+keystone_service "Create Identity Service" do
   auth_host ks_admin_endpoint["host"]
   auth_port ks_admin_endpoint["port"]
   auth_protocol ks_admin_endpoint["scheme"]
@@ -242,7 +242,7 @@ Chef::Log.info "Keystone AdminURL: #{ks_admin_endpoint["uri"]}"
 Chef::Log.info "Keystone InternalURL: #{ks_service_endpoint["uri"]}"
 Chef::Log.info "Keystone PublicURL: #{ks_service_endpoint["uri"]}"
 
-keystone_endpoint "Register Identity Endpoint" do
+keystone_endpoint "Create Identity Endpoint" do
   auth_host ks_admin_endpoint["host"]
   auth_port ks_admin_endpoint["port"]
   auth_protocol ks_admin_endpoint["scheme"]
