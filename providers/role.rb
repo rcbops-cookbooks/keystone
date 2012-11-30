@@ -76,37 +76,37 @@ action :grant do
     user_name = new_resource.user_name
 
     # construct a HTTP object
-    http = Net::HTTP.new(new_resource.auth_host, new_resource.auth_port)
+    http = Net::HTTP.new(host, port)
 
     # Check to see if connection is http or https
-    if new_resource.auth_protocol == "https"
+    if protocol == "https"
         http.use_ssl = true
     end
 
     # Build out the required header info
-    headers = _build_headers(new_resource.auth_token)
+    headers = _build_headers(token)
 
     # lookup tenant_uuid
     tenant_container = "tenants"
     tenant_key = "name"
-    tenant_path = "/#{new_resource.api_ver}/tenants"
-    tenant_uuid, tenant_error = _find_id(http, tenant_path, headers, tenant_container, tenant_key, new_resource.tenant_name)
-    Chef::Log.error("There was an error looking up Tenant '#{new_resource.tenant_name}'") if tenant_error
+    tenant_path = "/#{api_ver}/tenants"
+    tenant_uuid, tenant_error = _find_value(http, tenant_path, headers, tenant_container, tenant_key, tenant_name, 'id')
+    Chef::Log.error("There was an error looking up Tenant '#{tenant_name}'") if tenant_error
 
     # lookup user_uuid
     user_container = "users"
     user_key = "name"
     # user_path = "/#{new_resource.api_ver}/tenants/#{tenant_uuid}/users"
-    user_path = "/#{new_resource.api_ver}/users"
-    user_uuid, user_error = _find_id(http, user_path, headers, user_container, user_key, new_resource.user_name)
-    Chef::Log.error("There was an error looking up User '#{new_resource.user_name}'") if user_error
+    user_path = "/#{api_ver}/users"
+    user_uuid, user_error = _find_value(http, user_path, headers, user_container, user_key, user_name, 'id')
+    Chef::Log.error("There was an error looking up User '#{user_name}'") if user_error
 
     # lookup role_uuid
     role_container = "roles"
     role_key = "name"
     role_path = "/#{new_resource.api_ver}/OS-KSADM/roles"
-    role_uuid, role_error = _find_id(http, role_path, headers, role_container, role_key, new_resource.role_name)
-    Chef::Log.error("There was an error looking up Role '#{new_resource.role_name}'") if role_error
+    role_uuid, role_error = _find_value(http, role_path, headers, role_container, role_key, role_name, 'id')
+    Chef::Log.error("There was an error looking up Role '#{role_name}'") if role_error
 
     Chef::Log.debug("Found Tenant UUID: #{tenant_uuid}")
     Chef::Log.debug("Found User UUID: #{user_uuid}")
@@ -115,56 +115,34 @@ action :grant do
     # lookup roles assigned to user/tenant
     assigned_container = "roles"
     assigned_key = "name"
-    assigned_path = "/#{new_resource.api_ver}/tenants/#{tenant_uuid}/users/#{user_uuid}/roles"
-    assigned_role_uuid, assigned_error = _find_id(http, assigned_path, headers, assigned_container, assigned_key, new_resource.role_name)
-    Chef::Log.error("There was an error looking up Assigned Role '#{new_resource.role_name}' for User '#{new_resource.user_name}' and Tenant '#{new_resource.tenant_name}'") if assigned_error
+    assigned_path = "/#{api_ver}/tenants/#{tenant_uuid}/users/#{user_uuid}/roles"
+    assigned_role_uuid, assigned_error = _find_value(http, assigned_path, headers, assigned_container, assigned_key, role_name, 'id')
+    Chef::Log.error("There was an error looking up Assigned Role '#{role_name}' for User '#{user_name}' and Tenant '#{tenant_name}'") if assigned_error
 
     error = (tenant_error or user_error or role_error or assigned_error)
     unless role_uuid == assigned_role_uuid or error
         # Construct the extension path
-        path = "/#{new_resource.api_ver}/tenants/#{tenant_uuid}/users/#{user_uuid}/roles/OS-KSADM/#{role_uuid}"
+        path = "/#{api_ver}/tenants/#{tenant_uuid}/users/#{user_uuid}/roles/OS-KSADM/#{role_uuid}"
 
         # needs a '' for the body, or it throws a 500
         resp = http.send_request('PUT', path, '', headers)
         if resp.is_a?(Net::HTTPOK)
-            Chef::Log.info("Granted Role '#{new_resource.role_name}' to User '#{new_resource.user_name}' in Tenant '#{new_resource.tenant_name}'")
+            Chef::Log.info("Granted Role '#{role_name}' to User '#{user_name}' in Tenant '#{tenant_name}'")
             new_resource.updated_by_last_action(true)
         else
-            Chef::Log.error("Unable to grant role '#{new_resource.role_name}'")
+            Chef::Log.error("Unable to grant role '#{role_name}'")
             Chef::Log.error("Response Code: #{resp.code}")
             Chef::Log.error("Response Message: #{resp.message}")
             new_resource.updated_by_last_action(false)
         end
     else
-        Chef::Log.info("Role '#{new_resource.role_name}' already exists.. Not granting.")
-        Chef::Log.error("There was an error looking up '#{new_resource.role_name}'") if error
+        Chef::Log.info("Role '#{role_name}' already exists.. Not granting.")
+        Chef::Log.error("There was an error looking up '#{role_name}'") if error
         new_resource.updated_by_last_action(false)
     end
 end
 
 
-private
-def _find_id(http, path, headers, container, key, match_value)
-    uuid = nil
-    error = false
-    resp = http.request_get(path, headers)
-    if resp.is_a?(Net::HTTPOK)
-        data = JSON.parse(resp.body)
-        data[container].each do |obj|
-            uuid = obj['id'] if obj[key] == match_value
-            break if uuid
-        end
-    else
-        Chef::Log.error("Unknown response from the Keystone Server")
-        Chef::Log.error("Response Code: #{resp.code}")
-        Chef::Log.error("Response Message: #{resp.message}")
-        error = true
-    end
-    return uuid,error
-end
-
-
-#TODO(mancdaz): convert all lookups to use _find_value instead of _find_id
 private
 def _find_value(http, path, headers, container, key, match_value, value)
     val = nil

@@ -202,7 +202,7 @@ node["keystone"]["users"].each do |username, user_info|
 
   user_info["roles"].each do |rolename, tenant_list|
     tenant_list.each do |tenantname|
-      keystone_register "Grant '#{rolename}' Role to '#{username}' User in '#{tenantname}' Tenant" do
+      keystone_role "Grant '#{rolename}' Role to '#{username}' User in '#{tenantname}' Tenant" do
         auth_host ks_admin_endpoint["host"]
         auth_port ks_admin_endpoint["port"]
         auth_protocol ks_admin_endpoint["scheme"]
@@ -211,7 +211,7 @@ node["keystone"]["users"].each do |username, user_info|
         user_name username
         role_name rolename
         tenant_name tenantname
-        action :grant_role
+        action :grant
       end
     end
   end
