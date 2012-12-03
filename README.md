@@ -29,78 +29,35 @@ Resources/Providers
 
 These resources provide an abstraction layer for interacting with the keystone server's API, allowing for other nodes to register any required users, tenants, roles, services, or endpoints.
 
-register
---------
+Tenant
+------
 
-Register users, tenants, roles, services, and endpoints with Keystone
+Handles creating and deleting of Keystone Tenants.
 
-### Actions
+### ACTIONS
 
-- :create_tenant: Create a tenant
-- :create_user: Create a user for a specified tenant
-- :create_role: Create a role
-- :grant_role: Grant a role to a specified user for a specified tenant
-- :create_service: Create a service
-- :create_endpoint: Create an endpoint for a sepcified service
+- :create - Create a Keystone Tenant
+- :delete - Delete a Keystone Tenant
 
-### General Attributes
+### Required Attributes
 
 - auth_protocol: Required communication protocol with Keystone server
- - Acceptable values are [ "http", "https" ]
+  - Acceptable values are [ "http", "https" ]
 - auth_host: Keystone server IP Address
 - auth_port: Port Keystone server is listening on
 - api_ver: API Version for Keystone server
- - Accepted values are [ "/v2.0" ]
+  - Accepted values are [ "/v2.0" ]
 - auth_token: Auth Token for communication with Keystone server
-
-### :create_tenant Specific Attributes
-
 - tenant_name: Name of tenant to create
 - tenant_description: Description of tenant to create
 - tenant_enabled: Enable or Disable tenant
- - Accepted values are [ "true", "false" ]
- - Default is "true"
-
-### :create_user Specific Attributes
-
-- user_name: Name of user account to create
-- user_pass: Password for the user account
-- user_enabled: Enable or Disable user
- - Accepted values are [ "true", "false" ]
- - Default is "true"
-- tenant_name: Name of tenant to create user in
-
-### :create_role Specific Attributes
-
-- role_name: Name of the role to create
-
-### :grant_role Specific Attributes
-
-- role_name: Name of the role to grant
-- user_name: User name to grant the role to
-- tenant_name: Name of tenant to grant role in
-
-### :create_service Specific Attributes
-
-- service_name: Name of service
-- service_description: Description of service
-- service_type: Type of service to create
- - Accepted values are [ "image", "identity", "compute", "storage", "ec2", "volume" ]
-
-### :create_endpoint Specific Attributes
-
-- endpoint_region: Default value is "RegionOne"
-- endpoint_adminurl: URL to admin endpoint (using admin port)
-- endpoint_internalurl: URL to service endpoint (using service port)
-- endpoint_publicurl: URL to public endpoint
- - Default is same as endpoint_internalURL
-- service_type: Type of service to create endpoint for
- - Accepted values are [ "image", "identity", "compute", "storage", "ec2", "volume" ]
-
-### Examples
+  - Accepted values are [ "true", "false" ]
+    - Default is "true"
+ 
+### Example
 
     # Create 'openstack' tenant
-    keystone_register "Register 'openstack' Tenant" do
+    keystone_tenant "Create 'openstack' Tenant" do
       auth_host "192.168.1.10"
       auth_port "35357"
       auth_protocol "http"
@@ -109,11 +66,39 @@ Register users, tenants, roles, services, and endpoints with Keystone
       tenant_name "openstack"
       tenant_description "Default Tenant"
       tenant_enabled "true" # Not required as this is the default
-      action :create_tenant
+      action :create
     end
 
+User
+----
+
+Handles creating and deleting of Keystone Users.
+
+### ACTIONS
+
+- :create - Create a Keystone Tenant
+- :delete - Delete a Keystone Tenant
+
+### Required Attributes
+
+- auth_protocol: Required communication protocol with Keystone server
+  - Acceptable values are [ "http", "https" ]
+- auth_host: Keystone server IP Address
+- auth_port: Port Keystone server is listening on
+- api_ver: API Version for Keystone server
+  - Accepted values are [ "/v2.0" ]
+- auth_token: Auth Token for communication with Keystone server
+- user_name: Name of user account to create
+- user_pass: Password for the user account
+- user_enabled: Enable or Disable user
+  - Accepted values are [ "true", "false" ]
+    - Default is "true"
+- tenant_name: Name of tenant to create user in
+
+### Example
+
     # Create 'admin' user
-    keystone_register "Register 'admin' User" do
+    keystone_user "Create 'admin' User" do
       auth_host "192.168.1.10"
       auth_port "35357"
       auth_protocol "http"
@@ -123,23 +108,51 @@ Register users, tenants, roles, services, and endpoints with Keystone
       user_name "admin"
       user_pass "secrete"
       user_enabled "true" # Not required as this is the default
-      action :create_user
+      action :create
     end
 
+Role
+----
+
+Handles creating, deleting and granting of Keystone Roles.
+
+### ACTIONS
+
+- :create - Create a Keystone Tenant
+- :delete - Delete a Keystone Tenant
+
+### Required Attributes
+
+- auth_protocol: Required communication protocol with Keystone server
+  - Acceptable values are [ "http", "https" ]
+- auth_host: Keystone server IP Address
+- auth_port: Port Keystone server is listening on
+- api_ver: API Version for Keystone server
+  - Accepted values are [ "/v2.0" ]
+- auth_token: Auth Token for communication with Keystone server
+- role_name: Name of the role to create
+
+### :grant Specific Attributes
+
+- user_name: User name to grant the role to
+- tenant_name: Name of tenant to grant role in
+
+### Examples
+
     # Create 'admin' role
-    keystone_register "Register 'admin' Role" do
+    keystone_role "Create 'admin' Role" do
       auth_host "192.168.1.10"
       auth_port "35357"
       auth_protocol "http"
       api_ver "/v2.0"
       auth_token "123456789876"
-      role_name role_key
-      action :create_role
+      role_name "admin"
+      action :create
     end
 
 
     # Grant 'admin' role to 'admin' user in the 'openstack' tenant
-    keystone_register "Grant 'admin' Role to 'admin' User" do
+    keystone_role "Grant 'admin' Role to 'admin' User" do
       auth_host "192.168.1.10"
       auth_port "35357"
       auth_protocol "http"
@@ -148,11 +161,37 @@ Register users, tenants, roles, services, and endpoints with Keystone
       tenant_name "openstack"
       user_name "admin"
       role_name "admin"
-      action :grant_role
+      action :grant
     end
 
+Service
+-------
+
+Handles creating and deleting of Keystone Services.
+
+### Actions
+
+- :create - Create a Keystone Service
+- :delete - Delete a Keystone Service
+
+### Required Attributes
+
+- auth_protocol: Required communication protocol with Keystone server
+  - Acceptable values are [ "http", "https" ]
+- auth_host: Keystone server IP Address
+- auth_port: Port Keystone server is listening on
+- api_ver: API Version for Keystone server
+  - Accepted values are [ "/v2.0" ]
+- auth_token: Auth Token for communication with Keystone server
+- service_name: Name of service
+- service_description: Description of service
+- service_type: Type of service to create
+  - Accepted values are [ "image", "identity", "network", "compute", "storage", "ec2", "volume" ]
+
+### Example
+
     # Create 'identity' service
-    keystone_register "Register Identity Service" do
+    keystone_service "Create Identity Service" do
       auth_host "192.168.1.10"
       auth_port "35357"
       auth_protocol "http"
@@ -161,11 +200,41 @@ Register users, tenants, roles, services, and endpoints with Keystone
       service_name "keystone"
       service_type "identity"
       service_description "Keystone Identity Service"
-      action :create_service
+      action :create
     end
 
+Endpoint
+--------
+
+Handles creating, deleting, and recreating of Keystone Endpoints.
+
+### Actions
+
+- :create - Create a Keystone Endpoint
+- :delete - Delete a Keystone Endpoint
+- :recreate - Recreate a Keystone Endpoint
+
+### Required Attributes
+
+- auth_protocol: Required communication protocol with Keystone server
+  - Acceptable values are [ "http", "https" ]
+- auth_host: Keystone server IP Address
+- auth_port: Port Keystone server is listening on
+- api_ver: API Version for Keystone server
+  - Accepted values are [ "/v2.0" ]
+- auth_token: Auth Token for communication with Keystone server
+- endpoint_region: Default value is "RegionOne"
+- endpoint_adminurl: URL to admin endpoint (using admin port)
+- endpoint_internalurl: URL to service endpoint (using service port)
+- endpoint_publicurl: URL to public endpoint
+  - Default is same as endpoint_internalURL
+- service_type: Type of service to create endpoint for
+  - Accepted values are [ "image", "identity", "network", "compute", "storage", "ec2", "volume" ]
+
+### Example
+
     # Create 'identity' endpoint
-    keystone_register "Register Identity Endpoint" do
+    keystone_endpoint "Register Identity Endpoint" do
       auth_host "192.168.1.10"
       auth_port "35357"
       auth_protocol "http"
@@ -176,7 +245,7 @@ Register users, tenants, roles, services, and endpoints with Keystone
       endpoint_adminurl "http://192.168.1.10:35357/v2.0"
       endpoint_internalurl "http://192.168.1.10:5001/v2.0"
       endpoint_publicurl "http://1.2.3.4:5001/v2.0"
-      action :create_endpoint
+      action :create
     end
 
 credentials
@@ -233,19 +302,28 @@ Data Bags
 Attributes 
 ==========
 
-* `keystone["db"]` - Name of keystone database
-* `keystone["db_user"]` - Username for keystone database access
-* `keystone["db_passwd"]` - Password for keystone database access
-* `keystone["db_ipaddress"]` - IP address of the keystone database
-* `keystone["api_ipaddress"]` - IP address for the keystone API to bind to. _TODO_: Rename to bind_address
-* `keystone["verbose"]` - Enables/disables verbose output for keystone API server
+* `keystone["db"]["name"]` - Name of keystone database
+* `keystone["db"]["username"]` - Username for keystone database access
+* `keystone["db"][""password"]` - Password for keystone database access
+* `keystone["verbose"]` - Enables/disables verbose output for the keystone services
 * `keystone["debug"]` - Enables/disables debug output for keystone API server
-* `keystone["service_port"]` - Port for the keystone service API to bind to
-* `keystone["admin_port"]` - Port for the keystone admin service to bind to
-* `keystone["admin_token"]` - Admin token for bootstraping keystone server
-* `keystone["roles"]` - Array of roles to create in the keystone server
-* `keystone["users"]` - Array of users to create in the keystone server
-
+* `keystone["auth_type"]` - Which backend type to use
+* `keystone["ldap"]` - See `LDAP Support` section below for descriptions
+* `keystone["services"]["admin-api"]["scheme"]` - Protocol to use when connecting to keystone
+* `keystone["services"]["admin-api"]["network"]` - Network to connect to the admin-api over
+* `keystone["services"]["admin-api"]["port"]` - Port for the admin-api service to listen on
+* `keystone["services"]["admin-api"]["path"]` - Keystone version path
+* `keystone["services"]["service-api"]["scheme"]` - Protocol to use when connecting to the service-api
+* `keystone["services"]["service-api"]["network"]` - Network to connect to the service-api over
+* `keystone["services"]["service-api"]["port"]` - Port for the service-api service to listen on
+* `keystone["services"]["service-api"]["path"]` - Keystone version path
+* `keystone["syslog"]["use"]` - Enables/disables syslog
+* `keystone["syslog"]["facility"]` - Which syslog facility to log to
+* `keysotne["syslog"]["config_facility"]` - 
+* `keystone["roles"]` - Array of roles to create
+* `keystone["tenants"]` - Array of tenants to create
+* `keystone["admin_user"]` - Which user is designated as the "admin user"
+* `keystone["users"]` - Hash of users to create.
 
 LDAP Support
 =============
@@ -265,6 +343,7 @@ Base Configuration
     - the password for the above user.
 * default["keystone"]["ldap"]["suffix"] = ""
     - the ldap suffix (dc=example, dc=com)
+* default["keystone"]["ldap"]["use_dumb_member"] = "false"
 
 
 User Configuration
@@ -325,9 +404,5 @@ You may obtain a copy of the License at
 
     http://www.apache.org/licenses/LICENSE-2.0
 
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
+Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
 
