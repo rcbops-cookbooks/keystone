@@ -179,6 +179,6 @@ def _build_headers(token)
     ret = Hash.new
     ret.store('X-Auth-Token', token)
     ret.store('Content-type', 'application/json')
-    ret.store('user-agent', 'Chef keystone_register')
+    ret.store('user-agent', 'Chef keystone_role')
     return ret
 end
