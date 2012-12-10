@@ -42,7 +42,7 @@ driver = keystone.identity.backends.ldap.Identity
 
 [ldap]
 # Base Config
-url = ldap://<%= @ldap_options["url"] %>
+url = <%= @ldap_options["url"] %>
 tree_dn = <%= @ldap_options["tree_dn"] %>
 user = <%= @ldap_options["user"] %>
 password = <%= @ldap_options["password"] %>
