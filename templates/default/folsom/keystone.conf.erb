@@ -48,7 +48,7 @@ user = <%= @ldap_options["user"] %>
 password = <%= @ldap_options["password"] %>
 backend_entities = <%= @ldap_options["backend_entities"] %>
 suffix = <%= @ldap_options["suffix"] %>
-user_dumb_member = <%= @ldap_options["user_dumb_member"] %>
+use_dumb_member = <%= @ldap_options["user_dumb_member"] %>
 
 # User Schema
 user_tree_dn = <%= @ldap_options["user_tree_dn"] %>
@@ -61,6 +61,7 @@ user_name_attribute = <%= @ldap_options["user_name_attribute"] %>
 role_tree_dn = <%= @ldap_options["role_tree_dn"] %>
 role_objectclass = <%= @ldap_options["role_objectclass"] %>
 role_id_attribute = <%= @ldap_options["role_id_attribute"] %>
+role_name_attribute = <%= @ldap_options["role_name_attribute"] %>
 role_member_attribute = <%= @ldap_options["role_member_attribute"] %>
 <% end %>
 
