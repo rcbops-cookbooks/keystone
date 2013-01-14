@@ -38,6 +38,7 @@ default["keystone"]["ldap"]["user_name_attribute"] = "sn"
 default["keystone"]["ldap"]["role_tree_dn"] = ""
 default["keystone"]["ldap"]["role_objectclass"] = "organizationalRole"
 default["keystone"]["ldap"]["role_id_attribute"] = "cn"
+default["keystone"]["ldap"]["role_name_attribute"] = "ou"
 default["keystone"]["ldap"]["role_member_attribute"] = "roleOccupant"
 
 # ldap - Tenant tree setup, dependant on ldap schema. Can also use keystone db to manage tenants
