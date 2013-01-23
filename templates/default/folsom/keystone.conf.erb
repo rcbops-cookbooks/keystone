@@ -37,31 +37,49 @@ max_pool_size = 10
 pool_timeout = 200
 
 [identity]
-<% if @auth_type == "ldap" %>
+<% if @auth_type == "ldap" or @auth_type == "ad" %>
 driver = keystone.identity.backends.ldap.Identity
 
 [ldap]
 # Base Config
-url = ldap://<%= @ldap_options["url"] %>
+url = <%= @ldap_options["url"] %>
 tree_dn = <%= @ldap_options["tree_dn"] %>
 user = <%= @ldap_options["user"] %>
 password = <%= @ldap_options["password"] %>
 backend_entities = <%= @ldap_options["backend_entities"] %>
 suffix = <%= @ldap_options["suffix"] %>
-user_dumb_member = <%= @ldap_options["user_dumb_member"] %>
+use_dumb_member = <%= @ldap_options["user_dumb_member"] %>
 
 # User Schema
 user_tree_dn = <%= @ldap_options["user_tree_dn"] %>
 user_objectclass = <%= @ldap_options["user_objectclass"] %>
 user_id_attribute = <%= @ldap_options["user_id_attribute"] %>
 user_name_attribute = <%= @ldap_options["user_name_attribute"] %>
+<% if @auth_type == "ad" %>
+user_filter = <%= @ldap_options["user_filter"] %>
+user_mail_attribute = <%= @ldap_options["user_mail_attribute"] %>
+user_enabled_mask = <%= @ldap_options["user_enabled_attribute"] %>
+user_enabled_default = <%= @ldap_options["user_enabled_mask"] %>
+user_attribute_ignore = <%= @ldap_options["user_enabled_default"] %>
+user_allow_create = <%= @ldap_options["user_allow_create"] %>
+user_allow_update = <%= @ldap_options["user_allow_update"] %>
+user_allow_delete = <%= @ldap_options["user_allow_delete"] %>
+<% end %>
 
 <% if @ldap_options["role_tree_dn"] %>
 # Role Schema 
 role_tree_dn = <%= @ldap_options["role_tree_dn"] %>
 role_objectclass = <%= @ldap_options["role_objectclass"] %>
 role_id_attribute = <%= @ldap_options["role_id_attribute"] %>
+role_name_attribute = <%= @ldap_options["role_name_attribute"] %>
 role_member_attribute = <%= @ldap_options["role_member_attribute"] %>
+<% if @auth_type == "ad" %>
+role_filter = <%= @ldap_options["role_filter"] %>
+role_attribute_ignore = <%= @ldap_options["role_attribute_ignore"] %>
+role_allow_create = <%= @ldap_options["role_allow_create"] %>
+role_allow_update = <%= @ldap_options["role_allow_update"] %>
+role_allow_delete = <%= @ldap_options["role_allow_delete"] %>
+<% end %>
 <% end %>
 
 <% if @ldap_options["tenant_tree_dn"] %>
@@ -71,6 +89,14 @@ tenant_objectclass = <%= @ldap_options["tenant_objectclass"] %>
 tenant_id_attribute = <%= @ldap_options["tenant_id_attribute"] %>
 tenant_member_attribute = <%= @ldap_options["tenant_member_attribute"] %>
 tenant_name_attribute = <%= @ldap_options["tenant_name_attribute"] %>
+<% if @auth_type == "ad" %>
+tenant_filter = <%= @ldap_options["tenant_filter"] %>
+tenant_desc_attribute = <%= @ldap_options["tenant_desc_attribute"] %>
+tenant_enabled_attribute = <%= @ldap_options["tenant_attribute_ignore"] %>
+tenant_allow_create = <%= @ldap_options["tenant_allow_create"] %>
+tenant_allow_update = <%= @ldap_options["tenant_allow_update"] %>
+tenant_allow_delete = <%= @ldap_options["tenant_allow_delete"] %>
+<% end %>
 <% end %>
 
 <% else %>
