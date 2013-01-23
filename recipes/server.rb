@@ -42,6 +42,7 @@ mysql_info = create_db_and_user("mysql",
                                 node["keystone"]["db"]["name"],
                                 node["keystone"]["db"]["username"],
                                 node["keystone"]["db"]["password"])
+mysql_connect_ip = get_access_endpoint('mysql-master', 'mysql', 'db')["host"]
 
 ##### NOTE #####
 # https://bugs.launchpad.net/ubuntu/+source/keystone/+bug/931236 (Resolved)
@@ -129,7 +130,7 @@ template "/etc/keystone/keystone.conf" do
             :passwd => node["keystone"]["db"]["password"],
             :ip_address => ks_admin_endpoint["host"],
             :db_name => node["keystone"]["db"]["name"],
-            :db_ipaddress => mysql_info["bind_address"],
+            :db_ipaddress => mysql_connect_ip,
             :service_port => ks_service_endpoint["port"],
             :admin_port => ks_admin_endpoint["port"],
             :admin_token => node["keystone"]["admin_token"],
