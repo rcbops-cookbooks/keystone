@@ -26,7 +26,7 @@ default["keystone"]["ldap"]["user"] = ""
 default["keystone"]["ldap"]["password"] = ""
 default["keystone"]["ldap"]["backend_entities"] = ['Tenant', 'User', 'UserRoleAssociation', 'Role'] 
 default["keystone"]["ldap"]["suffix"] = ""
-default["keystone"]["ldap"]["user_dumb_member"] = "False"
+default["keystone"]["ldap"]["use_dumb_member"] = "False"
 
 # ldap - User tree setup, dependant on ldap schema
 default["keystone"]["ldap"]["user_tree_dn"] = ""
