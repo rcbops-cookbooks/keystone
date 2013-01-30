@@ -324,6 +324,7 @@ Attributes
 * `keystone["tenants"]` - Array of tenants to create
 * `keystone["admin_user"]` - Which user is designated as the "admin user"
 * `keystone["users"]` - Hash of users to create.
+* `keystone["config"]["log_verbosity"]` - Logging verbosity.  Valid options are DEBUG, INFO, WARNING, ERROR, CRITICAL.  Default is INFO
 
 LDAP Support
 =============
