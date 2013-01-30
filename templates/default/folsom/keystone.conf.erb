@@ -10,24 +10,9 @@ admin_token = <%= @admin_token %>
 bind_host = <%= @ip_address %>
 compute_port = 8774
 verbose = True
-debug = True
-<% if @use_syslog == true %>
-# log_config = /etc/keystone/logging.conf
-<% else %>
+debug = False
 log_config = /etc/keystone/logging.conf
-<% end %>
 
-# ================= Syslog Options ============================
-# Send logs to syslog (/dev/log) instead of to file specified
-# by `log-file`
-use_syslog = <%= @use_syslog %>
-
-# Facility to use. If unset defaults to LOG_USER.
-<% if @use_syslog == true %>
-syslog_log_facility = <%= @log_facility %>
-<% else %>
-# syslog_log_facility = LOG_USER
-<% end %>
 
 [sql]
 connection = mysql://<%= @user %>:<%= @passwd %>@<%= @db_ipaddress %>/<%= @db_name %>
@@ -162,10 +147,14 @@ paste.app_factory = keystone.service:public_app_factory
 paste.app_factory = keystone.service:admin_app_factory
 
 [pipeline:public_api]
-pipeline = stats_monitoring url_normalize token_auth admin_token_auth xml_body json_body debug ec2_extension user_crud_extension public_service
+# uncomment the line below to enable debug logging
+# pipeline = stats_monitoring url_normalize token_auth admin_token_auth xml_body json_body debug ec2_extension user_crud_extension public_service
+pipeline = stats_monitoring url_normalize token_auth admin_token_auth xml_body json_body ec2_extension user_crud_extension public_service
 
 [pipeline:admin_api]
-pipeline = stats_monitoring url_normalize token_auth admin_token_auth xml_body json_body debug stats_reporting ec2_extension s3_extension crud_extension admin_service
+# uncoment the line below to add debug logging
+# pipeline = stats_monitoring url_normalize token_auth admin_token_auth xml_body json_body debug stats_reporting ec2_extension s3_extension crud_extension admin_service
+pipeline = stats_monitoring url_normalize token_auth admin_token_auth xml_body json_body stats_reporting ec2_extension s3_extension crud_extension admin_service
 
 [app:public_version_service]
 paste.app_factory = keystone.service:public_version_app_factory

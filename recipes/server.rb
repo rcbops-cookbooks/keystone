@@ -98,12 +98,14 @@ end
 
 directory "/etc/keystone" do
   action :create
-  owner "root"
-  group "root"
-  mode "0755"
+  owner "keystone"
+  group "keystone"
+  mode "0700"
 end
 
 execute "keystone-manage db_sync" do
+  user "keystone"
+  group "keystone"
   command "keystone-manage db_sync"
   action :nothing
 end
@@ -119,9 +121,9 @@ end
 
 template "/etc/keystone/keystone.conf" do
   source "#{release}/keystone.conf.erb"
-  owner "root"
-  group "root"
-  mode "0644"
+  owner "keystone"
+  group "keystone"
+  mode "0600"
 
   variables(
             :debug => node["keystone"]["debug"],
@@ -148,13 +150,15 @@ file "/var/lib/keystone/keystone.db" do
   action :delete
 end
 
-
-
 template "/etc/keystone/logging.conf" do
   source "keystone-logging.conf.erb"
-  owner "root"
-  group "root"
-  mode "0644"
+  owner "keystone"
+  group "keystone"
+  mode "0600"
+  variables(
+            :log_facility => node["keystone"]["syslog"]["facility"],
+            :use_syslog => node["keystone"]["syslog"]["use"]
+  )
   notifies :restart, resources(:service => "keystone"), :immediately
 end
 
