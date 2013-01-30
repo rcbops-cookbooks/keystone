@@ -66,9 +66,9 @@ end
 
 directory "/etc/keystone" do
   action :create
-  owner "root"
-  group "root"
-  mode "0755"
+  owner "keystone"
+  group "keystone"
+  mode "0700"
 end
 
 ks_admin_endpoint = get_bind_endpoint("keystone", "admin-api")
@@ -79,9 +79,9 @@ mysql_info = get_access_endpoint("mysql-master", "mysql", "db")
 
 template "/etc/keystone/keystone.conf" do
   source "#{release}/keystone.conf.erb"
-  owner "root"
-  group "root"
-  mode "0644"
+  owner "keystone"
+  group "keystone"
+  mode "0600"
 
   variables(
             :debug => keystone["debug"],
@@ -109,9 +109,13 @@ end
 
 template "/etc/keystone/logging.conf" do
   source "keystone-logging.conf.erb"
-  owner "root"
-  group "root"
-  mode "0644"
+  owner "keystone"
+  group "keystone"
+  mode "0600"
+  variables(
+            :log_facility => keystone["syslog"]["facility"],
+            :use_syslog => keystone["syslog"]["use"]
+  )
   notifies :restart, resources(:service => "keystone"), :immediately
 end
 
