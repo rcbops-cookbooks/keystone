@@ -91,6 +91,12 @@ default["keystone"]["roles"] = [ "admin", "Member", "KeystoneAdmin", "KeystoneSe
 #TODO(shep): this should probably be derived from keystone.users hash keys
 default["keystone"]["tenants"] = [ "admin", "service"]                      # node_attribute
 
+# LOGGING LEVEL
+# in order of verbosity (most to least)
+# DEBUG, INFO, WARNING, ERROR, CRITICAL
+default["keystone"]["config"]["log_verbosity"] = "INFO"                                     # node attributes
+
+
 default["keystone"]["admin_user"] = "admin"                                 # node_attribute
 
 default["keystone"]["users"] = {                                            # node_attribute
