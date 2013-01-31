@@ -157,7 +157,9 @@ template "/etc/keystone/logging.conf" do
   mode "0600"
   variables(
             :log_facility => node["keystone"]["syslog"]["facility"],
-            :use_syslog => node["keystone"]["syslog"]["use"]
+            :use_syslog => node["keystone"]["syslog"]["use"],
+            :log_verbosity => node["keystone"]["config"]["log_verbosity"]
+
   )
   notifies :restart, resources(:service => "keystone"), :immediately
 end
