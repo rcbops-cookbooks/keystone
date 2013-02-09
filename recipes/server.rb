@@ -116,7 +116,7 @@ ks_service_endpoint = get_bind_endpoint("keystone", "service-api")
 if not node['package_component'].nil?
   release = node['package_component']
 else
-  release = "essex-final"
+  release = "folsom"
 end
 
 template "/etc/keystone/keystone.conf" do
