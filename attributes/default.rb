@@ -20,11 +20,11 @@ default["keystone"]["debug"] = "False"                                      # no
 default["keystone"]["auth_type"] == "sql"				    # node_attribute
 
 # ldap - base configuration
-default["keystone"]["ldap"]["url"] = ""					    
+default["keystone"]["ldap"]["url"] = ""
 default["keystone"]["ldap"]["tree_dn"] = ""
 default["keystone"]["ldap"]["user"] = ""
 default["keystone"]["ldap"]["password"] = ""
-default["keystone"]["ldap"]["backend_entities"] = ['Tenant', 'User', 'UserRoleAssociation', 'Role'] 
+default["keystone"]["ldap"]["backend_entities"] = ['Tenant', 'User', 'UserRoleAssociation', 'Role']
 default["keystone"]["ldap"]["suffix"] = ""
 default["keystone"]["ldap"]["user_dumb_member"] = "False"
 
