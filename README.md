@@ -327,7 +327,7 @@ Attributes
 * `keystone["services"]["service-api"]["path"]` - Keystone version path
 * `keystone["syslog"]["use"]` - Enables/disables syslog
 * `keystone["syslog"]["facility"]` - Which syslog facility to log to
-* `keysotne["syslog"]["config_facility"]` - 
+* `keystone["syslog"]["config_facility"]` - 
 * `keystone["roles"]` - Array of roles to create
 * `keystone["tenants"]` - Array of tenants to create
 * `keystone["config"]["log_verbosity"]` - Logging verbosity.  Valid options are DEBUG, INFO, WARNING, ERROR, CRITICAL.  Default is INFO
