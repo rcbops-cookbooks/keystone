@@ -15,7 +15,10 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#
+
+# don't run this recipe if we are running the 'keystone::server' recipe since
+# that recipe does all this stuff, and more, already
+return if node.run_list.expand(node.chef_environment).recipes.include?("keystone::server")
 
 ::Chef::Recipe.send(:include, Opscode::OpenSSL::Password)
 include_recipe "keystone::keystone-rsyslog"
