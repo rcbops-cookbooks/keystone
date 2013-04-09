@@ -115,14 +115,8 @@ ks_admin_bind = get_bind_endpoint("keystone", "admin-api")
 ks_admin_endpoint = get_access_endpoint("keystone-api", "keystone", "admin-api")
 ks_service_endpoint = get_access_endpoint("keystone-api", "keystone", "service-api")
 
-if not node['package_component'].nil?
-  release = node['package_component']
-else
-  release = "folsom"
-end
-
 template "/etc/keystone/keystone.conf" do
-  source "#{release}/keystone.conf.erb"
+  source "keystone.conf.erb"
   owner "keystone"
   group "keystone"
   mode "0600"
@@ -152,20 +146,6 @@ file "/var/lib/keystone/keystone.db" do
   action :delete
 end
 
-template "/etc/keystone/logging.conf" do
-  source "keystone-logging.conf.erb"
-  owner "keystone"
-  group "keystone"
-  mode "0600"
-  variables(
-            :log_facility => node["keystone"]["syslog"]["facility"],
-            :use_syslog => node["keystone"]["syslog"]["use"],
-            :log_verbosity => node["keystone"]["config"]["log_verbosity"]
-
-  )
-  notifies :restart, resources(:service => "keystone"), :immediately
-end
-
 #TODO(shep): this should probably be derived from keystone.users hash keys
 node["keystone"]["tenants"].each do |tenant_name|
   ## Add openstack tenant ##
@@ -177,7 +157,7 @@ node["keystone"]["tenants"].each do |tenant_name|
     auth_token node["keystone"]["admin_token"]
     tenant_name tenant_name
     tenant_description "#{tenant_name} Tenant"
-    tenant_enabled "true" # Not required as this is the default
+    tenant_enabled "1" # Not required as this is the default
     action :create
   end
 end
@@ -205,7 +185,7 @@ node["keystone"]["users"].each do |username, user_info|
     user_name username
     user_pass user_info["password"]
     tenant_name user_info["default_tenant"]
-    user_enabled "true" # Not required as this is the default
+    user_enabled "1" # Not required as this is the default
     action :create
   end
 

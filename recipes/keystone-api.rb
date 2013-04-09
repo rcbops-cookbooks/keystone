@@ -25,12 +25,6 @@ include_recipe "keystone::keystone-rsyslog"
 include_recipe "osops-utils"
 include_recipe "monitoring"
 
-if not node['package_component'].nil?
-  release = node['package_component']
-else
-  release = "folsom"
-end
-
 platform_options = node["keystone"]["platform"]
 
 platform_options["keystone_packages"].each do |pkg|
@@ -81,7 +75,7 @@ mysql_info = get_access_endpoint("mysql-master", "mysql", "db")
 
 
 template "/etc/keystone/keystone.conf" do
-  source "#{release}/keystone.conf.erb"
+  source "keystone.conf.erb"
   owner "keystone"
   group "keystone"
   mode "0600"
@@ -108,19 +102,6 @@ end
 
 file "/var/lib/keystone/keystone.db" do
   action :delete
-end
-
-template "/etc/keystone/logging.conf" do
-  source "keystone-logging.conf.erb"
-  owner "keystone"
-  group "keystone"
-  mode "0600"
-  variables(
-            :log_facility => keystone["syslog"]["facility"],
-            :use_syslog => keystone["syslog"]["use"],
-            :log_verbosity => node["keystone"]["config"]["log_verbosity"]
-  )
-  notifies :restart, resources(:service => "keystone"), :immediately
 end
 
 include_recipe "keystone::keystoneclient-patch"
