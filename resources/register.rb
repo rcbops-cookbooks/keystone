@@ -50,13 +50,13 @@ attribute :tenant_name, :kind_of => String
 
 # :create_tenant specific attributes
 attribute :tenant_description, :kind_of => String
-attribute :tenant_enabled, :kind_of => String, :equal_to => [ "true", "false" ], :default => "true"
+attribute :tenant_enabled, :kind_of => String, :equal_to => [ "1", "0" ], :default => "1"
 
 # :create_user specific attributes
 attribute :user_name, :kind_of => String
 attribute :user_pass, :kind_of => String
 # attribute :user_email, :kind_of => String
-attribute :user_enabled, :kind_of => String, :equal_to => [ "true", "false" ], :default => "true"
+attribute :user_enabled, :kind_of => String, :equal_to => [ "1", "0" ], :default => "1"
 
 # Used by :create_role and :grant_role specific attributes
 attribute :role_name, :kind_of => String

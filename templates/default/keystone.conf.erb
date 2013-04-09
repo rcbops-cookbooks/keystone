@@ -4,18 +4,85 @@
 <%= node["custom_template_banner"] %>
 <% end %>
 [DEFAULT]
-public_port = <%= @service_port %>
-admin_port = <%= @admin_port %>
+# A "shared secret" between keystone and other openstack services
 admin_token = <%= @admin_token %>
-bind_host = <%= @ip_address %>
-compute_port = 8774
-verbose = True
-debug = False
-log_config = /etc/keystone/logging.conf
 
+# The IP address of the network interface to listen on
+bind_host = <%= @ip_address %>
+
+# The port number which the public service listens on
+public_port = <%= @service_port %>
+
+# The port number which the public admin listens on
+admin_port = <%= @admin_port %>
+
+# The base endpoint URLs for keystone that are advertised to clients
+# (NOTE: this does NOT affect how keystone listens for connections)
+# public_endpoint = http://localhost:%(public_port)d/
+# admin_endpoint = http://localhost:%(admin_port)d/
+
+# The port number which the OpenStack Compute service listens on
+compute_port = 8774
+
+# Path to your policy definition containing identity actions
+# policy_file = policy.json
+
+# Rule to check if no matching policy definition is found
+# FIXME(dolph): This should really be defined as [policy] default_rule
+# policy_default_rule = admin_required
+
+# Role for migrating membership relationships
+# During a SQL upgrade, the following values will be used to create a new role
+# that will replace records in the user_tenant_membership table with explicit
+# role grants.  After migration, the member_role_id will be used in the API
+# add_user_to_project, and member_role_name will be ignored.
+# member_role_id = 9fe2ff9ee4384b1894a90878d3e92bab
+# member_role_name = _member_
+
+# === Logging Options ===
+# Print debugging output
+# (includes plaintext request logging, potentially including passwords)
+debug = False
+
+# Print more verbose output
+verbose = True
+
+# Name of log file to output to. If not set, logging will go to stdout.
+log_file = keystone.log
+
+# The directory to keep log files in (will be prepended to --logfile)
+log_dir = /var/log/keystone
+
+# Use syslog for logging.
+# use_syslog = False
+
+# syslog facility to receive log lines
+# syslog_log_facility = LOG_USER
+
+# If this option is specified, the logging configuration file specified is
+# used and overrides any other logging options specified. Please see the
+# Python logging module documentation for details on logging configuration
+# files.
+# log_config = logging.conf
+
+# A logging.Formatter log message format string which may use any of the
+# available logging.LogRecord attributes.
+# log_format = %(asctime)s %(levelname)8s [%(name)s] %(message)s
+
+# Format string for %(asctime)s in log records.
+# log_date_format = %Y-%m-%d %H:%M:%S
+
+# onready allows you to send a notification when the process is ready to serve
+# For example, to have it notify using systemd, one could set shell command:
+# onready = systemd-notify --ready
+# or a module with notify() method:
+# onready = keystone.common.systemd
 
 [sql]
+# The SQLAlchemy connection string used to connect to the database
 connection = mysql://<%= @user %>:<%= @passwd %>@<%= @db_ipaddress %>/<%= @db_name %>
+
+# the timeout before idle sql connections are reaped
 idle_timeout = 200
 min_pool_size = 5
 max_pool_size = 10
@@ -90,7 +157,13 @@ driver = keystone.identity.backends.sql.Identity
 <% end %>
 
 [catalog]
+# dynamic, sql-based backend (supports API/CLI-based management commands)
 driver = keystone.catalog.backends.sql.Catalog
+
+# static, file-based backend (does *NOT* support any management commands)
+# driver = keystone.catalog.backends.templated.TemplatedCatalog
+
+# template_file = default_catalog.templates
 
 [token]
 driver = keystone.token.backends.sql.Token
@@ -99,10 +172,31 @@ driver = keystone.token.backends.sql.Token
 expiration = 86400
 
 [policy]
-driver = keystone.policy.backends.rules.Policy
+driver = keystone.policy.backends.sql.Policy
 
 [ec2]
-driver = keystone.contrib.ec2.backends.sql.Ec2
+driver = keystone.contrib.ec2.backends.kvs.Ec2
+
+[ssl]
+#enable = True
+#certfile = /etc/keystone/ssl/certs/keystone.pem
+#keyfile = /etc/keystone/ssl/private/keystonekey.pem
+#ca_certs = /etc/keystone/ssl/certs/ca.pem
+#cert_required = True
+
+[signing]
+#token_format = PKI
+#certfile = /etc/keystone/ssl/certs/signing_cert.pem
+#keyfile = /etc/keystone/ssl/private/signing_key.pem
+#ca_certs = /etc/keystone/ssl/certs/ca.pem
+#key_size = 1024
+#valid_days = 3650
+#ca_password = None
+
+[auth]
+methods = password,token
+password = keystone.auth.plugins.password.Password
+token = keystone.auth.plugins.token.Token
 
 [filter:debug]
 paste.filter_factory = keystone.common.wsgi:Debug.factory
@@ -134,14 +228,23 @@ paste.filter_factory = keystone.contrib.s3:S3Extension.factory
 [filter:url_normalize]
 paste.filter_factory = keystone.middleware:NormalizingFilter.factory
 
+[filter:sizelimit]
+paste.filter_factory = keystone.middleware:RequestBodySizeLimiter.factory
+
 [filter:stats_monitoring]
 paste.filter_factory = keystone.contrib.stats:StatsMiddleware.factory
 
 [filter:stats_reporting]
 paste.filter_factory = keystone.contrib.stats:StatsExtension.factory
 
+[filter:access_log]
+paste.filter_factory = keystone.contrib.access:AccessLogMiddleware.factory
+
 [app:public_service]
 paste.app_factory = keystone.service:public_app_factory
+
+[app:service_v3]
+paste.app_factory = keystone.service:v3_app_factory
 
 [app:admin_service]
 paste.app_factory = keystone.service:admin_app_factory
@@ -149,12 +252,13 @@ paste.app_factory = keystone.service:admin_app_factory
 [pipeline:public_api]
 # uncomment the line below to enable debug logging
 # pipeline = stats_monitoring url_normalize token_auth admin_token_auth xml_body json_body debug ec2_extension user_crud_extension public_service
-pipeline = stats_monitoring url_normalize token_auth admin_token_auth xml_body json_body ec2_extension user_crud_extension public_service
+pipeline = access_log sizelimit stats_monitoring url_normalize token_auth admin_token_auth xml_body json_body debug ec2_extension user_crud_extension public_service
 
 [pipeline:admin_api]
-# uncoment the line below to add debug logging
-# pipeline = stats_monitoring url_normalize token_auth admin_token_auth xml_body json_body debug stats_reporting ec2_extension s3_extension crud_extension admin_service
-pipeline = stats_monitoring url_normalize token_auth admin_token_auth xml_body json_body stats_reporting ec2_extension s3_extension crud_extension admin_service
+pipeline = access_log sizelimit stats_monitoring url_normalize token_auth admin_token_auth xml_body json_body debug stats_reporting ec2_extension s3_extension crud_extension admin_service
+
+[pipeline:api_v3]
+pipeline = access_log sizelimit stats_monitoring url_normalize token_auth admin_token_auth xml_body json_body debug stats_reporting ec2_extension s3_extension service_v3
 
 [app:public_version_service]
 paste.app_factory = keystone.service:public_version_app_factory
@@ -163,17 +267,19 @@ paste.app_factory = keystone.service:public_version_app_factory
 paste.app_factory = keystone.service:admin_version_app_factory
 
 [pipeline:public_version_api]
-pipeline = stats_monitoring url_normalize xml_body public_version_service
+pipeline = access_log sizelimit stats_monitoring url_normalize xml_body public_version_service
 
 [pipeline:admin_version_api]
-pipeline = stats_monitoring url_normalize xml_body admin_version_service
+pipeline = access_log sizelimit stats_monitoring url_normalize xml_body admin_version_service
 
 [composite:main]
 use = egg:Paste#urlmap
 /v2.0 = public_api
+/v3 = api_v3
 / = public_version_api
 
 [composite:admin]
 use = egg:Paste#urlmap
 /v2.0 = admin_api
+/v3 = api_v3
 / = admin_version_api

@@ -33,4 +33,4 @@ attribute :api_ver, :kind_of => String, :default => "/v2.0", :required => true
 attribute :auth_token, :kind_of => String, :required => true
 attribute :tenant_name, :kind_of => String, :required => true
 attribute :tenant_description, :kind_of => String, :required => true
-attribute :tenant_enabled, :kind_of => String, :equal_to => [ "true", "false" ], :default => "true"
+attribute :tenant_enabled, :kind_of => String, :equal_to => [ "1", "0" ], :default => "1"
