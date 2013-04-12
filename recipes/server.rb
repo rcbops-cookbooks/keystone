@@ -110,6 +110,13 @@ execute "keystone-manage db_sync" do
   action :nothing
 end
 
+execute "keystone-manage pki_setup" do
+  user "keystone"
+  group "keystone"
+  command "keystone-manage pki_setup"
+  action :nothing
+end
+
 ks_service_bind = get_bind_endpoint("keystone", "service-api")
 ks_admin_bind = get_bind_endpoint("keystone", "admin-api")
 ks_admin_endpoint = get_access_endpoint("keystone-api", "keystone", "admin-api")
@@ -138,6 +145,11 @@ template "/etc/keystone/keystone.conf" do
             :ldap_options => node["keystone"]["ldap"]
             )
   notifies :run, resources(:execute => "keystone-manage db_sync"), :immediately
+  # TODO (mattt): Need to file bug here as package installation on CentOS
+  # doesn't run pki_setup
+  if platform?(%w{redhat centos fedora scientific})
+    notifies :run, resources(:execute => "keystone-manage pki_setup"), :immediately
+  end
   notifies :restart, resources(:service => "keystone"), :immediately
 end
 
