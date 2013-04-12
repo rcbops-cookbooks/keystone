@@ -145,8 +145,8 @@ template "/etc/keystone/keystone.conf" do
             :ldap_options => node["keystone"]["ldap"]
             )
   notifies :run, resources(:execute => "keystone-manage db_sync"), :immediately
-  # TODO (mattt): Need to file bug here as package installation on CentOS
-  # doesn't run pki_setup
+  # The pki_setup runs via postinst on Ubuntu, but doesn't run via package
+  # installation on CentOS.
   if platform?(%w{redhat centos fedora scientific})
     notifies :run, resources(:execute => "keystone-manage pki_setup"), :immediately
   end
