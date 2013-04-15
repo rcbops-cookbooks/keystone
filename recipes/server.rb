@@ -136,11 +136,7 @@ template "/etc/keystone/keystone.conf" do
             :log_facility => node["keystone"]["syslog"]["facility"],
             :auth_type => node["keystone"]["auth_type"],
             :ldap_options => node["keystone"]["ldap"],
-<<<<<<< HEAD
             :signing => node["keystone"]["signing"]
-=======
-            :pki => node["keystone"]["pki"]
->>>>>>> b19c23bc5476bae71d74b60e5e7b88af6b07dd4a
             )
   notifies :run, resources(:execute => "keystone-manage db_sync"), :immediately
   notifies :restart, resources(:service => "keystone"), :immediately
