@@ -185,6 +185,15 @@ driver = keystone.contrib.ec2.backends.kvs.Ec2
 #cert_required = True
 
 [signing]
+<% if @signing == 'pki' -%>
+token_format = PKI
+certfile = /etc/keystone/ssl/certs/signing_cert.pem
+keyfile = /etc/keystone/ssl/private/signing_key.pem
+ca_certs = /etc/keystone/ssl/certs/ca.pem
+key_size = 1024
+valid_days = 3650
+ca_password = None
+<% else -%>
 #token_format = PKI
 #certfile = /etc/keystone/ssl/certs/signing_cert.pem
 #keyfile = /etc/keystone/ssl/private/signing_key.pem
@@ -192,6 +201,7 @@ driver = keystone.contrib.ec2.backends.kvs.Ec2
 #key_size = 1024
 #valid_days = 3650
 #ca_password = None
+<% end -%>
 
 [auth]
 methods = password,token
