@@ -20,11 +20,7 @@ default["keystone"]["debug"] = "False"                                      # no
 default["keystone"]["auth_type"] == "sql"				    # node_attribute
 
 # Enable PKI
-<<<<<<< HEAD
 default["keystone"]["signing"] == ""
-=======
-default["keystone"]["pki"] == false
->>>>>>> b19c23bc5476bae71d74b60e5e7b88af6b07dd4a
 
 # ldap - base configuration
 default["keystone"]["ldap"]["url"] = ""
