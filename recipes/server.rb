@@ -153,9 +153,26 @@ template "/etc/keystone/keystone.conf" do
   notifies :restart, resources(:service => "keystone"), :immediately
 end
 
-
 file "/var/lib/keystone/keystone.db" do
   action :delete
+end
+
+node.set_unless["keystone"]["pki"]["key"] = if File.exists?("/etc/keystone/ssl/private/signing_key.pem") then
+  File.read("/etc/keystone/ssl/private/signing_key.pem")
+else
+  ""
+end
+
+node.set_unless["keystone"]["pki"]["key"] = if File.exists?("/etc/keystone/ssl/private/signing_key.pem") then
+  File.read("/etc/keystone/ssl/private/signing_key.pem")
+else
+  ""
+end
+
+node.set_unless["keystone"]["pki"]["cacert"] = if File.exists?("/etc/keystone/ssl/certs/ca.pem") then
+  File.read("/etc/keystone/ssl/certs/ca.pem")
+else
+  ""
 end
 
 #TODO(shep): this should probably be derived from keystone.users hash keys
