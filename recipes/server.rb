@@ -157,16 +157,15 @@ file "/var/lib/keystone/keystone.db" do
   action :delete
 end
 
-node.set_unless["keystone"]["pki"]["key"] = if File.exists?("/etc/keystone/ssl/private/signing_key.pem") then
-  File.read("/etc/keystone/ssl/private/signing_key.pem")
-end
-
-node.set_unless["keystone"]["pki"]["cert"] = if File.exists?("/etc/keystone/ssl/certs/signing_cert.pem") then
-  File.read("/etc/keystone/ssl/certs/signing_cert.pem")
-end
-
-node.set_unless["keystone"]["pki"]["cacert"] = if File.exists?("/etc/keystone/ssl/certs/ca.pem") then
-  File.read("/etc/keystone/ssl/certs/ca.pem")
+# Setting attributes inside ruby_block means they'll get set at run time
+# rather than compile time; these files do not exist at compile time when chef
+# is first run.
+ruby_block "store key and certs in attributes" do
+  block do
+    node.set_unless["keystone"]["pki"]["key"] = File.read("/etc/keystone/ssl/private/signing_key.pem")
+    node.set_unless["keystone"]["pki"]["cert"] = File.read("/etc/keystone/ssl/certs/signing_cert.pem")
+    node.set_unless["keystone"]["pki"]["cacert"] = File.read("/etc/keystone/ssl/certs/ca.pem")
+  end
 end
 
 #TODO(shep): this should probably be derived from keystone.users hash keys
