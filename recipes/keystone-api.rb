@@ -89,25 +89,27 @@ directory "/etc/keystone/ssl/private" do
   mode   "0700"
 end
 
-file "/etc/keystone/ssl/private/signing_key.pem" do
-  owner   "keystone"
-  group   "keystone"
-  mode    "0400"
-  content keystone["pki"]["key"]
-end
-
-file "/etc/keystone/ssl/certs/signing_cert.pem" do
-  owner   "keystone"
-  group   "keystone"
-  mode    "0644"
-  content keystone["pki"]["cert"]
-end
-
-file "/etc/keystone/ssl/certs/ca.pem" do
-  owner   "keystone"
-  group   "keystone"
-  mode    "0444"
-  content keystone["pki"]["cacert"]
+if node["keystone"]["pki"]["enabled"] == true
+  file "/etc/keystone/ssl/private/signing_key.pem" do
+    owner   "keystone"
+    group   "keystone"
+    mode    "0400"
+    content keystone["pki"]["key"]
+  end
+  
+  file "/etc/keystone/ssl/certs/signing_cert.pem" do
+    owner   "keystone"
+    group   "keystone"
+    mode    "0644"
+    content keystone["pki"]["cert"]
+  end
+  
+  file "/etc/keystone/ssl/certs/ca.pem" do
+    owner   "keystone"
+    group   "keystone"
+    mode    "0444"
+    content keystone["pki"]["cacert"]
+  end
 end
 
 template "/etc/keystone/keystone.conf" do
@@ -130,7 +132,8 @@ template "/etc/keystone/keystone.conf" do
             :use_syslog => keystone["syslog"]["use"],
             :log_facility => keystone["syslog"]["facility"],
             :auth_type => keystone["auth_type"],
-            :ldap_options => keystone["ldap"]
+            :ldap_options => keystone["ldap"],
+            :pki_token_signing => node["keystone"]["pki"]["enabled"]
             )
   notifies :restart, resources(:service => "keystone"), :immediately
 end
