@@ -149,7 +149,8 @@ template "/etc/keystone/keystone.conf" do
             :use_syslog => node["keystone"]["syslog"]["use"],
             :log_facility => node["keystone"]["syslog"]["facility"],
             :auth_type => node["keystone"]["auth_type"],
-            :ldap_options => node["keystone"]["ldap"]
+            :ldap_options => node["keystone"]["ldap"],
+            :pki_token_signing => node["keystone"]["pki"]["enabled"]
             )
   notifies :run, resources(:execute => "keystone-manage db_sync"), :immediately
   # The pki_setup runs via postinst on Ubuntu, but doesn't run via package
@@ -169,9 +170,11 @@ end
 # is first run.
 ruby_block "store key and certs in attributes" do
   block do
-    node.set_unless["keystone"]["pki"]["key"] = File.read("/etc/keystone/ssl/private/signing_key.pem")
-    node.set_unless["keystone"]["pki"]["cert"] = File.read("/etc/keystone/ssl/certs/signing_cert.pem")
-    node.set_unless["keystone"]["pki"]["cacert"] = File.read("/etc/keystone/ssl/certs/ca.pem")
+    if node["keystone"]["pki"]["enabled"] == true
+      node.set_unless["keystone"]["pki"]["key"] = File.read("/etc/keystone/ssl/private/signing_key.pem")
+      node.set_unless["keystone"]["pki"]["cert"] = File.read("/etc/keystone/ssl/certs/signing_cert.pem")
+      node.set_unless["keystone"]["pki"]["cacert"] = File.read("/etc/keystone/ssl/certs/ca.pem")
+    end
   end
 end
 
