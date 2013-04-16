@@ -69,6 +69,9 @@ default["keystone"]["ldap"]["tenant_allow_create"] = "True"
 default["keystone"]["ldap"]["tenant_allow_update"] = "True"
 default["keystone"]["ldap"]["tenant_allow_delete"] = "True"
 
+# setting to false will use a token_format of UUID
+default["keystone"]["pki"]["enabled"] = true
+
 # new endpoint location stuff
 default["keystone"]["services"]["admin-api"]["scheme"] = "http"             # node_attribute
 default["keystone"]["services"]["admin-api"]["network"] = "nova"            # node_attribute
