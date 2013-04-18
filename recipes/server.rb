@@ -55,9 +55,10 @@ platform_options["mysql_python_packages"].each do |pkg|
   end
 end
 
-
 platform_options["keystone_packages"].each do |pkg|
+  Chef::Log.debug "**** upgrading package #{pkg} to #{platform_options["package_versions"][pkg]}"
   package pkg do
+    version platform_options["package_versions"][pkg]
     action :install
     options platform_options["package_options"]
   end
