@@ -28,7 +28,9 @@ include_recipe "monitoring"
 platform_options = node["keystone"]["platform"]
 
 platform_options["keystone_packages"].each do |pkg|
+  Chef::Log.debug "**** upgrading package #{pkg} to #{platform_options["package_versions"][pkg]}"
   package pkg do
+    version platform_options["package_versions"][pkg]
     action :install
     options platform_options["package_options"]
   end
