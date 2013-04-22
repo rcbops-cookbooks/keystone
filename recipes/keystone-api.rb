@@ -125,7 +125,7 @@ end
 if get_role_count("openstack-ha") == 0
   ip_address = "0.0.0.0"
 else
-  ip_address = ks_admin_bind["host"]
+  ip_address = ks_admin_endpoint["host"],
 end
 
 template "/etc/keystone/keystone.conf" do
