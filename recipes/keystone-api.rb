@@ -120,6 +120,14 @@ if node["keystone"]["pki"]["enabled"] == true
   end
 end
 
+# only bind to 0.0.0.0 if we're not using openstack-ha, otherwise
+# HAProxy will fail to start when trying to bind to keystone VIP
+if get_role_count("openstack-ha") == 0
+  ip_address = "0.0.0.0"
+else
+  ip_address = ks_admin_bind["host"]
+end
+
 template "/etc/keystone/keystone.conf" do
   source "keystone.conf.erb"
   owner "keystone"
@@ -131,7 +139,7 @@ template "/etc/keystone/keystone.conf" do
             :verbose => keystone["verbose"],
             :user => keystone["db"]["username"],
             :passwd => keystone["db"]["password"],
-            :ip_address => ks_admin_endpoint["host"],
+            :ip_address => ip_address,
             :db_name => keystone["db"]["name"],
             :db_ipaddress => mysql_info["host"],
             :service_port => ks_service_endpoint["port"],
