@@ -29,12 +29,14 @@ platform_options = node["keystone"]["platform"]
 
 platform_options["keystone_packages"].each do |pkg|
   #Chef::Log.debug "**** upgrading package #{pkg} to #{platform_options["package_versions"][pkg]}"
+  pkg_version = rcb_safe_deref(node, "keystone.platform.package_versions.#{pkg}")
+
   package pkg do
-    if platform_options.has_key?("package_versions") and platform_options["package_versions"].has_key?(pkg)
+    if pkg_version
       version platform_options["package_versions"][pkg]
     end
-    action :install
     options platform_options["package_options"]
+    action  :install
   end
 end
 
