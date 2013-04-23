@@ -58,7 +58,7 @@ end
 platform_options["keystone_packages"].each do |pkg|
   #Chef::Log.debug "**** upgrading package #{pkg} to #{platform_options["package_versions"][pkg]}"
   package pkg do
-    if platform_options["package_versions"].has_key?(pkg)
+    if platform_options.has_key?("package_versions") and platform_options["package_versions"].has_key?(pkg)
       version platform_options["package_versions"][pkg]
     end
     action :install
