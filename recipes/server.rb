@@ -56,11 +56,16 @@ platform_options["mysql_python_packages"].each do |pkg|
 end
 
 platform_options["keystone_packages"].each do |pkg|
-  Chef::Log.debug "**** upgrading package #{pkg} to #{platform_options["package_versions"][pkg]}"
+  #Chef::Log.debug "**** upgrading package #{pkg} to #{platform_options["package_versions"][pkg]}"
+  pkg_version = rcb_safe_deref(node, "keystone.platform.package_versions.#{pkg}")
+  Chef::Log.info "******** OHAI #{pkg_version.inspect}"
+
   package pkg do
-    version platform_options["package_versions"][pkg]
-    action :install
+    if pkg_version
+      version platform_options["package_versions"][pkg]
+    end
     options platform_options["package_options"]
+    action  :install
   end
 end
 
