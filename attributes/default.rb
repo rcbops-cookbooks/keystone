@@ -135,10 +135,6 @@ when "ubuntu"
     "mysql_python_packages" => [ "python-mysqldb" ],
     "keystone_ldap_packages" => [ "python-ldap" ],
     "keystone_packages" => [ "python-keystone", "keystone", "python-keystoneclient" ],
-    "package_versions" => {
-        "keystone" => "1:2013.1-0ubuntu1~cloud0",
-        "python-keystone" => "1:2013.1-0ubuntu1~cloud0"
-    },
     "keystone_service" => "keystone",
     "keystone_process_name" => "keystone-all",
     "package_options" => "-o Dpkg::Options::='--force-confold' -o Dpkg::Options::='--force-confdef'"
