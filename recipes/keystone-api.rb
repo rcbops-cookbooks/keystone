@@ -29,7 +29,6 @@ platform_options = node["keystone"]["platform"]
 
 platform_options["keystone_packages"].each do |pkg|
   package pkg do
-    version platform_options["package_versions"][pkg]
     if node["osops"]["do_package_upgrades"]
       action :upgrade
     else
