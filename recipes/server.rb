@@ -56,17 +56,23 @@ platform_options["mysql_python_packages"].each do |pkg|
 end
 
 platform_options["keystone_packages"].each do |pkg|
-  Chef::Log.debug "**** upgrading package #{pkg} to #{platform_options["package_versions"][pkg]}"
   package pkg do
-    version platform_options["package_versions"][pkg]
-    action :install
+    if node["osops"]["do_package_upgrades"]
+      action :upgrade
+    else
+      action :install
+    end
     options platform_options["package_options"]
   end
 end
 
 platform_options["keystone_ldap_packages"].each do |pkg|
   package pkg do
-    action :install
+    if node["osops"]["do_package_upgrades"]
+      action :upgrade
+    else
+      action :install
+    end
     options platform_options["package_options"]
   end
 end
