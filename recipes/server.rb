@@ -55,17 +55,24 @@ platform_options["mysql_python_packages"].each do |pkg|
   end
 end
 
-
 platform_options["keystone_packages"].each do |pkg|
   package pkg do
-    action :install
+    if node["osops"]["do_package_upgrades"]
+      action :upgrade
+    else
+      action :install
+    end
     options platform_options["package_options"]
   end
 end
 
 platform_options["keystone_ldap_packages"].each do |pkg|
   package pkg do
-    action :install
+    if node["osops"]["do_package_upgrades"]
+      action :upgrade
+    else
+      action :install
+    end
     options platform_options["package_options"]
   end
 end
@@ -98,46 +105,44 @@ end
 
 directory "/etc/keystone" do
   action :create
-  owner "root"
-  group "root"
-  mode "0755"
+  owner "keystone"
+  group "keystone"
+  mode "0700"
 end
 
 execute "keystone-manage db_sync" do
+  user "keystone"
+  group "keystone"
   command "keystone-manage db_sync"
   action :nothing
 end
 
-ks_admin_endpoint = get_bind_endpoint("keystone", "admin-api")
-ks_service_endpoint = get_bind_endpoint("keystone", "service-api")
-
-if not node['package_component'].nil?
-  release = node['package_component']
-else
-  release = "essex-final"
-end
+ks_service_bind = get_bind_endpoint("keystone", "service-api")
+ks_admin_bind = get_bind_endpoint("keystone", "admin-api")
+ks_admin_endpoint = get_access_endpoint("keystone-api", "keystone", "admin-api")
+ks_service_endpoint = get_access_endpoint("keystone-api", "keystone", "service-api")
 
 template "/etc/keystone/keystone.conf" do
-  source "#{release}/keystone.conf.erb"
-  owner "root"
-  group "root"
-  mode "0644"
+  source "keystone.conf.erb"
+  owner "keystone"
+  group "keystone"
+  mode "0600"
 
   variables(
             :debug => node["keystone"]["debug"],
             :verbose => node["keystone"]["verbose"],
             :user => node["keystone"]["db"]["username"],
             :passwd => node["keystone"]["db"]["password"],
-            :ip_address => ks_admin_endpoint["host"],
+            :ip_address => ks_admin_bind["host"],
             :db_name => node["keystone"]["db"]["name"],
             :db_ipaddress => mysql_connect_ip,
-            :service_port => ks_service_endpoint["port"],
-            :admin_port => ks_admin_endpoint["port"],
+            :service_port => ks_service_bind["port"],
+            :admin_port => ks_admin_bind["port"],
             :admin_token => node["keystone"]["admin_token"],
             :use_syslog => node["keystone"]["syslog"]["use"],
             :log_facility => node["keystone"]["syslog"]["facility"],
-	    :auth_type => node["keystone"]["auth_type"],
-	    :ldap_options => node["keystone"]["ldap"]
+            :auth_type => node["keystone"]["auth_type"],
+            :ldap_options => node["keystone"]["ldap"]
             )
   notifies :run, resources(:execute => "keystone-manage db_sync"), :immediately
   notifies :restart, resources(:service => "keystone"), :immediately
@@ -146,16 +151,6 @@ end
 
 file "/var/lib/keystone/keystone.db" do
   action :delete
-end
-
-
-
-template "/etc/keystone/logging.conf" do
-  source "keystone-logging.conf.erb"
-  owner "root"
-  group "root"
-  mode "0644"
-  notifies :restart, resources(:service => "keystone"), :immediately
 end
 
 #TODO(shep): this should probably be derived from keystone.users hash keys
@@ -169,7 +164,7 @@ node["keystone"]["tenants"].each do |tenant_name|
     auth_token node["keystone"]["admin_token"]
     tenant_name tenant_name
     tenant_description "#{tenant_name} Tenant"
-    tenant_enabled "true" # Not required as this is the default
+    tenant_enabled "1" # Not required as this is the default
     action :create
   end
 end
@@ -197,7 +192,7 @@ node["keystone"]["users"].each do |username, user_info|
     user_name username
     user_pass user_info["password"]
     tenant_name user_info["default_tenant"]
-    user_enabled "true" # Not required as this is the default
+    user_enabled "1" # Not required as this is the default
     action :create
   end
 

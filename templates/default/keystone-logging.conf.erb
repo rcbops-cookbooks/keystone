@@ -4,39 +4,47 @@
 <%= node["custom_template_banner"] %>
 <% end %>
 [loggers]
-keys=root,keystone,combined
+keys=root
 
 [formatters]
 keys=normal,normal_with_name,debug
 
 [handlers]
-keys=production,file,devel
+<% if @use_syslog == true %>
+keys=production
+<% else %>
+keys=file,devel
+<% end %>
 
 [logger_root]
-level=NOTSET
+level=<%= @log_verbosity %>
+<% if @use_syslog == true %>
+handlers=production
+<% else %>
 handlers=file
+<% end %>
 
 [logger_keystone]
-level=DEBUG
+level=<%= @log_verbosity %>
 handlers=file
 qualname=keystone
 
 [logger_combined]
-level=DEBUG
+level=<%= @log_verbosity %>
 handlers=file
 qualname=keystone-combined
 
 [handler_production]
 class=handlers.SysLogHandler
-level=ERROR
+level=<%= @log_verbosity %>
 formatter=normal_with_name
-args=(('localhost', handlers.SYSLOG_UDP_PORT), handlers.SysLogHandler.LOG_USER)
+args=(('localhost', handlers.SYSLOG_UDP_PORT), handlers.SysLogHandler.<%= @log_facility %>)
 
 [handler_file]
 class=FileHandler
-level=DEBUG
+level=<%= @log_verbosity %>
 formatter=normal_with_name
-args=('/var/log/keystone/keystone.log', 'w')
+args=('/var/log/keystone/keystone-console.log', 'w')
 
 [handler_devel]
 class=StreamHandler

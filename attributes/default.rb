@@ -20,11 +20,11 @@ default["keystone"]["debug"] = "False"                                      # no
 default["keystone"]["auth_type"] == "sql"				    # node_attribute
 
 # ldap - base configuration
-default["keystone"]["ldap"]["url"] = ""					    
+default["keystone"]["ldap"]["url"] = ""
 default["keystone"]["ldap"]["tree_dn"] = ""
 default["keystone"]["ldap"]["user"] = ""
 default["keystone"]["ldap"]["password"] = ""
-default["keystone"]["ldap"]["backend_entities"] = ['Tenant', 'User', 'UserRoleAssociation', 'Role'] 
+default["keystone"]["ldap"]["backend_entities"] = ['Tenant', 'User', 'UserRoleAssociation', 'Role']
 default["keystone"]["ldap"]["suffix"] = ""
 default["keystone"]["ldap"]["use_dumb_member"] = "False"
 
@@ -91,6 +91,12 @@ default["keystone"]["roles"] = [ "admin", "Member", "KeystoneAdmin", "KeystoneSe
 #TODO(shep): this should probably be derived from keystone.users hash keys
 default["keystone"]["tenants"] = [ "admin", "service"]                      # node_attribute
 
+# LOGGING LEVEL
+# in order of verbosity (most to least)
+# DEBUG, INFO, WARNING, ERROR, CRITICAL
+default["keystone"]["config"]["log_verbosity"] = "INFO"                                     # node attributes
+
+
 default["keystone"]["admin_user"] = "admin"                                 # node_attribute
 
 default["keystone"]["users"] = {                                            # node_attribute
@@ -128,7 +134,7 @@ when "ubuntu"
   default["keystone"]["platform"] = {                                       # node_attribute
     "mysql_python_packages" => [ "python-mysqldb" ],
     "keystone_ldap_packages" => [ "python-ldap" ],
-    "keystone_packages" => [ "keystone", "python-keystone", "python-keystoneclient" ],
+    "keystone_packages" => [ "python-keystone", "keystone", "python-keystoneclient" ],
     "keystone_service" => "keystone",
     "keystone_process_name" => "keystone-all",
     "package_options" => "-o Dpkg::Options::='--force-confold' -o Dpkg::Options::='--force-confdef'"

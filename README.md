@@ -1,3 +1,19 @@
+Support
+=======
+
+Issues have been disabled for this repository.  
+Any issues with this cookbook should be raised here:
+
+[https://github.com/rcbops/chef-cookbooks/issues](https://github.com/rcbops/chef-cookbooks/issues)
+
+Please title the issue as follows:
+
+[keystone]: \<short description of problem\>
+
+In the issue description, please include a longer description of the issue, along with any relevant log/command/error output.  
+If logfiles are extremely long, please place the relevant portion into the issue description, and link to a gist containing the entire logfile
+
+
 Description
 ===========
 
@@ -13,8 +29,8 @@ Chef 0.10.0 or higher required (for Chef environment use)
 Platform
 --------
 
-* Ubuntu-12.04
-* Fedora-17
+* CentOS >= 6.3
+* Ubuntu >= 12.04
 
 Cookbooks
 ---------
@@ -22,7 +38,10 @@ Cookbooks
 The following cookbooks are dependencies:
 
 * database
+* monitoring
 * mysql
+* openssl
+* osops-utils
 
 Resources/Providers
 ===================
@@ -296,6 +315,11 @@ server
 
 Installs the Keystone Server
 
+keystone-api
+------------
+
+Installs an additional Keystone Server to node for HA purposes (requires an existing Keystone Server)
+
 Data Bags
 =========
 
@@ -304,7 +328,7 @@ Attributes
 
 * `keystone["db"]["name"]` - Name of keystone database
 * `keystone["db"]["username"]` - Username for keystone database access
-* `keystone["db"][""password"]` - Password for keystone database access
+* `keystone["db"][""password"]` - Password for keystone database access NOTE: service password is no longer set statically in the attributes file, but securely/randomly in the server recipe
 * `keystone["verbose"]` - Enables/disables verbose output for the keystone services
 * `keystone["debug"]` - Enables/disables debug output for keystone API server
 * `keystone["auth_type"]` - Which backend type to use
@@ -319,11 +343,13 @@ Attributes
 * `keystone["services"]["service-api"]["path"]` - Keystone version path
 * `keystone["syslog"]["use"]` - Enables/disables syslog
 * `keystone["syslog"]["facility"]` - Which syslog facility to log to
-* `keysotne["syslog"]["config_facility"]` - 
+* `keystone["syslog"]["config_facility"]` - 
 * `keystone["roles"]` - Array of roles to create
 * `keystone["tenants"]` - Array of tenants to create
+* `keystone["config"]["log_verbosity"]` - Logging verbosity.  Valid options are DEBUG, INFO, WARNING, ERROR, CRITICAL.  Default is INFO
 * `keystone["admin_user"]` - Which user is designated as the "admin user"
 * `keystone["users"]` - Hash of users to create.
+* `keystone["platform"]` - Hash of platform specific package/service names and options
 
 LDAP Support
 =============
@@ -395,6 +421,7 @@ Author:: Joseph Breu (<joseph.breu@rackspace.com>)
 Author:: William Kelly (<william.kelly@RACKSPACE.COM>)  
 Author:: Darren Birkett (<Darren.Birkett@rackspace.co.uk>)  
 Author:: Evan Callicoat (<evan.callicoat@RACKSPACE.COM>)  
+Author:: Matt Thompson (<matt.thompson@rackspace.co.uk>)  
 
 Copyright 2012, Rackspace US, Inc.
 

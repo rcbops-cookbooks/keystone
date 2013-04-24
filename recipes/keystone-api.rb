@@ -15,31 +15,36 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#
+
+# don't run this recipe if we are running the 'keystone::server' recipe since
+# that recipe does all this stuff, and more, already
+return if node.run_list.expand(node.chef_environment).recipes.include?("keystone::server")
 
 ::Chef::Recipe.send(:include, Opscode::OpenSSL::Password)
 include_recipe "keystone::keystone-rsyslog"
 include_recipe "osops-utils"
 include_recipe "monitoring"
 
-if not node['package_component'].nil?
-  release = node['package_component']
-else
-  release = "essex-final"
-end
-
 platform_options = node["keystone"]["platform"]
 
 platform_options["keystone_packages"].each do |pkg|
   package pkg do
-    action :install
+    if node["osops"]["do_package_upgrades"]
+      action :upgrade
+    else
+      action :install
+    end
     options platform_options["package_options"]
   end
 end
 
 platform_options["keystone_ldap_packages"].each do |pkg|
   package pkg do
-    action :install
+    if node["osops"]["do_package_upgrades"]
+      action :upgrade
+    else
+      action :install
+    end
     options platform_options["package_options"]
   end
 end
@@ -66,9 +71,9 @@ end
 
 directory "/etc/keystone" do
   action :create
-  owner "root"
-  group "root"
-  mode "0755"
+  owner "keystone"
+  group "keystone"
+  mode "0700"
 end
 
 ks_admin_endpoint = get_bind_endpoint("keystone", "admin-api")
@@ -78,10 +83,10 @@ mysql_info = get_access_endpoint("mysql-master", "mysql", "db")
 
 
 template "/etc/keystone/keystone.conf" do
-  source "#{release}/keystone.conf.erb"
-  owner "root"
-  group "root"
-  mode "0644"
+  source "keystone.conf.erb"
+  owner "keystone"
+  group "keystone"
+  mode "0600"
 
   variables(
             :debug => keystone["debug"],
@@ -105,14 +110,6 @@ end
 
 file "/var/lib/keystone/keystone.db" do
   action :delete
-end
-
-template "/etc/keystone/logging.conf" do
-  source "keystone-logging.conf.erb"
-  owner "root"
-  group "root"
-  mode "0644"
-  notifies :restart, resources(:service => "keystone"), :immediately
 end
 
 include_recipe "keystone::keystoneclient-patch"
