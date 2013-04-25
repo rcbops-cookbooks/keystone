@@ -357,19 +357,32 @@ Begininng with the folsom version of the cookbooks we have added support for usi
 
 Base Configuration
 -----------
-* default["keystone"]["auth_type"] == "ldap"
-    - set to sql by default
-* default["keystone"]["ldap"]["url"] = """
-    - the address/name of the ldap server
-* default["keystone"]["ldap"]["tree_dn"] = ""
-    - the toplevel tree distinguished name.
-* default["keystone"]["ldap"]["user"] = ""
-    - a user with administrative privileges to ldap
-* default["keystone"]["ldap"]["password"] = ""
-    - the password for the above user.
-* default["keystone"]["ldap"]["suffix"] = ""
-    - the ldap suffix (dc=example, dc=com)
-* default["keystone"]["ldap"]["use_dumb_member"] = "false"
+Every possible ldap config option is now an attribute. All attributes are set to empty strings in the attributes file
+the template loops through ldap attributes and puts set attributes into keystone.conf. The following is exerpt from a working environment configuration (ip and password have been redacted).
+    "keystone": {
+      "ldap": {
+        "user_attribute_ignore": "tenantId",
+        "tenant_tree_dn": "ou=Groups,dc=example,dc=com",
+        "role_tree_dn": "ou=Roles,dc=example,dc=com",
+        "tenant_attribute_ignore": "tenantId",
+        "group_attribute_ignore": "enabled",
+        "url": "ldap://*.*.*.*",
+        "tenant_objectclass": "groupOfNames",
+        "tenant_enabled_emulation": "True",
+        "use_dumb_member": "True",
+        "user_tree_dn": "ou=Users,dc=example,dc=com",
+        "user_objectclass": "inetOrgPerson",
+        "role_objectclass": "organizationalRole",
+        "user_enabled_emulation": "True",
+        "allow_subtree_delete": "false",
+        "domain_attribute_ignore": "enabled",
+        "suffix": "dc=example,dc=com",
+        "user": "cn=admin,dc=example,dc=com",
+        "password": "*******"
+      },
+      "auth_type": "ldap",
+      "debug": "True"
+    }
 
 
 User Configuration
