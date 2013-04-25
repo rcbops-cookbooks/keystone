@@ -16,58 +16,109 @@ default["keystone"]["db"]["username"] = "keystone"                          # no
 default["keystone"]["verbose"] = "False"                                    # node_attribute
 default["keystone"]["debug"] = "False"                                      # node_attribute
 
-# Auth type = sql or ldap
+# Auth type = sql, ldap (use ad for active directory), pam
 default["keystone"]["auth_type"] == "sql"				    # node_attribute
 
 # ldap - base configuration
 default["keystone"]["ldap"]["url"] = ""
-default["keystone"]["ldap"]["tree_dn"] = ""
 default["keystone"]["ldap"]["user"] = ""
 default["keystone"]["ldap"]["password"] = ""
-default["keystone"]["ldap"]["backend_entities"] = ['Tenant', 'User', 'UserRoleAssociation', 'Role']
 default["keystone"]["ldap"]["suffix"] = ""
-default["keystone"]["ldap"]["use_dumb_member"] = "False"
+default["keystone"]["ldap"]["use_dumb_member"] = ""
+default["keystone"]["ldap"]["dumb_member"] = ""
+default["keystone"]["ldap"]["allow_subtree_delete"] = ""
+default["keystone"]["ldap"]["query_scope"] = ""
+default["keystone"]["ldap"]["page_size"] = ""
+default["keystone"]["ldap"]["alias_dereferencing"] = ""
 
-# ldap - User tree setup, dependant on ldap schema
+# ldap - User tree setup, dependent on ldap schema
 default["keystone"]["ldap"]["user_tree_dn"] = ""
-default["keystone"]["ldap"]["user_objectclass"] = "inetOrgPerson"
-default["keystone"]["ldap"]["user_id_attribute"] = "cn"
-default["keystone"]["ldap"]["user_name_attribute"] = "sn"
 default["keystone"]["ldap"]["user_filter"] = ""
+default["keystone"]["ldap"]["user_objectclass"] = ""
+default["keystone"]["ldap"]["user_id_attribute"] = ""
+default["keystone"]["ldap"]["user_name_attribute"] = ""
 default["keystone"]["ldap"]["user_mail_attribute"] = ""
+default["keystone"]["ldap"]["user_pass_attribute"] = ""
 default["keystone"]["ldap"]["user_enabled_attribute"] = ""
+default["keystone"]["ldap"]["user_domain_id_attribute"] = ""
 default["keystone"]["ldap"]["user_enabled_mask"] = ""
 default["keystone"]["ldap"]["user_enabled_default"] = ""
 default["keystone"]["ldap"]["user_attribute_ignore"] = ""
-default["keystone"]["ldap"]["user_allow_create"] = "True"
-default["keystone"]["ldap"]["user_allow_update"] = "True"
-default["keystone"]["ldap"]["user_allow_delete"] = "True"
+default["keystone"]["ldap"]["user_allow_create"] = ""
+default["keystone"]["ldap"]["user_allow_update"] = ""
+default["keystone"]["ldap"]["user_allow_delete"] = ""
+default["keystone"]["ldap"]["user_enabled_emulation"] = ""
+default["keystone"]["ldap"]["user_enabled_emulation_dn"] = ""
 
-# ldap - Role tree setup, dependant on ldap schema. Can also use keystone db to manage roles
+# ldap - Tenant tree setup, dependent on ldap schema. Can also use keystone db to manage tenants
+default["keystone"]["ldap"]["tenant_tree_dn"] = ""
+default["keystone"]["ldap"]["tenant_filter"] = ""
+default["keystone"]["ldap"]["tenant_objectclass"] = ""
+default["keystone"]["ldap"]["tenant_id_attribute"] = ""
+default["keystone"]["ldap"]["tenant_member_attribute"] = ""
+default["keystone"]["ldap"]["tenant_name_attribute"] = ""
+default["keystone"]["ldap"]["tenant_desc_attribute"] = ""
+default["keystone"]["ldap"]["tenant_enabled_attribute"] = ""
+default["keystone"]["ldap"]["user_domain_id_attribute"] = ""
+default["keystone"]["ldap"]["tenant_attribute_ignore"] = ""
+default["keystone"]["ldap"]["tenant_allow_create"] = ""
+default["keystone"]["ldap"]["tenant_allow_update"] = ""
+default["keystone"]["ldap"]["tenant_allow_delete"] = ""
+default["keystone"]["ldap"]["tenant_enabled_emulation"] = ""
+default["keystone"]["ldap"]["tenant_enabled_emulation_dn"] = ""
+
+# ldap - Role tree setup, dependent on ldap schema. Can also use keystone db to manage roles
 default["keystone"]["ldap"]["role_tree_dn"] = ""
-default["keystone"]["ldap"]["role_objectclass"] = "organizationalRole"
-default["keystone"]["ldap"]["role_id_attribute"] = "cn"
-default["keystone"]["ldap"]["role_name_attribute"] = "ou"
-default["keystone"]["ldap"]["role_member_attribute"] = "roleOccupant"
 default["keystone"]["ldap"]["role_filter"] = ""
+default["keystone"]["ldap"]["role_objectclass"] = ""
+default["keystone"]["ldap"]["role_id_attribute"] = ""
+default["keystone"]["ldap"]["role_name_attribute"] = ""
+default["keystone"]["ldap"]["role_member_attribute"] = ""
 default["keystone"]["ldap"]["role_attribute_ignore"] = ""
 default["keystone"]["ldap"]["role_allow_create"] = ""
 default["keystone"]["ldap"]["role_allow_update"] = ""
 default["keystone"]["ldap"]["role_allow_delete"] = ""
 
-# ldap - Tenant tree setup, dependant on ldap schema. Can also use keystone db to manage tenants
-default["keystone"]["ldap"]["tenant_tree_dn"] = ""
-default["keystone"]["ldap"]["tenant_objectclass"] = "groupOfNames"
-default["keystone"]["ldap"]["tenant_id_attribute"] = "cn"
-default["keystone"]["ldap"]["tenant_member_attribute"] = "member"
-default["keystone"]["ldap"]["tenant_name_attribute"] = "ou"
-default["keystone"]["ldap"]["tenant_filter"] = ""
-default["keystone"]["ldap"]["tenant_desc_attribute"] = ""
-default["keystone"]["ldap"]["tenant_enabled_attribute"] = ""
-default["keystone"]["ldap"]["tenant_attribute_ignore"] = ""
-default["keystone"]["ldap"]["tenant_allow_create"] = "True"
-default["keystone"]["ldap"]["tenant_allow_update"] = "True"
-default["keystone"]["ldap"]["tenant_allow_delete"] = "True"
+# ldap - Group setup (grizzly and beyond)
+default["keystone"]["ldap"]["group_tree_dn"] = ""
+default["keystone"]["ldap"]["group_filter"] = ""
+default["keystone"]["ldap"]["group_objectclass"] = ""
+default["keystone"]["ldap"]["group_id_attribute"] = ""
+default["keystone"]["ldap"]["group_name_attribute"] = ""
+default["keystone"]["ldap"]["group_member_attribute"] = ""
+default["keystone"]["ldap"]["group_desc_attribute"] = ""
+default["keystone"]["ldap"]["group_domain_id_attribute"] = ""
+default["keystone"]["ldap"]["group_attribute_ignore"] = ""
+default["keystone"]["ldap"]["group_allow_create"] = ""
+default["keystone"]["ldap"]["group_allow_update"] = ""
+default["keystone"]["ldap"]["group_allow_delete"] = ""
+
+# ldap - domain setup (grizzly and beyond)
+default["keystone"]["ldap"]["domain_tree_dn"] = ""
+default["keystone"]["ldap"]["domain_filter"] = ""
+default["keystone"]["ldap"]["domain_objectclass"] = ""
+default["keystone"]["ldap"]["domain_id_attribute"] = ""
+default["keystone"]["ldap"]["domain_name_attribute"] = ""
+default["keystone"]["ldap"]["domain_member_attribute"] = ""
+default["keystone"]["ldap"]["domain_desc_attribute"] = ""
+default["keystone"]["ldap"]["domain_enabled_attribute"] = ""
+default["keystone"]["ldap"]["domain_attribute_ignore"] = ""
+default["keystone"]["ldap"]["domain_allow_create"] = ""
+default["keystone"]["ldap"]["domain_allow_delete"] = ""
+default["keystone"]["ldap"]["domain_allow_update"] = ""
+default["keystone"]["ldap"]["domain_enabled_emulation"] = ""
+default["keystone"]["ldap"]["domain_enabled_emulation_dn"] = ""
+
+# ldap - SSL setup
+default["keystone"]["ldap"]["tls_cacertfile"] = ""
+default["keystone"]["ldap"]["tls_cacertdir"] = ""
+default["keystone"]["ldap"]["use_tls"] = ""
+default["keystone"]["ldap"]["tls_req_cert"] = ""
+
+# PAM Support
+default["keystone"]["pam"]["url"] = ""
+default["keystone"]["pam"]["userid"] = ""
+default["keystone"]["pam"]["password"] = ""
 
 # new endpoint location stuff
 default["keystone"]["services"]["admin-api"]["scheme"] = "http"             # node_attribute
