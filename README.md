@@ -333,6 +333,7 @@ Attributes
 * `keystone["debug"]` - Enables/disables debug output for keystone API server
 * `keystone["auth_type"]` - Which backend type to use
 * `keystone["ldap"]` - See `LDAP Support` section below for descriptions
+* `keystone["pki"]["enabled"]` - Defaults to `true`.  Setting to `false` will configure keystone to use a token_format of `UUID`
 * `keystone["services"]["admin-api"]["scheme"]` - Protocol to use when connecting to keystone
 * `keystone["services"]["admin-api"]["network"]` - Network to connect to the admin-api over
 * `keystone["services"]["admin-api"]["port"]` - Port for the admin-api service to listen on
