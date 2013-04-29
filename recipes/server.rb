@@ -129,6 +129,14 @@ ks_admin_bind = get_bind_endpoint("keystone", "admin-api")
 ks_admin_endpoint = get_access_endpoint("keystone-api", "keystone", "admin-api")
 ks_service_endpoint = get_access_endpoint("keystone-api", "keystone", "service-api")
 
+# only bind to 0.0.0.0 if we're not using openstack-ha, otherwise
+# HAProxy will fail to start when trying to bind to keystone VIP
+if get_role_count("openstack-ha") == 0
+  ip_address = "0.0.0.0"
+else
+  ip_address = ks_admin_bind["host"]
+end
+
 template "/etc/keystone/keystone.conf" do
   source "keystone.conf.erb"
   owner "keystone"
@@ -140,7 +148,7 @@ template "/etc/keystone/keystone.conf" do
             :verbose => node["keystone"]["verbose"],
             :user => node["keystone"]["db"]["username"],
             :passwd => node["keystone"]["db"]["password"],
-            :ip_address => ks_admin_bind["host"],
+            :ip_address => ip_address,
             :db_name => node["keystone"]["db"]["name"],
             :db_ipaddress => mysql_connect_ip,
             :service_port => ks_service_bind["port"],
