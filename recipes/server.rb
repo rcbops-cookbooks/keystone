@@ -131,7 +131,7 @@ ks_service_endpoint = get_access_endpoint("keystone-api", "keystone", "service-a
 
 # only bind to 0.0.0.0 if we're not using openstack-ha w/ a keystone-admin-api VIP,
 # otherwise HAProxy will fail to start when trying to bind to keystone VIP
-if get_role_count("openstack-ha") > 0 and rcb_safe_deref(node, "vips.keystone-admin-api"):
+if get_role_count("openstack-ha") > 0 and rcb_safe_deref(node, "vips.keystone-admin-api")
   ip_address = ks_admin_bind["host"]
 else
   ip_address = "0.0.0.0"
