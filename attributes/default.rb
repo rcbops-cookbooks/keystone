@@ -20,105 +20,105 @@ default["keystone"]["debug"] = "False"                                      # no
 default["keystone"]["auth_type"] == "sql"				    # node_attribute
 
 # ldap - base configuration
-default["keystone"]["ldap"]["url"] = ""
-default["keystone"]["ldap"]["user"] = ""
-default["keystone"]["ldap"]["password"] = ""
-default["keystone"]["ldap"]["suffix"] = ""
-default["keystone"]["ldap"]["use_dumb_member"] = ""
-default["keystone"]["ldap"]["dumb_member"] = ""
-default["keystone"]["ldap"]["allow_subtree_delete"] = ""
-default["keystone"]["ldap"]["query_scope"] = ""
-default["keystone"]["ldap"]["page_size"] = ""
-default["keystone"]["ldap"]["alias_dereferencing"] = ""
+default["keystone"]["ldap"]["url"] = nil
+default["keystone"]["ldap"]["user"] = nil
+default["keystone"]["ldap"]["password"] = nil
+default["keystone"]["ldap"]["suffix"] = nil
+default["keystone"]["ldap"]["use_dumb_member"] = nil
+default["keystone"]["ldap"]["dumb_member"] = nil
+default["keystone"]["ldap"]["allow_subtree_delete"] = nil
+default["keystone"]["ldap"]["query_scope"] = nil
+default["keystone"]["ldap"]["page_size"] = nil
+default["keystone"]["ldap"]["alias_dereferencing"] = nil
 
 # ldap - User tree setup, dependent on ldap schema
-default["keystone"]["ldap"]["user_tree_dn"] = ""
-default["keystone"]["ldap"]["user_filter"] = ""
-default["keystone"]["ldap"]["user_objectclass"] = ""
-default["keystone"]["ldap"]["user_id_attribute"] = ""
-default["keystone"]["ldap"]["user_name_attribute"] = ""
-default["keystone"]["ldap"]["user_mail_attribute"] = ""
-default["keystone"]["ldap"]["user_pass_attribute"] = ""
-default["keystone"]["ldap"]["user_enabled_attribute"] = ""
-default["keystone"]["ldap"]["user_domain_id_attribute"] = ""
-default["keystone"]["ldap"]["user_enabled_mask"] = ""
-default["keystone"]["ldap"]["user_enabled_default"] = ""
-default["keystone"]["ldap"]["user_attribute_ignore"] = ""
-default["keystone"]["ldap"]["user_allow_create"] = ""
-default["keystone"]["ldap"]["user_allow_update"] = ""
-default["keystone"]["ldap"]["user_allow_delete"] = ""
-default["keystone"]["ldap"]["user_enabled_emulation"] = ""
-default["keystone"]["ldap"]["user_enabled_emulation_dn"] = ""
+default["keystone"]["ldap"]["user_tree_dn"] = nil
+default["keystone"]["ldap"]["user_filter"] = nil
+default["keystone"]["ldap"]["user_objectclass"] = nil
+default["keystone"]["ldap"]["user_id_attribute"] = nil
+default["keystone"]["ldap"]["user_name_attribute"] = nil
+default["keystone"]["ldap"]["user_mail_attribute"] = nil
+default["keystone"]["ldap"]["user_pass_attribute"] = nil
+default["keystone"]["ldap"]["user_enabled_attribute"] = nil
+default["keystone"]["ldap"]["user_domain_id_attribute"] = nil
+default["keystone"]["ldap"]["user_enabled_mask"] = nil
+default["keystone"]["ldap"]["user_enabled_default"] = nil
+default["keystone"]["ldap"]["user_attribute_ignore"] = nil
+default["keystone"]["ldap"]["user_allow_create"] = nil
+default["keystone"]["ldap"]["user_allow_update"] = nil
+default["keystone"]["ldap"]["user_allow_delete"] = nil
+default["keystone"]["ldap"]["user_enabled_emulation"] = nil
+default["keystone"]["ldap"]["user_enabled_emulation_dn"] = nil
 
 # ldap - Tenant tree setup, dependent on ldap schema. Can also use keystone db to manage tenants
-default["keystone"]["ldap"]["tenant_tree_dn"] = ""
-default["keystone"]["ldap"]["tenant_filter"] = ""
-default["keystone"]["ldap"]["tenant_objectclass"] = ""
-default["keystone"]["ldap"]["tenant_id_attribute"] = ""
-default["keystone"]["ldap"]["tenant_member_attribute"] = ""
-default["keystone"]["ldap"]["tenant_name_attribute"] = ""
-default["keystone"]["ldap"]["tenant_desc_attribute"] = ""
-default["keystone"]["ldap"]["tenant_enabled_attribute"] = ""
-default["keystone"]["ldap"]["user_domain_id_attribute"] = ""
-default["keystone"]["ldap"]["tenant_attribute_ignore"] = ""
-default["keystone"]["ldap"]["tenant_allow_create"] = ""
-default["keystone"]["ldap"]["tenant_allow_update"] = ""
-default["keystone"]["ldap"]["tenant_allow_delete"] = ""
-default["keystone"]["ldap"]["tenant_enabled_emulation"] = ""
-default["keystone"]["ldap"]["tenant_enabled_emulation_dn"] = ""
+default["keystone"]["ldap"]["tenant_tree_dn"] = nil
+default["keystone"]["ldap"]["tenant_filter"] = nil
+default["keystone"]["ldap"]["tenant_objectclass"] = nil
+default["keystone"]["ldap"]["tenant_id_attribute"] = nil
+default["keystone"]["ldap"]["tenant_member_attribute"] = nil
+default["keystone"]["ldap"]["tenant_name_attribute"] = nil
+default["keystone"]["ldap"]["tenant_desc_attribute"] = nil
+default["keystone"]["ldap"]["tenant_enabled_attribute"] = nil
+default["keystone"]["ldap"]["user_domain_id_attribute"] = nil
+default["keystone"]["ldap"]["tenant_attribute_ignore"] = nil
+default["keystone"]["ldap"]["tenant_allow_create"] = nil
+default["keystone"]["ldap"]["tenant_allow_update"] = nil
+default["keystone"]["ldap"]["tenant_allow_delete"] = nil
+default["keystone"]["ldap"]["tenant_enabled_emulation"] = nil
+default["keystone"]["ldap"]["tenant_enabled_emulation_dn"] = nil
 
 # ldap - Role tree setup, dependent on ldap schema. Can also use keystone db to manage roles
-default["keystone"]["ldap"]["role_tree_dn"] = ""
-default["keystone"]["ldap"]["role_filter"] = ""
-default["keystone"]["ldap"]["role_objectclass"] = ""
-default["keystone"]["ldap"]["role_id_attribute"] = ""
-default["keystone"]["ldap"]["role_name_attribute"] = ""
-default["keystone"]["ldap"]["role_member_attribute"] = ""
-default["keystone"]["ldap"]["role_attribute_ignore"] = ""
-default["keystone"]["ldap"]["role_allow_create"] = ""
-default["keystone"]["ldap"]["role_allow_update"] = ""
-default["keystone"]["ldap"]["role_allow_delete"] = ""
+default["keystone"]["ldap"]["role_tree_dn"] = nil
+default["keystone"]["ldap"]["role_filter"] = nil
+default["keystone"]["ldap"]["role_objectclass"] = nil
+default["keystone"]["ldap"]["role_id_attribute"] = nil
+default["keystone"]["ldap"]["role_name_attribute"] = nil
+default["keystone"]["ldap"]["role_member_attribute"] = nil
+default["keystone"]["ldap"]["role_attribute_ignore"] = nil
+default["keystone"]["ldap"]["role_allow_create"] = nil
+default["keystone"]["ldap"]["role_allow_update"] = nil
+default["keystone"]["ldap"]["role_allow_delete"] = nil
 
 # ldap - Group setup (grizzly and beyond)
-default["keystone"]["ldap"]["group_tree_dn"] = ""
-default["keystone"]["ldap"]["group_filter"] = ""
-default["keystone"]["ldap"]["group_objectclass"] = ""
-default["keystone"]["ldap"]["group_id_attribute"] = ""
-default["keystone"]["ldap"]["group_name_attribute"] = ""
-default["keystone"]["ldap"]["group_member_attribute"] = ""
-default["keystone"]["ldap"]["group_desc_attribute"] = ""
-default["keystone"]["ldap"]["group_domain_id_attribute"] = ""
-default["keystone"]["ldap"]["group_attribute_ignore"] = ""
-default["keystone"]["ldap"]["group_allow_create"] = ""
-default["keystone"]["ldap"]["group_allow_update"] = ""
-default["keystone"]["ldap"]["group_allow_delete"] = ""
+default["keystone"]["ldap"]["group_tree_dn"] = nil
+default["keystone"]["ldap"]["group_filter"] = nil
+default["keystone"]["ldap"]["group_objectclass"] = nil
+default["keystone"]["ldap"]["group_id_attribute"] = nil
+default["keystone"]["ldap"]["group_name_attribute"] = nil
+default["keystone"]["ldap"]["group_member_attribute"] = nil
+default["keystone"]["ldap"]["group_desc_attribute"] = nil
+default["keystone"]["ldap"]["group_domain_id_attribute"] = nil
+default["keystone"]["ldap"]["group_attribute_ignore"] = nil
+default["keystone"]["ldap"]["group_allow_create"] = nil
+default["keystone"]["ldap"]["group_allow_update"] = nil
+default["keystone"]["ldap"]["group_allow_delete"] = nil
 
 # ldap - domain setup (grizzly and beyond)
-default["keystone"]["ldap"]["domain_tree_dn"] = ""
-default["keystone"]["ldap"]["domain_filter"] = ""
-default["keystone"]["ldap"]["domain_objectclass"] = ""
-default["keystone"]["ldap"]["domain_id_attribute"] = ""
-default["keystone"]["ldap"]["domain_name_attribute"] = ""
-default["keystone"]["ldap"]["domain_member_attribute"] = ""
-default["keystone"]["ldap"]["domain_desc_attribute"] = ""
-default["keystone"]["ldap"]["domain_enabled_attribute"] = ""
-default["keystone"]["ldap"]["domain_attribute_ignore"] = ""
-default["keystone"]["ldap"]["domain_allow_create"] = ""
-default["keystone"]["ldap"]["domain_allow_delete"] = ""
-default["keystone"]["ldap"]["domain_allow_update"] = ""
-default["keystone"]["ldap"]["domain_enabled_emulation"] = ""
-default["keystone"]["ldap"]["domain_enabled_emulation_dn"] = ""
+default["keystone"]["ldap"]["domain_tree_dn"] = nil
+default["keystone"]["ldap"]["domain_filter"] = nil
+default["keystone"]["ldap"]["domain_objectclass"] = nil
+default["keystone"]["ldap"]["domain_id_attribute"] = nil
+default["keystone"]["ldap"]["domain_name_attribute"] = nil
+default["keystone"]["ldap"]["domain_member_attribute"] = nil
+default["keystone"]["ldap"]["domain_desc_attribute"] = nil
+default["keystone"]["ldap"]["domain_enabled_attribute"] = nil
+default["keystone"]["ldap"]["domain_attribute_ignore"] = nil
+default["keystone"]["ldap"]["domain_allow_create"] = nil
+default["keystone"]["ldap"]["domain_allow_delete"] = nil
+default["keystone"]["ldap"]["domain_allow_update"] = nil
+default["keystone"]["ldap"]["domain_enabled_emulation"] = nil
+default["keystone"]["ldap"]["domain_enabled_emulation_dn"] = nil
 
 # ldap - SSL setup
-default["keystone"]["ldap"]["tls_cacertfile"] = ""
-default["keystone"]["ldap"]["tls_cacertdir"] = ""
-default["keystone"]["ldap"]["use_tls"] = ""
-default["keystone"]["ldap"]["tls_req_cert"] = ""
+default["keystone"]["ldap"]["tls_cacertfile"] = nil
+default["keystone"]["ldap"]["tls_cacertdir"] = nil
+default["keystone"]["ldap"]["use_tls"] = nil
+default["keystone"]["ldap"]["tls_req_cert"] = nil
 
 # PAM Support
-default["keystone"]["pam"]["url"] = ""
-default["keystone"]["pam"]["userid"] = ""
-default["keystone"]["pam"]["password"] = ""
+default["keystone"]["pam"]["url"] = nil
+default["keystone"]["pam"]["userid"] = nil
+default["keystone"]["pam"]["password"] = nil
 
 # setting to false will use a token_format of UUID
 default["keystone"]["pki"]["enabled"] = true
