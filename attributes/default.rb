@@ -120,6 +120,9 @@ default["keystone"]["pam"]["url"] = nil
 default["keystone"]["pam"]["userid"] = nil
 default["keystone"]["pam"]["password"] = nil
 
+# setting to false will use a token_format of UUID
+default["keystone"]["pki"]["enabled"] = true
+
 # new endpoint location stuff
 default["keystone"]["services"]["admin-api"]["scheme"] = "http"             # node_attribute
 default["keystone"]["services"]["admin-api"]["network"] = "nova"            # node_attribute

@@ -117,10 +117,25 @@ execute "keystone-manage db_sync" do
   action :nothing
 end
 
+execute "keystone-manage pki_setup" do
+  user "keystone"
+  group "keystone"
+  command "keystone-manage pki_setup"
+  action :nothing
+end
+
 ks_service_bind = get_bind_endpoint("keystone", "service-api")
 ks_admin_bind = get_bind_endpoint("keystone", "admin-api")
 ks_admin_endpoint = get_access_endpoint("keystone-api", "keystone", "admin-api")
 ks_service_endpoint = get_access_endpoint("keystone-api", "keystone", "service-api")
+
+# only bind to 0.0.0.0 if we're not using openstack-ha, otherwise
+# HAProxy will fail to start when trying to bind to keystone VIP
+if get_role_count("openstack-ha") == 0
+  ip_address = "0.0.0.0"
+else
+  ip_address = ks_admin_bind["host"]
+end
 
 template "/etc/keystone/keystone.conf" do
   source "keystone.conf.erb"
@@ -133,7 +148,7 @@ template "/etc/keystone/keystone.conf" do
             :verbose => node["keystone"]["verbose"],
             :user => node["keystone"]["db"]["username"],
             :passwd => node["keystone"]["db"]["password"],
-            :ip_address => ks_admin_bind["host"],
+            :ip_address => ip_address,
             :db_name => node["keystone"]["db"]["name"],
             :db_ipaddress => mysql_connect_ip,
             :service_port => ks_service_bind["port"],
@@ -142,15 +157,33 @@ template "/etc/keystone/keystone.conf" do
             :use_syslog => node["keystone"]["syslog"]["use"],
             :log_facility => node["keystone"]["syslog"]["facility"],
             :auth_type => node["keystone"]["auth_type"],
-            :ldap_options => node["keystone"]["ldap"]
+            :ldap_options => node["keystone"]["ldap"],
+            :pki_token_signing => node["keystone"]["pki"]["enabled"]
             )
   notifies :run, resources(:execute => "keystone-manage db_sync"), :immediately
+  # The pki_setup runs via postinst on Ubuntu, but doesn't run via package
+  # installation on CentOS.
+  if platform?(%w{redhat centos fedora scientific})
+    notifies :run, resources(:execute => "keystone-manage pki_setup"), :immediately
+  end
   notifies :restart, resources(:service => "keystone"), :immediately
 end
 
-
 file "/var/lib/keystone/keystone.db" do
   action :delete
+end
+
+# Setting attributes inside ruby_block means they'll get set at run time
+# rather than compile time; these files do not exist at compile time when chef
+# is first run.
+ruby_block "store key and certs in attributes" do
+  block do
+    if node["keystone"]["pki"]["enabled"] == true
+      node.set_unless["keystone"]["pki"]["key"] = File.read("/etc/keystone/ssl/private/signing_key.pem")
+      node.set_unless["keystone"]["pki"]["cert"] = File.read("/etc/keystone/ssl/certs/signing_cert.pem")
+      node.set_unless["keystone"]["pki"]["cacert"] = File.read("/etc/keystone/ssl/certs/ca.pem")
+    end
+  end
 end
 
 #TODO(shep): this should probably be derived from keystone.users hash keys
