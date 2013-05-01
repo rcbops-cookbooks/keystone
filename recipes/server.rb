@@ -86,7 +86,7 @@ service "keystone" do
   service_name platform_options["keystone_service"]
   supports :status => true, :restart => true
   action [ :enable ]
-	notifies :run, "execute[Keystone sleep]", :immediately
+	notifies :run, "execute[Keystone: sleep]", :immediately
 end
 
 monitoring_procmon "keystone" do
