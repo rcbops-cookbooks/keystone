@@ -35,4 +35,4 @@ attribute :tenant_name, :kind_of => String, :required => true
 attribute :user_name, :kind_of => String, :required => true
 attribute :user_pass, :kind_of => String, :required => true
 # attribute :user_email, :kind_of => String
-attribute :user_enabled, :kind_of => String, :equal_to => [ "1", "0" ], :default => "1"
+attribute :user_enabled, :kind_of => [TrueClass,FalseClass], :default => true
