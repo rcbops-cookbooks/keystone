@@ -86,7 +86,7 @@ service "keystone" do
   service_name platform_options["keystone_service"]
   supports :status => true, :restart => true
   action [ :enable ]
-  notifies :run, resources(:execute => "Keystone: sleep"), :immediately
+	notifies :run, "execute[Keystone sleep]", :immediately
 end
 
 monitoring_procmon "keystone" do
@@ -160,13 +160,13 @@ template "/etc/keystone/keystone.conf" do
             :ldap_options => node["keystone"]["ldap"],
             :pki_token_signing => node["keystone"]["pki"]["enabled"]
             )
-  notifies :run, resources(:execute => "keystone-manage db_sync"), :immediately
+	notifies :run, "execute[keystone-manage db_sync]", :immediately
   # The pki_setup runs via postinst on Ubuntu, but doesn't run via package
   # installation on CentOS.
   if platform?(%w{redhat centos fedora scientific})
-    notifies :run, resources(:execute => "keystone-manage pki_setup"), :immediately
+		notifies :run, "execute[keystone-manage pki_setup]", :immediately
   end
-  notifies :restart, resources(:service => "keystone"), :immediately
+	notifies :restart, "service[keystone]", :immediately
 end
 
 file "/var/lib/keystone/keystone.db" do
