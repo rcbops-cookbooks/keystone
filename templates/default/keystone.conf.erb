@@ -100,24 +100,10 @@ pool_timeout = 200
 
 <% if @auth_type == "ldap" or @auth_type == "ad" %>
 driver = keystone.identity.backends.ldap.Identity
-
-[ldap]
-<%- @ldap_options.each do |key, value| -%>
-<% if not value.nil? %>
-<%= key %> = <%= value %>
-<% end %>
-<% end %>
-
+	<%= render "partials/ldap-options.partial.erb" %>
 <% elsif @auth_type == "pam" %>
 driver = keystone.identity.backends.pam.PamIdentity
-
-[pam]
-<%- @pam_options.each do |key,value| -%>
-<% if not value.nil? %>
-<%= key %> = <%= value %>
-<% end %>
-<% end %>
-
+	<%= render "partials/pam-options.partial.erb" %>
 <% else %>
 driver = keystone.identity.backends.sql.Identity
 <% end %>

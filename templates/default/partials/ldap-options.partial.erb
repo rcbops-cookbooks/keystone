@@ -1,0 +1,6 @@
+[ldap]
+<%- @ldap_options.each do |key, value| -%>
+<% if not value.nil? %>
+<%= key %> = <%= value %>
+<% end %>
+<% end %>
