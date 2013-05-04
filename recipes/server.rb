@@ -89,6 +89,8 @@ service "keystone" do
 	notifies :run, "execute[Keystone: sleep]", :immediately
 end
 
+include_recipe "keystone::keystone-ldap-patch"
+
 monitoring_procmon "keystone" do
   procname=platform_options["keystone_service"]
   sname=platform_options["keystone_process_name"]
@@ -197,7 +199,7 @@ node["keystone"]["tenants"].each do |tenant_name|
     auth_token node["keystone"]["admin_token"]
     tenant_name tenant_name
     tenant_description "#{tenant_name} Tenant"
-    tenant_enabled "1" # Not required as this is the default
+    tenant_enabled true # Not required as this is the default
     action :create
   end
 end
@@ -225,7 +227,7 @@ node["keystone"]["users"].each do |username, user_info|
     user_name username
     user_pass user_info["password"]
     tenant_name user_info["default_tenant"]
-    user_enabled "1" # Not required as this is the default
+    user_enabled true # Not required as this is the default
     action :create
   end
 
