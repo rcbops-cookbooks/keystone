@@ -104,14 +104,14 @@ if node["keystone"]["pki"]["enabled"] == true
     mode    "0400"
     content keystone["pki"]["key"]
   end
-  
+
   file "/etc/keystone/ssl/certs/signing_cert.pem" do
     owner   "keystone"
     group   "keystone"
     mode    "0644"
     content keystone["pki"]["cert"]
   end
-  
+
   file "/etc/keystone/ssl/certs/ca.pem" do
     owner   "keystone"
     group   "keystone"
@@ -151,7 +151,7 @@ template "/etc/keystone/keystone.conf" do
             :ldap_options => keystone["ldap"],
             :pki_token_signing => node["keystone"]["pki"]["enabled"]
             )
-  notifies :restart, resources(:service => "keystone"), :immediately
+	notifies :restart, "service[keystone]", :immediately
 end
 
 file "/var/lib/keystone/keystone.db" do
