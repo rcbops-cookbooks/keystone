@@ -34,28 +34,6 @@ package_list.each do |pkg|
   end
 end
 
-#platform_options["keystone_packages"].each do |pkg|
-#  package pkg do
-#    if node["osops"]["do_package_upgrades"]
-#      action :upgrade
-#    else
-#      action :install
-#    end
-#    options platform_options["package_options"]
-#  end
-#end
-#
-#platform_options["keystone_ldap_packages"].each do |pkg|
-#  package pkg do
-#    if node["osops"]["do_package_upgrades"]
-#      action :upgrade
-#    else
-#      action :install
-#    end
-#    options platform_options["package_options"]
-#  end
-#end
-
 service "keystone" do
   service_name platform_options["keystone_service"]
   supports :status => true, :restart => true
