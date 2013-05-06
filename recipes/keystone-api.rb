@@ -16,70 +16,32 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# don't run this recipe if we are running the 'keystone::server' recipe since
-# that recipe does all this stuff, and more, already
-return if node.run_list.expand(node.chef_environment).recipes.include?("keystone::server")
-
 ::Chef::Recipe.send(:include, Opscode::OpenSSL::Password)
 include_recipe "keystone::keystone-rsyslog"
 include_recipe "osops-utils"
 include_recipe "monitoring"
 
+include_recipe "keystone::keystone-common"
+
 platform_options = node["keystone"]["platform"]
 
-platform_options["keystone_packages"].each do |pkg|
-  package pkg do
-    if node["osops"]["do_package_upgrades"]
-      action :upgrade
-    else
-      action :install
-    end
-    options platform_options["package_options"]
-  end
-end
+# TODO(shep): this is going to get pulled out into openstack-monitoring
+#monitoring_procmon "keystone" do
+#  procname=platform_options["keystone_service"]
+#  sname=platform_options["keystone_process_name"]
+#  process_name sname
+#  script_name procname
+#end
 
-platform_options["keystone_ldap_packages"].each do |pkg|
-  package pkg do
-    if node["osops"]["do_package_upgrades"]
-      action :upgrade
-    else
-      action :install
-    end
-    options platform_options["package_options"]
-  end
-end
+# TODO(shep): this is going to get pulled out into openstack-monitoring
+#monitoring_metric "keystone-proc" do
+#  type "proc"
+#  proc_name "keystone"
+#  proc_regex platform_options["keystone_service"]
+#  alarms(:failure_min => 2.0)
+#end
 
-service "keystone" do
-  service_name platform_options["keystone_service"]
-  supports :status => true, :restart => true
-  action [ :enable ]
-end
-
-monitoring_procmon "keystone" do
-  procname=platform_options["keystone_service"]
-  sname=platform_options["keystone_process_name"]
-  process_name sname
-  script_name procname
-end
-
-monitoring_metric "keystone-proc" do
-  type "proc"
-  proc_name "keystone"
-  proc_regex platform_options["keystone_service"]
-  alarms(:failure_min => 2.0)
-end
-
-directory "/etc/keystone" do
-  action :create
-  owner "keystone"
-  group "keystone"
-  mode "0700"
-end
-
-ks_admin_endpoint = get_bind_endpoint("keystone", "admin-api")
-ks_service_endpoint = get_bind_endpoint("keystone", "service-api")
-keystone = get_settings_by_role("keystone", "keystone")
-mysql_info = get_access_endpoint("mysql-master", "mysql", "db")
+keystone = get_settings_by_role("keystone-setup", "keystone")
 
 %w{ssl ssl/certs}.each do |dir|
   directory "/etc/keystone/#{dir}" do
@@ -120,42 +82,70 @@ if node["keystone"]["pki"]["enabled"] == true
   end
 end
 
-# only bind to 0.0.0.0 if we're not using openstack-ha w/ a keystone-admin-api VIP,
-# otherwise HAProxy will fail to start when trying to bind to keystone VIP
-if get_role_count("openstack-ha") > 0 and rcb_safe_deref(node, "vips.keystone-admin-api")
-  ip_address = ks_admin_endpoint["host"]
-else
-  ip_address = "0.0.0.0"
+ks_api_role = "keystone-api"
+ks_ns = "keystone"
+ks_admin_endpoint = get_access_endpoint(ks_api_role, ks_ns, "admin-api")
+ks_service_endpoint = get_access_endpoint(ks_api_role, ks_ns, "service-api")
+
+## Add Services ##
+keystone_service "Create Identity Service" do
+  auth_host ks_admin_endpoint["host"]
+  auth_port ks_admin_endpoint["port"]
+  auth_protocol ks_admin_endpoint["scheme"]
+  api_ver ks_admin_endpoint["path"]
+  auth_token keystone["admin_token"]
+  service_name "keystone"
+  service_type "identity"
+  service_description "Keystone Identity Service"
+  action :create
 end
 
-template "/etc/keystone/keystone.conf" do
-  source "keystone.conf.erb"
-  owner "keystone"
-  group "keystone"
-  mode "0600"
+## Add Endpoints ##
+node.set["keystone"]["adminURL"] = ks_admin_endpoint["uri"]
+node.set["keystone"]["internalURL"] = ks_service_endpoint["uri"]
+node.set["keystone"]["publicURL"] = ks_service_endpoint["uri"]
 
-  variables(
-            :debug => keystone["debug"],
-            :verbose => keystone["verbose"],
-            :user => keystone["db"]["username"],
-            :passwd => keystone["db"]["password"],
-            :ip_address => ip_address,
-            :db_name => keystone["db"]["name"],
-            :db_ipaddress => mysql_info["host"],
-            :service_port => ks_service_endpoint["port"],
-            :admin_port => ks_admin_endpoint["port"],
-            :admin_token => keystone["admin_token"],
-            :use_syslog => keystone["syslog"]["use"],
-            :log_facility => keystone["syslog"]["facility"],
-            :auth_type => keystone["auth_type"],
-            :ldap_options => keystone["ldap"],
-            :pki_token_signing => node["keystone"]["pki"]["enabled"]
-            )
-	notifies :restart, "service[keystone]", :immediately
+Chef::Log.info "Keystone AdminURL: #{ks_admin_endpoint["uri"]}"
+Chef::Log.info "Keystone InternalURL: #{ks_service_endpoint["uri"]}"
+Chef::Log.info "Keystone PublicURL: #{ks_service_endpoint["uri"]}"
+
+keystone_endpoint "Create Identity Endpoint" do
+  auth_host ks_admin_endpoint["host"]
+  auth_port ks_admin_endpoint["port"]
+  auth_protocol ks_admin_endpoint["scheme"]
+  api_ver ks_admin_endpoint["path"]
+  auth_token keystone["admin_token"]
+  service_type "identity"
+  endpoint_region "RegionOne"
+  endpoint_adminurl node["keystone"]["adminURL"]
+  endpoint_internalurl node["keystone"]["internalURL"]
+  endpoint_publicurl node["keystone"]["publicURL"]
+  action :create
 end
 
-file "/var/lib/keystone/keystone.db" do
-  action :delete
+# TODO(shep): this could probably come from the search result (keystone)
+node["keystone"]["users"].each do |username, user_info|
+  keystone_credentials "Create EC2 credentials for '#{username}' user" do
+    auth_host ks_admin_endpoint["host"]
+    auth_port ks_admin_endpoint["port"]
+    auth_protocol ks_admin_endpoint["scheme"]
+    api_ver ks_admin_endpoint["path"]
+    auth_token keystone["admin_token"]
+    user_name username
+    tenant_name user_info["default_tenant"]
+  end
 end
+
+# TODO(shep): this is going to get pulled out into openstack-monitoring
+## Add keystone monitoring metrics
+#monitoring_metric "keystone" do
+#  keystone_admin_user = node["keystone"]["admin_user"]
+#  type "pyscript"
+#  script "keystone_plugin.py"
+#  options("Username" => keystone_admin_user,
+#          "Password" => node["keystone"]["users"][keystone_admin_user]["password"],
+#          "TenantName" => node["keystone"]["users"][keystone_admin_user]["default_tenant"],
+#          "AuthURL" => ks_service_endpoint["uri"])
+#end
 
 include_recipe "keystone::keystoneclient-patch"
