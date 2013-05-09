@@ -46,7 +46,7 @@ action :create do
   tenant_uuid, tenant_error = find_value(http, tenant_path, headers, tenant_container, tenant_key, tenant_name, 'id')
   Chef::Log.error("There was an error looking up Tenant '#{tenant_name}'") if tenant_error
   Chef::Log.fatal(tenant_error)
-  
+
 
   unless tenant_uuid
     Chef::Log.error("Unable to find tenant '#{tenant_name}'")
