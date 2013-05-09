@@ -1,53 +1,11 @@
 module RCB_keystone_helpers
 
-  #private
-#  def find_cred_id(http, path, headers, container, key, match_value)
-#    uuid = nil
-#    error = false
-#    resp = http.request_get(path, headers)
-#    if resp.is_a?(Net::HTTPOK)
-#      data = JSON.parse(resp.body)
-#      data[container].each do |obj|
-#        uuid = obj['tenant_id'] if obj[key] == match_value
-#        break if uuid
-#      end
-#    else
-#      Chef::Log.error("Unknown response from the Keystone Server")
-#      Chef::Log.error("Response Code: #{resp.code}")
-#      Chef::Log.error("Response Message: #{resp.message}")
-#      error = true
-#    end
-#    return uuid,error
-#  end
-
-  #private
   def build_credentials_obj(tenant_uuid)
     ret = Hash.new
     ret.store("tenant_id", tenant_uuid)
     return ret
   end
 
-  ##private
-  #def find_id(http, path, headers, container, key, match_value)
-  #    uuid = nil
-  #    error = false
-  #    resp = http.request_get(path, headers)
-  #    if resp.is_a?(Net::HTTPOK)
-  #      data = JSON.parse(resp.body)
-  #      data[container].each do |obj|
-  #        uuid = obj['id'] if obj[key] == match_value
-  #        break if uuid
-  #      end
-  #    else
-  #      Chef::Log.error("Unknown response from the Keystone Server")
-  #      Chef::Log.error("Response Code: #{resp.code}")
-  #      Chef::Log.error("Response Message: #{resp.message}")
-  #      error = true
-  #    end
-  #    return uuid,error
-  #end
-
-  #private
   def find_value(http, path, headers, container, key, match_value, value)
     val = nil
     error = false
@@ -67,7 +25,6 @@ module RCB_keystone_helpers
     return val,error
   end
 
-  #private
   def build_endpoint_object(region, service_uuid, publicurl, internalurl, adminurl)
     endpoint_obj = Hash.new
     endpoint_obj.store("adminurl", adminurl)
@@ -80,7 +37,6 @@ module RCB_keystone_helpers
     return ret
   end
 
-  #private
   def build_headers(token)
     ret = Hash.new
     ret.store('X-Auth-Token', token)
@@ -89,7 +45,6 @@ module RCB_keystone_helpers
     return ret
   end
 
-  #private
   def build_role_obj(name)
     role_obj = Hash.new
     role_obj.store("name", name)
@@ -98,7 +53,6 @@ module RCB_keystone_helpers
     return ret
   end
 
-  #private
   def build_service_object(type, name, description)
     service_obj = Hash.new
     service_obj.store("type", type)
@@ -109,7 +63,6 @@ module RCB_keystone_helpers
     return ret
   end
 
-  #private
   def build_tenant_object(name, description, enabled)
     tenant_obj = Hash.new
     tenant_obj.store("name", name)
@@ -120,7 +73,6 @@ module RCB_keystone_helpers
     return ret
   end
 
-  #private
   def build_user_object(tenant_uuid, name, password, enabled)
     user_obj = Hash.new
     user_obj.store("tenantId", tenant_uuid)
