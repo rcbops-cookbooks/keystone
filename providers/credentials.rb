@@ -55,7 +55,7 @@ action :create_ec2 do
     cred_container = "credentials"
     cred_key = "tenant_id"
     cred_path = "/#{new_resource.api_ver}/users/#{user_uuid}/credentials/OS-EC2"
-    cred_tenant_uuid, cred_error = find_cred_id(http, cred_path, headers, cred_container, cred_key, tenant_uuid)
+    cred_tenant_uuid, cred_error = find_value(http, cred_path, headers, cred_container, cred_key, tenant_uuid, 'tenant_id')
     Chef::Log.error("There was an error looking up EC2 Credentials for User '#{new_resource.user_name}' and Tenant '#{new_resource.tenant_name}'") if cred_error
 
     error = (tenant_error or user_error or cred_error)
