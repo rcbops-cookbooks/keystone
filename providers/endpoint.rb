@@ -38,7 +38,7 @@ action :create do
     end
 
     # Build out the required header info
-    headers = _build_headers(token)
+    headers = build_headers(token)
 
     # Construct the extension path
     path = "/#{api_ver}/endpoints"
@@ -47,7 +47,7 @@ action :create do
     service_container = "OS-KSADM:services"
     service_key = "type"
     service_path = "/#{api_ver}/OS-KSADM/services"
-    service_uuid, service_error = _find_value(http, service_path, headers, service_container, service_key, svc_type, 'id')
+    service_uuid, service_error = find_value(http, service_path, headers, service_container, service_key, svc_type, 'id')
     Chef::Log.error("There was an error looking up Service '#{svc_type}'") if service_error
 
     unless service_uuid or service_error
@@ -58,10 +58,10 @@ action :create do
     # Make sure this endpoint does not already exist
     endpoint_container = "endpoints"
     endpoint_key = "service_id"
-    endpoint_uuid, endpoint_error = _find_value(http, path, headers, endpoint_container, endpoint_key, service_uuid, 'id')
+    endpoint_uuid, endpoint_error = find_value(http, path, headers, endpoint_container, endpoint_key, service_uuid, 'id')
 
     unless endpoint_uuid or endpoint_error
-        payload = _build_endpoint_object(
+        payload = build_endpoint_object(
                   region,
                   service_uuid,
                   public_url,
@@ -97,7 +97,7 @@ action :delete do
     end
 
     # Build out the required header info
-    headers = _build_headers(new_resource.auth_token)
+    headers = build_headers(new_resource.auth_token)
 
     # Construct the extension path
     path = "/#{new_resource.api_ver}/endpoints"
@@ -106,7 +106,7 @@ action :delete do
     service_container = "OS-KSADM:services"
     service_key = "type"
     service_path = "/#{new_resource.api_ver}/OS-KSADM/services"
-    service_uuid, service_error = _find_id(http, service_path, headers, service_container, service_key, new_resource.service_type)
+    service_uuid, service_error = find_value(http, service_path, headers, service_container, service_key, new_resource.service_type, 'id')
     Chef::Log.error("There was an error looking up Service '#{new_resource.service_type}'") if service_error
 
     unless service_uuid or service_error
@@ -118,7 +118,7 @@ action :delete do
     endpoint_container = "endpoints"
     endpoint_key = "service_id"
     endpoint_path = "/#{new_resource.api_ver}/endpoints"
-    endpoint_uuid, endpoint_error = _find_id(http, endpoint_path, headers, endpoint_container, endpoint_key, service_uuid)
+    endpoint_uuid, endpoint_error = find_value(http, endpoint_path, headers, endpoint_container, endpoint_key, service_uuid, 'id')
     Chef::Log.error("There was an error looking up endpoint for Service '#{new_resource.service_type}'") if endpoint_error
     Chef::Log.error("service_uuid is '#{service_uuid}'") if endpoint_error
 
@@ -177,7 +177,7 @@ action :recreate do
     end
 
     # Build out the required header info
-    headers = _build_headers(new_resource.auth_token)
+    headers = build_headers(new_resource.auth_token)
 
     # Construct the extension path
     path = "/#{new_resource.api_ver}/endpoints"
@@ -186,7 +186,7 @@ action :recreate do
     service_container = "OS-KSADM:services"
     service_key = "type"
     service_path = "/#{new_resource.api_ver}/OS-KSADM/services"
-    service_uuid, service_error = _find_id(http, service_path, headers, service_container, service_key, new_resource.service_type)
+    service_uuid, service_error = find_value(http, service_path, headers, service_container, service_key, new_resource.service_type, 'id')
     Chef::Log.error("There was an error looking up Service '#{new_resource.service_type}'") if service_error
 
     unless service_uuid or service_error
@@ -200,7 +200,7 @@ action :recreate do
         endpoint_container = "endpoints"
         endpoint_key = "service_id"
         endpoint_path = "/#{new_resource.api_ver}/endpoints"
-        val, error = _find_value(http, endpoint_path, headers, endpoint_container, endpoint_key, service_uuid, url)
+        val, error = find_value(http, endpoint_path, headers, endpoint_container, endpoint_key, service_uuid, url)
         Chef::Log.error("There was an error looking up endpoint for Service '#{new_resource.service_type}'") if error
         Chef::Log.error("service_uuid is '#{service_uuid}'") if error
         urls[url] = val
@@ -230,7 +230,7 @@ action :recreate do
         endpoint_container = "endpoints"
         endpoint_key = "service_id"
         endpoint_path = "/#{new_resource.api_ver}/endpoints"
-        endpoint_uuid, endpoint_error = _find_id(http, endpoint_path, headers, endpoint_container, endpoint_key, service_uuid)
+        endpoint_uuid, endpoint_error = find_value(http, endpoint_path, headers, endpoint_container, endpoint_key, service_uuid, 'id')
         Chef::Log.error("There was an error looking up endpoint for Service '#{new_resource.service_type}'") if endpoint_error
         Chef::Log.error("service_uuid is '#{service_uuid}'") if endpoint_error
 
@@ -258,7 +258,7 @@ action :recreate do
         end
 
         # and now create it with our new values
-        payload = _build_endpoint_object(
+        payload = build_endpoint_object(
                   new_resource.endpoint_region,
                   service_uuid,
                   new_resource.endpoint_publicurl,
@@ -277,71 +277,4 @@ action :recreate do
             new_resource.updated_by_last_action(false)
         end
     end
-end
-
-
-private
-def _find_id(http, path, headers, container, key, match_value)
-    uuid = nil
-    error = false
-    resp = http.request_get(path, headers)
-    if resp.is_a?(Net::HTTPOK)
-        data = JSON.parse(resp.body)
-        data[container].each do |obj|
-            uuid = obj['id'] if obj[key] == match_value
-            break if uuid
-        end
-    else
-        Chef::Log.error("Unknown response from the Keystone Server")
-        Chef::Log.error("Response Code: #{resp.code}")
-        Chef::Log.error("Response Message: #{resp.message}")
-        error = true
-    end
-    return uuid,error
-end
-
-
-#TODO(mancdaz): convert all lookups to use _find_value instead of _find_id
-private
-def _find_value(http, path, headers, container, key, match_value, value)
-    val = nil
-    error = false
-    resp = http.request_get(path, headers)
-    if resp.is_a?(Net::HTTPOK)
-        data = JSON.parse(resp.body)
-        data[container].each do |obj|
-            val = obj[value] if obj[key] == match_value
-            break if val
-        end
-    else
-        Chef::Log.error("Unknown response from the Keystone Server")
-        Chef::Log.error("Response Code: #{resp.code}")
-        Chef::Log.error("Response Message: #{resp.message}")
-        error = true
-    end
-    return val,error
-end
-
-
-private
-def _build_endpoint_object(region, service_uuid, publicurl, internalurl, adminurl)
-    endpoint_obj = Hash.new
-    endpoint_obj.store("adminurl", adminurl)
-    endpoint_obj.store("internalurl", internalurl)
-    endpoint_obj.store("publicurl", publicurl)
-    endpoint_obj.store("service_id", service_uuid)
-    endpoint_obj.store("region", region)
-    ret = Hash.new
-    ret.store("endpoint", endpoint_obj)
-    return ret
-end
-
-
-private
-def _build_headers(token)
-    ret = Hash.new
-    ret.store('X-Auth-Token', token)
-    ret.store('Content-type', 'application/json')
-    ret.store('user-agent', 'Chef keystone_endpoint')
-    return ret
 end

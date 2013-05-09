@@ -36,7 +36,7 @@ action :create do
     end
 
     # Build out the required header info
-    headers = _build_headers(token)
+    headers = build_headers(token)
 
     # Construct the extension path
     path = "/#{api_ver}/OS-KSADM/services"
@@ -45,13 +45,13 @@ action :create do
     service_container = "OS-KSADM:services"
     service_key = "type"
     service_path = "/#{api_ver}/OS-KSADM/services"
-    service_uuid, service_error = _find_value(http, service_path, headers, service_container, service_key, svc_type, 'id')
+    service_uuid, service_error = find_value(http, service_path, headers, service_container, service_key, svc_type, 'id')
     Chef::Log.error("There was an error looking up Service '#{svc_type}'") if service_error
 
     # See if the service exists yet
     unless service_uuid or service_error
         # Service does not exist yet
-        payload = _build_service_object(svc_type, svc_name, svc_desc)
+        payload = build_service_object(svc_type, svc_name, svc_desc)
         resp = http.send_request('POST', path, JSON.generate(payload), headers)
         if resp.is_a?(Net::HTTPOK)
             Chef::Log.info("Created service '#{svc_name}'")
@@ -90,7 +90,7 @@ action :delete do
     end
 
     # Build out the required header info
-    headers = _build_headers(token)
+    headers = build_headers(token)
 
     # Construct the extension path
     path = "/#{api_ver}/OS-KSADM/services"
@@ -99,7 +99,7 @@ action :delete do
     service_container = "OS-KSADM:services"
     service_key = "type"
     service_path = "/#{api_ver}/OS-KSADM/services"
-    service_uuid, service_error = _find_value(http, service_path, headers, service_container, service_key, svc_type, 'id')
+    service_uuid, service_error = find_value(http, service_path, headers, service_container, service_key, svc_type, 'id')
     Chef::Log.error("There was an error looking up Service '#{svc_type}'") if service_error
 
     # See if the service exists yet
@@ -122,47 +122,4 @@ action :delete do
         Chef::Log.error("There was an error looking up '#{svc_type}'") if service_error
         new_resource.updated_by_last_action(false)
     end
-end
-
-
-private
-def _find_value(http, path, headers, container, key, match_value, value)
-    val = nil
-    error = false
-    resp = http.request_get(path, headers)
-    if resp.is_a?(Net::HTTPOK)
-        data = JSON.parse(resp.body)
-        data[container].each do |obj|
-            val = obj[value] if obj[key] == match_value
-            break if val
-        end
-    else
-        Chef::Log.error("Unknown response from the Keystone Server")
-        Chef::Log.error("Response Code: #{resp.code}")
-        Chef::Log.error("Response Message: #{resp.message}")
-        error = true
-    end
-    return val,error
-end
-
-
-private
-def _build_service_object(type, name, description)
-    service_obj = Hash.new
-    service_obj.store("type", type)
-    service_obj.store("name", name)
-    service_obj.store("description", description)
-    ret = Hash.new
-    ret.store("OS-KSADM:service", service_obj)
-    return ret
-end
-
-
-private
-def _build_headers(token)
-    ret = Hash.new
-    ret.store('X-Auth-Token', token)
-    ret.store('Content-type', 'application/json')
-    ret.store('user-agent', 'Chef keystone_service')
-    return ret
 end

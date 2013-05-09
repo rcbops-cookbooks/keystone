@@ -30,14 +30,14 @@ action :create_ec2 do
     end
 
     # Build out the required header info
-    headers = _build_headers(new_resource.auth_token)
+    headers = build_headers(new_resource.auth_token)
 
     # lookup tenant_uuid
     Chef::Log.debug("Looking up Tenant_UUID for Tenant_Name: #{new_resource.tenant_name}")
     tenant_container = "tenants"
     tenant_key = "name"
     tenant_path = "/#{new_resource.api_ver}/tenants"
-    tenant_uuid, tenant_error = _find_id(http, tenant_path, headers, tenant_container, tenant_key, new_resource.tenant_name)
+    tenant_uuid, tenant_error = find_value(http, tenant_path, headers, tenant_container, tenant_key, new_resource.tenant_name, 'id')
     Chef::Log.error("There was an error looking up Tenant '#{new_resource.tenant_name}'") if tenant_error
 
     # lookup user_uuid
@@ -45,7 +45,7 @@ action :create_ec2 do
     user_container = "users"
     user_key = "name"
     user_path = "/#{new_resource.api_ver}/tenants/#{tenant_uuid}/users"
-    user_uuid, user_error = _find_id(http, user_path, headers, user_container, user_key, new_resource.user_name)
+    user_uuid, user_error = find_value(http, user_path, headers, user_container, user_key, new_resource.user_name, 'id')
     Chef::Log.error("There was an error looking up User '#{new_resource.user_name}'") if user_error
 
     Chef::Log.debug("Found Tenant UUID: #{tenant_uuid}")
@@ -55,7 +55,7 @@ action :create_ec2 do
     cred_container = "credentials"
     cred_key = "tenant_id"
     cred_path = "/#{new_resource.api_ver}/users/#{user_uuid}/credentials/OS-EC2"
-    cred_tenant_uuid, cred_error = _find_cred_id(http, cred_path, headers, cred_container, cred_key, tenant_uuid)
+    cred_tenant_uuid, cred_error = find_cred_id(http, cred_path, headers, cred_container, cred_key, tenant_uuid)
     Chef::Log.error("There was an error looking up EC2 Credentials for User '#{new_resource.user_name}' and Tenant '#{new_resource.tenant_name}'") if cred_error
 
     error = (tenant_error or user_error or cred_error)
@@ -63,7 +63,7 @@ action :create_ec2 do
         # Construct the extension path
         path = "/#{new_resource.api_ver}/users/#{user_uuid}/credentials/OS-EC2"
 
-        payload = _build_credentials_obj(tenant_uuid)
+        payload = build_credentials_obj(tenant_uuid)
 
         resp = http.send_request('POST', path, JSON.generate(payload), headers)
         if resp.is_a?(Net::HTTPOK)
@@ -84,63 +84,4 @@ action :create_ec2 do
         Chef::Log.info("Credentials already exist for User '#{new_resource.user_name}' in Tenant '#{new_resource.tenant_name}'.. Not creating.")
         new_resource.updated_by_last_action(false)
     end
-end
-
-
-private
-def _find_id(http, path, headers, container, key, match_value)
-    uuid = nil
-    error = false
-    resp = http.request_get(path, headers)
-    if resp.is_a?(Net::HTTPOK)
-        data = JSON.parse(resp.body)
-        data[container].each do |obj|
-            uuid = obj['id'] if obj[key] == match_value
-            break if uuid
-        end
-    else
-        Chef::Log.error("Unknown response from the Keystone Server")
-        Chef::Log.error("Response Code: #{resp.code}")
-        Chef::Log.error("Response Message: #{resp.message}")
-        error = true
-    end
-    return uuid,error
-end
-
-
-private
-def _find_cred_id(http, path, headers, container, key, match_value)
-    uuid = nil
-    error = false
-    resp = http.request_get(path, headers)
-    if resp.is_a?(Net::HTTPOK)
-        data = JSON.parse(resp.body)
-        data[container].each do |obj|
-            uuid = obj['tenant_id'] if obj[key] == match_value
-            break if uuid
-        end
-    else
-        Chef::Log.error("Unknown response from the Keystone Server")
-        Chef::Log.error("Response Code: #{resp.code}")
-        Chef::Log.error("Response Message: #{resp.message}")
-        error = true
-    end
-    return uuid,error
-end
-
-private
-def _build_credentials_obj(tenant_uuid)
-    ret = Hash.new
-    ret.store("tenant_id", tenant_uuid)
-    return ret
-end
-
-
-private
-def _build_headers(token)
-    ret = Hash.new
-    ret.store('X-Auth-Token', token)
-    ret.store('Content-type', 'application/json')
-    ret.store('user-agent', 'Chef keystone_credentials')
-    return ret
 end

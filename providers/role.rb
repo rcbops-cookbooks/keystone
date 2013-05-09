@@ -34,7 +34,7 @@ action :create do
     end
 
     # Build out the required header info
-    headers = _build_headers(token)
+    headers = build_headers(token)
 
     # Construct the extension path
     path = "/#{api_ver}/OS-KSADM/roles"
@@ -43,10 +43,10 @@ action :create do
     key = "name"
 
     # See if the role exists yet
-    role_uuid, role_error = _find_value(http, path, headers, container, key, role_name, 'id')
+    role_uuid, role_error = find_value(http, path, headers, container, key, role_name, 'id')
     unless role_uuid or role_error
         # role does not exist yet
-        payload = _build_role_obj(role_name)
+        payload = build_role_obj(role_name)
         resp = http.send_request('POST', path, JSON.generate(payload), headers)
         if resp.is_a?(Net::HTTPOK)
             Chef::Log.info("Created Role '#{role_name}'")
@@ -84,13 +84,13 @@ action :grant do
     end
 
     # Build out the required header info
-    headers = _build_headers(token)
+    headers = build_headers(token)
 
     # lookup tenant_uuid
     tenant_container = "tenants"
     tenant_key = "name"
     tenant_path = "/#{api_ver}/tenants"
-    tenant_uuid, tenant_error = _find_value(http, tenant_path, headers, tenant_container, tenant_key, tenant_name, 'id')
+    tenant_uuid, tenant_error = find_value(http, tenant_path, headers, tenant_container, tenant_key, tenant_name, 'id')
     Chef::Log.error("There was an error looking up Tenant '#{tenant_name}'") if tenant_error
 
     # lookup user_uuid
@@ -98,14 +98,14 @@ action :grant do
     user_key = "name"
     # user_path = "/#{new_resource.api_ver}/tenants/#{tenant_uuid}/users"
     user_path = "/#{api_ver}/users"
-    user_uuid, user_error = _find_value(http, user_path, headers, user_container, user_key, user_name, 'id')
+    user_uuid, user_error = find_value(http, user_path, headers, user_container, user_key, user_name, 'id')
     Chef::Log.error("There was an error looking up User '#{user_name}'") if user_error
 
     # lookup role_uuid
     role_container = "roles"
     role_key = "name"
     role_path = "/#{new_resource.api_ver}/OS-KSADM/roles"
-    role_uuid, role_error = _find_value(http, role_path, headers, role_container, role_key, role_name, 'id')
+    role_uuid, role_error = find_value(http, role_path, headers, role_container, role_key, role_name, 'id')
     Chef::Log.error("There was an error looking up Role '#{role_name}'") if role_error
 
     Chef::Log.debug("Found Tenant UUID: #{tenant_uuid}")
@@ -116,7 +116,7 @@ action :grant do
     assigned_container = "roles"
     assigned_key = "name"
     assigned_path = "/#{api_ver}/tenants/#{tenant_uuid}/users/#{user_uuid}/roles"
-    assigned_role_uuid, assigned_error = _find_value(http, assigned_path, headers, assigned_container, assigned_key, role_name, 'id')
+    assigned_role_uuid, assigned_error = find_value(http, assigned_path, headers, assigned_container, assigned_key, role_name, 'id')
     Chef::Log.error("There was an error looking up Assigned Role '#{role_name}' for User '#{user_name}' and Tenant '#{tenant_name}'") if assigned_error
 
     error = (tenant_error or user_error or role_error or assigned_error)
@@ -140,45 +140,4 @@ action :grant do
         Chef::Log.error("There was an error looking up '#{role_name}'") if error
         new_resource.updated_by_last_action(false)
     end
-end
-
-
-private
-def _find_value(http, path, headers, container, key, match_value, value)
-    val = nil
-    error = false
-    resp = http.request_get(path, headers)
-    if resp.is_a?(Net::HTTPOK)
-        data = JSON.parse(resp.body)
-        data[container].each do |obj|
-            val = obj[value] if obj[key] == match_value
-            break if val
-        end
-    else
-        Chef::Log.error("Unknown response from the Keystone Server")
-        Chef::Log.error("Response Code: #{resp.code}")
-        Chef::Log.error("Response Message: #{resp.message}")
-        error = true
-    end
-    return val,error
-end
-
-
-private
-def _build_role_obj(name)
-    role_obj = Hash.new
-    role_obj.store("name", name)
-    ret = Hash.new
-    ret.store("role", role_obj)
-    return ret
-end
-
-
-private
-def _build_headers(token)
-    ret = Hash.new
-    ret.store('X-Auth-Token', token)
-    ret.store('Content-type', 'application/json')
-    ret.store('user-agent', 'Chef keystone_role')
-    return ret
 end
