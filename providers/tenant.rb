@@ -50,7 +50,7 @@ action :create do
     Chef::Log.error("There was an error looking up Tenant '#{name}'") if tenant_error
 
     unless tenant_uuid or tenant_error
-        # Service does not exist yet
+        # Tenant does not exist yet
         payload = build_tenant_object(name, desc, enabled)
         resp = http.send_request('POST', path, JSON.generate(payload), headers)
         if resp.is_a?(Net::HTTPOK)
