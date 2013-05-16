@@ -11,6 +11,6 @@ recipe            "keystone::keystone-api", "Installs packages required for an a
   supports os
 end
 
-%w{ database monitoring mysql openssl osops-utils }.each do |dep|
+%w{ database mysql openssl osops-utils }.each do |dep|
   depends dep
 end
