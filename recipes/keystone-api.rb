@@ -19,27 +19,10 @@
 ::Chef::Recipe.send(:include, Opscode::OpenSSL::Password)
 include_recipe "keystone::keystone-rsyslog"
 include_recipe "osops-utils"
-include_recipe "monitoring"
 
 include_recipe "keystone::keystone-common"
 
 platform_options = node["keystone"]["platform"]
-
-# TODO(shep): this is going to get pulled out into openstack-monitoring
-#monitoring_procmon "keystone" do
-#  procname=platform_options["keystone_service"]
-#  sname=platform_options["keystone_process_name"]
-#  process_name sname
-#  script_name procname
-#end
-
-# TODO(shep): this is going to get pulled out into openstack-monitoring
-#monitoring_metric "keystone-proc" do
-#  type "proc"
-#  proc_name "keystone"
-#  proc_regex platform_options["keystone_service"]
-#  alarms(:failure_min => 2.0)
-#end
 
 keystone = get_settings_by_role("keystone-setup", "keystone")
 
@@ -135,17 +118,5 @@ node["keystone"]["users"].each do |username, user_info|
     tenant_name user_info["default_tenant"]
   end
 end
-
-# TODO(shep): this is going to get pulled out into openstack-monitoring
-## Add keystone monitoring metrics
-#monitoring_metric "keystone" do
-#  keystone_admin_user = node["keystone"]["admin_user"]
-#  type "pyscript"
-#  script "keystone_plugin.py"
-#  options("Username" => keystone_admin_user,
-#          "Password" => node["keystone"]["users"][keystone_admin_user]["password"],
-#          "TenantName" => node["keystone"]["users"][keystone_admin_user]["default_tenant"],
-#          "AuthURL" => ks_service_endpoint["uri"])
-#end
 
 include_recipe "keystone::keystoneclient-patch"
