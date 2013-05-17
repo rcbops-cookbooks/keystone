@@ -38,7 +38,6 @@ Cookbooks
 The following cookbooks are dependencies:
 
 * database
-* monitoring
 * mysql
 * openssl
 * osops-utils
