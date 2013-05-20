@@ -17,7 +17,6 @@
 # limitations under the License.
 
 ::Chef::Recipe.send(:include, Opscode::OpenSSL::Password)
-include_recipe "keystone::keystone-rsyslog"
 include_recipe "osops-utils"
 
 include_recipe "keystone::keystone-common"

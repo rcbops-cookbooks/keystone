@@ -90,8 +90,6 @@ template "/etc/keystone/keystone.conf" do
     :service_port => ks_service_bind["port"],
     :admin_port => ks_admin_bind["port"],
     :admin_token => settings["admin_token"],
-    :use_syslog => settings["syslog"]["use"],
-    :log_facility => settings["syslog"]["facility"],
     :auth_type => settings["auth_type"],
     :ldap_options => settings["ldap"],
     :pki_token_signing => settings["pki"]["enabled"]
