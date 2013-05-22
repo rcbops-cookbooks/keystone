@@ -17,4 +17,5 @@
 # limitations under the License.
 #
 
-include_recipe "keystone::server"
+include_recipe "keystone::setup"
+include_recipe "keystone::keystone-api"
