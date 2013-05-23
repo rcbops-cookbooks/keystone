@@ -134,11 +134,6 @@ default["keystone"]["services"]["service-api"]["network"] = "public"        # no
 default["keystone"]["services"]["service-api"]["port"] = "5000"             # node_attribute
 default["keystone"]["services"]["service-api"]["path"] = "/v2.0"            # node_attribute
 
-# Logging stuff
-default["keystone"]["syslog"]["use"] = true                                 # node_attribute
-default["keystone"]["syslog"]["facility"] = "LOG_LOCAL3"                    # node_attribute
-default["keystone"]["syslog"]["config_facility"] = "local3"                 # node_attribute
-
 # default["keystone"]["roles"] = [ "admin", "Member", "KeystoneAdmin", "KeystoneServiceAdmin", "sysadmin", "netadmin" ]
 default["keystone"]["roles"] = [ "admin", "Member", "KeystoneAdmin", "KeystoneServiceAdmin" ] # node_attribute
 
