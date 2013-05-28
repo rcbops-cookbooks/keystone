@@ -19,7 +19,7 @@
 include_recipe "osops-utils"
 
 template "/usr/share/pyshared/keystone/common/config.py" do
-	source "patches/ldap_user_enabled_default_config.py.1:2013.1-0ubuntu1~cloud0"
+	source "patches/ldap_user_enabled_default_config.py.1:2013.1-0ubuntu1~cloud0.erb"
 	owner "root"
 	group "root"
 	mode "0644"
