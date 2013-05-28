@@ -91,9 +91,9 @@ template "/etc/keystone/keystone.conf" do
     :admin_port => ks_admin_bind["port"],
     :admin_token => settings["admin_token"],
     :auth_type => settings["auth_type"],
-    :ldap_options => settings["ldap"],
     :pki_token_signing => settings["pki"]["enabled"]
   )
+  :ldap_options => settings["ldap]
   # The pki_setup runs via postinst on Ubuntu, but doesn't run via package
   # installation on CentOS.
   if platform?(%w{redhat centos fedora scientific})
