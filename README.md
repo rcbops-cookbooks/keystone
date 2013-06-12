@@ -341,9 +341,6 @@ Attributes
 * `keystone["services"]["service-api"]["network"]` - Network to connect to the service-api over
 * `keystone["services"]["service-api"]["port"]` - Port for the service-api service to listen on
 * `keystone["services"]["service-api"]["path"]` - Keystone version path
-* `keystone["syslog"]["use"]` - Enables/disables syslog
-* `keystone["syslog"]["facility"]` - Which syslog facility to log to
-* `keystone["syslog"]["config_facility"]` - 
 * `keystone["roles"]` - Array of roles to create
 * `keystone["tenants"]` - Array of tenants to create
 * `keystone["config"]["log_verbosity"]` - Logging verbosity.  Valid options are DEBUG, INFO, WARNING, ERROR, CRITICAL.  Default is INFO
