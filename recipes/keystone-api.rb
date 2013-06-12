@@ -68,6 +68,7 @@ ks_api_role = "keystone-api"
 ks_ns = "keystone"
 ks_admin_endpoint = get_access_endpoint(ks_api_role, ks_ns, "admin-api")
 ks_service_endpoint = get_access_endpoint(ks_api_role, ks_ns, "service-api")
+ks_internal_endpoint = get_access_endpoint(ks_api_role, ks_ns, "internal-api")
 
 ## Add Services ##
 keystone_service "Create Identity Service" do
@@ -84,11 +85,11 @@ end
 
 ## Add Endpoints ##
 node.set["keystone"]["adminURL"] = ks_admin_endpoint["uri"]
-node.set["keystone"]["internalURL"] = ks_service_endpoint["uri"]
+node.set["keystone"]["internalURL"] = ks_internal_endpoint["uri"]
 node.set["keystone"]["publicURL"] = ks_service_endpoint["uri"]
 
 Chef::Log.info "Keystone AdminURL: #{ks_admin_endpoint["uri"]}"
-Chef::Log.info "Keystone InternalURL: #{ks_service_endpoint["uri"]}"
+Chef::Log.info "Keystone InternalURL: #{ks_internal_endpoint["uri"]}"
 Chef::Log.info "Keystone PublicURL: #{ks_service_endpoint["uri"]}"
 
 keystone_endpoint "Create Identity Endpoint" do
