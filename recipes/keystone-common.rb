@@ -96,6 +96,7 @@ template "/etc/keystone/keystone.conf" do
     :service_port => ks_service_bind["port"],
     :admin_port => ks_admin_bind["port"],
     :admin_token => settings["admin_token"],
+    :member_role_id => node["keystone"]["member_role_id"],
     :auth_type => settings["auth_type"],
     :ldap_options => settings["ldap"],
     :pki_token_signing => settings["pki"]["enabled"]
@@ -105,6 +106,8 @@ template "/etc/keystone/keystone.conf" do
   if platform?(%w{redhat centos fedora scientific})
     notifies :run, "execute[keystone-manage pki_setup]", :immediately
   end
+  # FIXME: Workaround for https://bugs.launchpad.net/keystone/+bug/1176270
+  subscribes :create, "keystone_role[Get Member role-id]", :delayed
   notifies :restart, "service[keystone]", :immediately
 end
 
