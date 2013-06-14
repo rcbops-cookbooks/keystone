@@ -34,10 +34,16 @@ package_list.each do |pkg|
   end
 end
 
+execute "Keystone: sleep" do
+  command "sleep 10s"
+  action :nothing
+end
+
 service "keystone" do
   service_name platform_options["keystone_service"]
   supports :status => true, :restart => true
   action [:enable]
+  notifies :run, resources(:execute => "Keystone: sleep"), :immediately
 end
 
 directory "/etc/keystone" do
