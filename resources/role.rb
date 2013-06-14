@@ -18,7 +18,7 @@
 #
 
 # actions :create, :delete, :grant
-actions :create, :delete
+actions :create, :delete, :get_member_role_id
 
 # In earlier versions of Chef the LWRP DSL doesn't support specifying
 # a default action, so you need to drop into Ruby.
