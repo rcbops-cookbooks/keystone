@@ -48,14 +48,6 @@ mysql_info = create_db_and_user(
   node["keystone"]["db"]["password"])
 mysql_connect_ip = get_access_endpoint('mysql-master', 'mysql', 'db')["host"]
 
-# fixup the keystone.log ownership if it exists
-file "/var/log/keystone/keystone.log" do
-  owner "keystone"
-  group "keystone"
-  mode "0600"
-  only_if { ::File.exists?("/var/log/keystone/keystone.log") }
-end
-
 include_recipe "keystone::keystone-common"
 
 execute "keystone-manage db_sync" do
