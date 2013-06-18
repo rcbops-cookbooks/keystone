@@ -17,7 +17,7 @@ default["keystone"]["verbose"] = "False"                                    # no
 default["keystone"]["debug"] = "False"                                      # node_attribute
 
 # FIXME: Workaround for https://bugs.launchpad.net/keystone/+bug/1176270
-default["keystone"]["member_role_id"] = ""
+default["keystone"]["member_role_id"] = "9fe2ff9ee4384b1894a90878d3e92bab"
 
 
 # Auth type = sql, ldap (use ad for active directory), pam
