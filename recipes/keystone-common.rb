@@ -17,6 +17,14 @@
 # limitations under the License.
 #
 
+# fixup the keystone.log ownership if it exists
+file "/var/log/keystone/keystone.log" do
+  owner "keystone"
+  group "keystone"
+  mode "0600"
+  only_if { ::File.exists?("/var/log/keystone/keystone.log") }
+end
+
 platform_options = node["keystone"]["platform"]
 
 package_list = platform_options["keystone_packages"] +
