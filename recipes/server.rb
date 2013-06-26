@@ -25,7 +25,7 @@ include_recipe "osops-utils"
 include_recipe "monitoring"
 
 # Allow for using a well known db password
-if node["developer_mode"]
+if node["developer_mode"] == true
   node.set_unless["keystone"]["db"]["password"] = "keystone"
   node.set_unless["keystone"]["admin_token"] = "999888777666"
   node.set_unless["keystone"]["users"]["monitoring"]["password"] = "monitoring"
@@ -79,7 +79,7 @@ service "keystone" do
   service_name platform_options["keystone_service"]
   supports :status => true, :restart => true
   action [ :enable ]
-  notifies :run, resources(:execute => "Keystone: sleep"), :immediately
+  notifies :run, "execute[Keystone: sleep]", :immediately
 end
 
 monitoring_procmon "keystone" do
@@ -143,8 +143,8 @@ template "/etc/keystone/keystone.conf" do
             :auth_type => node["keystone"]["auth_type"],
             :ldap_options => node["keystone"]["ldap"]
             )
-  notifies :run, resources(:execute => "keystone-manage db_sync"), :immediately
-  notifies :restart, resources(:service => "keystone"), :immediately
+  notifies :run, "execute[keystone-manage db_sync]", :immediately
+  notifies :restart, "service[keystone]", :immediately
 end
 
 
@@ -163,7 +163,7 @@ template "/etc/keystone/logging.conf" do
             :log_verbosity => node["keystone"]["config"]["log_verbosity"]
 
   )
-  notifies :restart, resources(:service => "keystone"), :immediately
+  notifies :restart, "service[keystone]", :immediately
 end
 
 #TODO(shep): this should probably be derived from keystone.users hash keys
