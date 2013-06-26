@@ -1,7 +1,7 @@
 Support
 =======
 
-Issues have been disabled for this repository.  
+Issues have been disabled for this repository.
 Any issues with this cookbook should be raised here:
 
 [https://github.com/rcbops/chef-cookbooks/issues](https://github.com/rcbops/chef-cookbooks/issues)
@@ -10,7 +10,7 @@ Please title the issue as follows:
 
 [keystone]: \<short description of problem\>
 
-In the issue description, please include a longer description of the issue, along with any relevant log/command/error output.  
+In the issue description, please include a longer description of the issue, along with any relevant log/command/error output.
 If logfiles are extremely long, please place the relevant portion into the issue description, and link to a gist containing the entire logfile
 
 
@@ -71,7 +71,7 @@ Handles creating and deleting of Keystone Tenants.
 - tenant_enabled: Enable or Disable tenant
   - Accepted values are [ "true", "false" ]
     - Default is "true"
- 
+
 ### Example
 
     # Create 'openstack' tenant
@@ -322,7 +322,7 @@ Installs an additional Keystone Server to node for HA purposes (requires an exis
 Data Bags
 =========
 
-Attributes 
+Attributes
 ==========
 
 * `keystone["db"]["name"]` - Name of keystone database
@@ -346,6 +346,7 @@ Attributes
 * `keystone["config"]["log_verbosity"]` - Logging verbosity.  Valid options are DEBUG, INFO, WARNING, ERROR, CRITICAL.  Default is INFO
 * `keystone["admin_user"]` - Which user is designated as the "admin user"
 * `keystone["users"]` - Hash of users to create.
+* `keystone["published_services"]` - hash of services and endpoints to create
 * `keystone["platform"]` - Hash of platform specific package/service names and options
 
 LDAP Support
@@ -424,14 +425,14 @@ Usage
 License and Author
 ==================
 
-Author:: Justin Shepherd (<justin.shepherd@rackspace.com>)  
-Author:: Jason Cannavale (<jason.cannavale@rackspace.com>)  
-Author:: Ron Pedde (<ron.pedde@rackspace.com>)  
-Author:: Joseph Breu (<joseph.breu@rackspace.com>)  
-Author:: William Kelly (<william.kelly@RACKSPACE.COM>)  
-Author:: Darren Birkett (<Darren.Birkett@rackspace.co.uk>)  
-Author:: Evan Callicoat (<evan.callicoat@RACKSPACE.COM>)  
-Author:: Matt Thompson (<matt.thompson@rackspace.co.uk>)  
+Author:: Justin Shepherd (<justin.shepherd@rackspace.com>)
+Author:: Jason Cannavale (<jason.cannavale@rackspace.com>)
+Author:: Ron Pedde (<ron.pedde@rackspace.com>)
+Author:: Joseph Breu (<joseph.breu@rackspace.com>)
+Author:: William Kelly (<william.kelly@RACKSPACE.COM>)
+Author:: Darren Birkett (<Darren.Birkett@rackspace.co.uk>)
+Author:: Evan Callicoat (<evan.callicoat@RACKSPACE.COM>)
+Author:: Matt Thompson (<matt.thompson@rackspace.co.uk>)
 
 Copyright 2012, Rackspace US, Inc.
 
@@ -442,4 +443,3 @@ You may obtain a copy of the License at
     http://www.apache.org/licenses/LICENSE-2.0
 
 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
-
