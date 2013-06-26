@@ -102,7 +102,7 @@ template "/etc/keystone/keystone.conf" do
             :auth_type => keystone["auth_type"],
             :ldap_options => keystone["ldap"]
             )
-  notifies :restart, resources(:service => "keystone"), :immediately
+  notifies :restart, "service[keystone]", :immediately
 end
 
 
@@ -120,7 +120,7 @@ template "/etc/keystone/logging.conf" do
             :use_syslog => keystone["syslog"]["use"],
             :log_verbosity => node["keystone"]["config"]["log_verbosity"]
   )
-  notifies :restart, resources(:service => "keystone"), :immediately
+  notifies :restart, "service[keystone]", :immediately
 end
 
 include_recipe "keystone::keystoneclient-patch"

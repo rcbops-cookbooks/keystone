@@ -23,7 +23,7 @@ include_recipe "osops-utils"
 # https://review.openstack.org/#/c/15410/
 # Fix keystoneclient so swift works against Rackspace Cloud Files
 template "/usr/share/pyshared/keystoneclient/v2_0/client.py" do
-  source "patches/client.py.1:0.1.3.37+git201210301431~precise-0ubuntu1"
+  source "patches/client.py.1:0.1.3.37+git201210301431~precise-0ubuntu1.erb"
   owner "root"
   group "root"
   mode "0644"
