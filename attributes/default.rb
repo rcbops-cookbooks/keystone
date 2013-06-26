@@ -1,6 +1,5 @@
 ########################################################################
 # Toggles - These can be overridden at the environment level
-default["developer_mode"] = false  # we want secure passwords by default
 ########################################################################
 
 # Adding these as blank
