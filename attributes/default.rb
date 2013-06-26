@@ -21,7 +21,7 @@ default["keystone"]["member_role_id"] = "9fe2ff9ee4384b1894a90878d3e92bab"
 
 
 # Auth type = sql, ldap (use ad for active directory), pam
-default["keystone"]["auth_type"] == "sql"				    # node_attribute
+default["keystone"]["auth_type"] == "sql"                                   # node_attribute
 
 # ldap - base configuration
 default["keystone"]["ldap"]["url"] = nil
@@ -153,6 +153,24 @@ default["keystone"]["roles"] = [ "admin", "Member", "KeystoneAdmin", "KeystoneSe
 
 #TODO(shep): this should probably be derived from keystone.users hash keys
 default["keystone"]["tenants"] = [ "admin", "service"]                      # node_attribute
+
+# Allow the ability to make static service and endpoints
+default["keystone"]["published_services"] = []
+
+# default["keystone"]["published_services"] = \
+#     [
+#      { "name": "swift",
+#        "type": "object-store",
+#        "description": "Swift Object Storage",
+#        "endpoints": {
+#          "RegionOne": {
+#            "admin_url": "http://something",
+#            "internal_url": "http://something",
+#            "public_url": "http://something"
+#          }
+#        }
+#      }
+#     ]
 
 # LOGGING LEVEL
 # in order of verbosity (most to least)
