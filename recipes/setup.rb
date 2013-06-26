@@ -30,7 +30,7 @@ include_recipe "osops-utils"
 
 # Allow for using a well known db password
 ks_ns = "keystone"
-if node["developer_mode"]
+if node["developer_mode"] == true
   node.set_unless[ks_ns]["db"]["password"] = "keystone"
   node.set_unless[ks_ns]["admin_token"] = "999888777666"
   node.set_unless[ks_ns]["users"]["monitoring"]["password"] = "monitoring"
