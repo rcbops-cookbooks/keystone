@@ -30,7 +30,7 @@ include_recipe "osops-utils"
 
 # Allow for using a well known db password
 ks_ns = "keystone"
-if node["developer_mode"]
+if node["developer_mode"] == true
   node.set_unless[ks_ns]["db"]["password"] = "keystone"
   node.set_unless[ks_ns]["admin_token"] = "999888777666"
   node.set_unless[ks_ns]["users"]["monitoring"]["password"] = "monitoring"
@@ -143,5 +143,40 @@ node["keystone"]["users"].each do |username, user_info|
       end
     end
   end
+end
 
+node["keystone"]["published_services"].each do |service|
+  keystone_service "Create #{service['name']}" do
+    auth_host ks_admin_endpoint["host"]
+    auth_port ks_admin_endpoint["port"]
+    auth_protocol ks_admin_endpoint["scheme"]
+    api_ver ks_admin_endpoint["path"]
+    auth_token node["keystone"]["admin_token"]
+
+    service_name service["name"]
+    service_type service["type"]
+    service_description service["description"]
+
+    action :create
+  end
+
+  if service.has_key?("endpoints")
+    service["endpoints"].each do |region, endpoint|
+      keystone_endpoint "Create #{region} #{service['name']} endpoint" do
+        auth_host ks_admin_endpoint["host"]
+        auth_port ks_admin_endpoint["port"]
+        auth_protocol ks_admin_endpoint["scheme"]
+        api_ver ks_admin_endpoint["path"]
+        auth_token node["keystone"]["admin_token"]
+
+        service_type service["type"]
+        endpoint_region region
+        endpoint_adminurl endpoint["admin_url"]
+        endpoint_internalurl endpoint["internal_url"]
+        endpoint_publicurl endpoint["public_url"]
+
+        action :create
+      end
+    end
+  end
 end
