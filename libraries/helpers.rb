@@ -12,17 +12,17 @@ module RCB_keystone_helpers
     resp = http.request_get(path, headers)
     if resp.is_a?(Net::HTTPOK)
       data = JSON.parse(resp.body)
-        data[container].each do |obj|
-          val = obj[value] if obj[key] == match_value
-          break if val
-        end
+      data[container].each do |obj|
+        val = obj[value] if obj[key] == match_value
+        break if val
+      end
     else
       Chef::Log.error("Unknown response from the Keystone Server")
       Chef::Log.error("Response Code: #{resp.code}")
       Chef::Log.error("Response Message: #{resp.message}")
       error = true
     end
-    return val,error
+    return val, error
   end
 
   def build_endpoint_object(region, service_uuid, publicurl, internalurl, adminurl)

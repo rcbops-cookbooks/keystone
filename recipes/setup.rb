@@ -106,12 +106,12 @@ end
 
 # FIXME: Workaround for https://bugs.launchpad.net/keystone/+bug/1176270
 keystone_role "Get Member role-id" do
-    auth_host ks_admin_endpoint["host"]
-    auth_port ks_admin_endpoint["port"]
-    auth_protocol ks_admin_endpoint["scheme"]
-    api_ver ks_admin_endpoint["path"]
-    auth_token node["keystone"]["admin_token"]
-    action :get_member_role_id
+  auth_host ks_admin_endpoint["host"]
+  auth_port ks_admin_endpoint["port"]
+  auth_protocol ks_admin_endpoint["scheme"]
+  api_ver ks_admin_endpoint["path"]
+  auth_token node["keystone"]["admin_token"]
+  action :get_member_role_id
 end
 
 node["keystone"]["users"].each do |username, user_info|
