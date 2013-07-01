@@ -158,16 +158,16 @@ action :create_endpoint do
         new_resource.endpoint_publicurl,
         new_resource.endpoint_internalurl,
         new_resource.endpoint_adminurl)
-        resp = http.send_request('POST', path, JSON.generate(payload), headers)
-        if resp.is_a?(Net::HTTPOK)
-          Chef::Log.info("Created endpoint for service type '#{new_resource.service_type}'")
-          new_resource.updated_by_last_action(true)
-        else
-          Chef::Log.error("Unable to create endpoint for service type '#{new_resource.service_type}'")
-          Chef::Log.error("Response Code: #{resp.code}")
-          Chef::Log.error("Response Message: #{resp.message}")
-          new_resource.updated_by_last_action(false)
-        end
+      resp = http.send_request('POST', path, JSON.generate(payload), headers)
+      if resp.is_a?(Net::HTTPOK)
+        Chef::Log.info("Created endpoint for service type '#{new_resource.service_type}'")
+        new_resource.updated_by_last_action(true)
+      else
+        Chef::Log.error("Unable to create endpoint for service type '#{new_resource.service_type}'")
+        Chef::Log.error("Response Code: #{resp.code}")
+        Chef::Log.error("Response Message: #{resp.message}")
+        new_resource.updated_by_last_action(false)
+      end
     end
   else
     Chef::Log.error("Unknown response from the Keystone Server")
@@ -355,18 +355,18 @@ action :recreate_endpoint do
       new_resource.endpoint_publicurl,
       new_resource.endpoint_internalurl,
       new_resource.endpoint_adminurl)
-      Chef::Log::debug("payload contains: #{payload}")
-      Chef::Log::debug("path is: #{path}")
-      resp = http.send_request('POST', path, JSON.generate(payload), headers)
-      if resp.is_a?(Net::HTTPOK)
-        Chef::Log.info("Created endpoint for service type '#{new_resource.service_type}'")
-        new_resource.updated_by_last_action(true)
-      else
-        Chef::Log.error("Unable to create endpoint for service type '#{new_resource.service_type}'")
-        Chef::Log.error("Response Code: #{resp.code}")
-        Chef::Log.error("Response Message: #{resp.message}")
-        new_resource.updated_by_last_action(false)
-      end
+    Chef::Log::debug("payload contains: #{payload}")
+    Chef::Log::debug("path is: #{path}")
+    resp = http.send_request('POST', path, JSON.generate(payload), headers)
+    if resp.is_a?(Net::HTTPOK)
+      Chef::Log.info("Created endpoint for service type '#{new_resource.service_type}'")
+      new_resource.updated_by_last_action(true)
+    else
+      Chef::Log.error("Unable to create endpoint for service type '#{new_resource.service_type}'")
+      Chef::Log.error("Response Code: #{resp.code}")
+      Chef::Log.error("Response Message: #{resp.message}")
+      new_resource.updated_by_last_action(false)
+    end
   end
 end
 
@@ -501,16 +501,16 @@ action :create_user do
         new_resource.user_name,
         new_resource.user_pass,
         new_resource.user_enabled)
-        resp = http.send_request('POST', path, JSON.generate(payload), headers)
-        if resp.is_a?(Net::HTTPOK)
-          Chef::Log.info("Created user '#{new_resource.user_name}' for tenant '#{new_resource.tenant_name}'")
-          new_resource.updated_by_last_action(true)
-        else
-          Chef::Log.error("Unable to create user '#{new_resource.user_name}' for tenant '#{new_resource.tenant_name}'")
-          Chef::Log.error("Response Code: #{resp.code}")
-          Chef::Log.error("Response Message: #{resp.message}")
-          new_resource.updated_by_last_action(false)
-        end
+      resp = http.send_request('POST', path, JSON.generate(payload), headers)
+      if resp.is_a?(Net::HTTPOK)
+        Chef::Log.info("Created user '#{new_resource.user_name}' for tenant '#{new_resource.tenant_name}'")
+        new_resource.updated_by_last_action(true)
+      else
+        Chef::Log.error("Unable to create user '#{new_resource.user_name}' for tenant '#{new_resource.tenant_name}'")
+        Chef::Log.error("Response Code: #{resp.code}")
+        Chef::Log.error("Response Message: #{resp.message}")
+        new_resource.updated_by_last_action(false)
+      end
     end
   else
     Chef::Log.error("Unknown response from the Keystone Server")

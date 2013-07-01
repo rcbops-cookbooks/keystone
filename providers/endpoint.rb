@@ -67,16 +67,16 @@ action :create do
       public_url,
       internal_url,
       admin_url)
-      resp = http.send_request('POST', path, JSON.generate(payload), headers)
-      if resp.is_a?(Net::HTTPOK)
-        Chef::Log.info("Created endpoint for service type '#{svc_type}'")
-        new_resource.updated_by_last_action(true)
-      else
-        Chef::Log.error("Unable to create endpoint for service type '#{svc_type}'")
-        Chef::Log.error("Response Code: #{resp.code}")
-        Chef::Log.error("Response Message: #{resp.message}")
-        new_resource.updated_by_last_action(false)
-      end
+    resp = http.send_request('POST', path, JSON.generate(payload), headers)
+    if resp.is_a?(Net::HTTPOK)
+      Chef::Log.info("Created endpoint for service type '#{svc_type}'")
+      new_resource.updated_by_last_action(true)
+    else
+      Chef::Log.error("Unable to create endpoint for service type '#{svc_type}'")
+      Chef::Log.error("Response Code: #{resp.code}")
+      Chef::Log.error("Response Message: #{resp.message}")
+      new_resource.updated_by_last_action(false)
+    end
   else
     Chef::Log.info("Endpoint already exists for Service Type '#{svc_type}' already exists.. Not creating.") if endpoint_uuid
     Chef::Log.info("Endpoint UUID: #{endpoint_uuid}") if endpoint_uuid
@@ -264,17 +264,17 @@ action :recreate do
       new_resource.endpoint_publicurl,
       new_resource.endpoint_internalurl,
       new_resource.endpoint_adminurl)
-      Chef::Log::debug("payload contains: #{payload}")
-      Chef::Log::debug("path is: #{path}")
-      resp = http.send_request('POST', path, JSON.generate(payload), headers)
-      if resp.is_a?(Net::HTTPOK)
-        Chef::Log.info("Created endpoint for service type '#{new_resource.service_type}'")
-        new_resource.updated_by_last_action(true)
-      else
-        Chef::Log.error("Unable to create endpoint for service type '#{new_resource.service_type}'")
-        Chef::Log.error("Response Code: #{resp.code}")
-        Chef::Log.error("Response Message: #{resp.message}")
-        new_resource.updated_by_last_action(false)
-      end
+    Chef::Log::debug("payload contains: #{payload}")
+    Chef::Log::debug("path is: #{path}")
+    resp = http.send_request('POST', path, JSON.generate(payload), headers)
+    if resp.is_a?(Net::HTTPOK)
+      Chef::Log.info("Created endpoint for service type '#{new_resource.service_type}'")
+      new_resource.updated_by_last_action(true)
+    else
+      Chef::Log.error("Unable to create endpoint for service type '#{new_resource.service_type}'")
+      Chef::Log.error("Response Code: #{resp.code}")
+      Chef::Log.error("Response Message: #{resp.message}")
+      new_resource.updated_by_last_action(false)
+    end
   end
 end

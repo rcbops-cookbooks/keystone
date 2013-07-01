@@ -26,7 +26,7 @@ def initialize(*args)
   @action = :create_ec2
 end
 
-attribute :auth_protocol, :kind_of => String, :equal_to => [ "http", "https" ]
+attribute :auth_protocol, :kind_of => String, :equal_to => ["http", "https"]
 attribute :auth_host, :kind_of => String
 attribute :auth_port, :kind_of => String
 attribute :api_ver, :kind_of => String, :default => "/v2.0"
