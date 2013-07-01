@@ -19,10 +19,10 @@
 include_recipe "osops-utils"
 
 template "/usr/share/pyshared/keystone/common/config.py" do
-	source "patches/ldap_user_enabled_default_config.py.1:2013.1-0ubuntu1~cloud0.erb"
-	owner "root"
-	group "root"
-	mode "0644"
-	notifies :restart, "service[keystone]", :immediately
-	only_if { ::Chef::Recipe::Patch.check_package_version("keystone","1:2013.1-0ubuntu1~cloud0", node) }
+  source "patches/ldap_user_enabled_default_config.py.1:2013.1-0ubuntu1~cloud0.erb"
+  owner "root"
+  group "root"
+  mode "0644"
+  notifies :restart, "service[keystone]", :immediately
+  only_if { ::Chef::Recipe::Patch.check_package_version("keystone", "1:2013.1-0ubuntu1~cloud0", node) }
 end

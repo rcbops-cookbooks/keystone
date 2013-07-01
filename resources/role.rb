@@ -27,7 +27,7 @@ def initialize(*args)
   @action = :create
 end
 
-attribute :auth_protocol, :kind_of => String, :equal_to => [ "http", "https" ], :required => true
+attribute :auth_protocol, :kind_of => String, :equal_to => ["http", "https"], :required => true
 attribute :auth_host, :kind_of => String, :required => true
 attribute :auth_port, :kind_of => String, :required => true
 attribute :api_ver, :kind_of => String, :default => "/v2.0", :required => true
