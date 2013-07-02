@@ -57,6 +57,51 @@ execute "keystone-manage db_sync" do
   action :run
 end
 
+# This execute block and its referenced notifier is only required in Grizzly.
+# The indexing has been added into Havana.
+# Up stream fix:
+# https://github.com/openstack/keystone/commit/9faf255cf54c1386527c67a2d75074c547aa407a
+execute "keystone token_index_valid" do
+  user "keystone"
+  group "keystone"
+  environment ({'PATH' => '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'})
+  command <<-EOH
+    mysql -u #{node["keystone"]["db"]["username"]} \
+    -p#{node["keystone"]["db"]["password"]} \
+    -e "create index \"rax_ix_token_valid\" on token (valid);" \
+    #{node["keystone"]["db"]["name"]}
+  EOH
+  not_if <<-EOH
+    mysql -s -N -u#{node["keystone"]["db"]["username"]} \
+    -p#{node["keystone"]["db"]["password"]} \
+    -e "show index from token where key_name = 'rax_ix_token_valid'" \
+    #{node["keystone"]["db"]["name"]} | grep -o rax_ix_token_valid
+    EOH
+  action :nothing
+  subscribes :run, "execute[keystone-manage db_sync]", :immediately
+end
+
+# This is the second part to the previous hack
+execute "keystone token_index_expires" do
+  user "keystone"
+  group "keystone"
+  environment ({'PATH' => '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'})
+  command <<-EOH
+    mysql -u#{node["keystone"]["db"]["username"]} \
+    -p#{node["keystone"]["db"]["password"]} \
+    -e "create index \"rax_ix_token_expires\" on token (expires);" \
+    #{node["keystone"]["db"]["name"]}
+  EOH
+  not_if <<-EOH
+    mysql -s -N -u#{node["keystone"]["db"]["username"]} \
+    -p#{node["keystone"]["db"]["password"]} \
+    -e "show index from token where key_name = 'rax_ix_token_expires'" \
+    #{node["keystone"]["db"]["name"]} | grep -o rax_ix_token_expires
+    EOH
+  action :nothing
+  subscribes :run, "execute[keystone-manage db_sync]", :immediately
+end
+
 # Setting attributes inside ruby_block means they'll get set at run time
 # rather than compile time; these files do not exist at compile time when chef
 # is first run.
