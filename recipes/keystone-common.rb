@@ -47,11 +47,29 @@ execute "Keystone: sleep" do
   action :nothing
 end
 
+ks_admin_bind = get_bind_endpoint("keystone", "admin-api")
+ks_service_bind = get_bind_endpoint("keystone", "service-api")
+
 service "keystone" do
   service_name platform_options["keystone_service"]
   supports :status => true, :restart => true
-  action [:enable]
-  notifies :run, "execute[Keystone: sleep]", :immediately
+  unless ks_admin_bind["scheme"] == "https" or ks_service_bind["scheme"] == "https"
+    action [:enable]
+    notifies :run, "execute[Keystone: sleep]", :immediately
+  else
+    action [ :disable, :stop ]
+  end
+end
+
+# Setup SSL if "scheme" is set to https
+if ks_service_bind["scheme"] == "https" or ks_admin_bind["scheme"] == "https"
+  include_recipe "keystone::keystone-ssl"
+  else
+    apache_site "openstack-keystone" do
+      enable false
+      notifies :run, "execute[restore-selinux-context]", :immediately
+      notifies :restart, "service[apache2]", :immediately
+  end
 end
 
 directory "/etc/keystone" do
@@ -68,8 +86,6 @@ execute "keystone-manage pki_setup" do
   action :nothing
 end
 
-ks_admin_bind = get_bind_endpoint("keystone", "admin-api")
-ks_service_bind = get_bind_endpoint("keystone", "service-api")
 settings = get_settings_by_role("keystone-setup", "keystone")
 mysql_info = get_access_endpoint("mysql-master", "mysql", "db")
 
@@ -89,20 +105,6 @@ db_info = {
   "pass" => settings["db"]["password"],
   "name" => settings["db"]["name"],
   "ipaddress" => mysql_info["host"] }
-
-# Setup SSL if "scheme" is set to https
-if ks_service_bind["scheme"] == "https" or ks_admin_bind["scheme"] == "https"
-  include_recipe "keystone::keystone-ssl"
-else
-  apache_site "openstack-keystone" do
-    enable false
-    notifies :run, "execute[restore-selinux-context]", :immediately
-    notifies :restart, "service[apache2]", :immediately
-  end
-  service "keystone" do
-    action [ :enable, :restart ]
-  end
-end
 
 template "/etc/keystone/keystone.conf" do
   source "keystone.conf.erb"
