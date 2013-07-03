@@ -6,11 +6,12 @@ long_description  IO.read(File.join(File.dirname(__FILE__), 'README.md'))
 version           "1.0.20"
 recipe            "keystone::setup", "Installs packages required for a keystone server"
 recipe            "keystone::keystone-api", "Installs packages required for an additional keystone server in HA environment"
+recipe            "keystone::keystone-ssl", "Sets up Keystone to use Apache mod_wsgi"
 
 %w{ centos ubuntu }.each do |os|
   supports os
 end
 
-%w{ database mysql openssl osops-utils }.each do |dep|
+%w{ database mysql openssl osops-utils apache2 }.each do |dep|
   depends dep
 end
