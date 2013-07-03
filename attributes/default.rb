@@ -131,11 +131,17 @@ default["keystone"]["services"]["admin-api"]["scheme"] = "http"             # no
 default["keystone"]["services"]["admin-api"]["network"] = "nova"            # node_attribute
 default["keystone"]["services"]["admin-api"]["port"] = "35357"              # node_attribute
 default["keystone"]["services"]["admin-api"]["path"] = "/v2.0"              # node_attribute
+default["keystone"]["services"]["admin-api"]["cert_file"] = "keystone.pem"
+default["keystone"]["services"]["admin-api"]["key_file"] = "keystone.key"
+default["keystone"]["services"]["admin-api"]["wsgi_file"] = "admin"
 
 default["keystone"]["services"]["service-api"]["scheme"] = "http"           # node_attribute
 default["keystone"]["services"]["service-api"]["network"] = "public"        # node_attribute
 default["keystone"]["services"]["service-api"]["port"] = "5000"             # node_attribute
 default["keystone"]["services"]["service-api"]["path"] = "/v2.0"            # node_attribute
+default["keystone"]["services"]["service-api"]["cert_file"] = "keystone.pem"
+default["keystone"]["services"]["service-api"]["key_file"] = "keystone.key"
+default["keystone"]["services"]["service-api"]["wsgi_file"] = "main"
 
 default["keystone"]["services"]["internal-api"]["scheme"] = "http"           # node_attribute
 default["keystone"]["services"]["internal-api"]["network"] = "management"        # node_attribute
@@ -210,6 +216,7 @@ when "fedora", "redhat", "centos"                                 # :pragma-food
     "keystone_process_name" => "keystone-all",
     "package_options" => ""
   }
+  default["keystone"]["ssl"]["dir"] = "/etc/pki/tls"
 when "ubuntu"
   default["keystone"]["platform"] = {                                       # node_attribute
     "mysql_python_packages" => [ "python-mysqldb" ],
@@ -219,4 +226,5 @@ when "ubuntu"
     "keystone_process_name" => "keystone-all",
     "package_options" => "-o Dpkg::Options::='--force-confold' -o Dpkg::Options::='--force-confdef'"
   }
+  default["keystone"]["ssl"]["dir"] = "/etc/ssl"
 end
