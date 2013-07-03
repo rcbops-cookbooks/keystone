@@ -45,6 +45,7 @@ action :create do
   # Check to see if connection is http or https
   if protocol == "https"
     http.use_ssl = true
+    http.verify_mode = OpenSSL::SSL::VERIFY_NONE
   end
 
   # Build out the required header info
@@ -95,6 +96,7 @@ action :grant do
   # Check to see if connection is http or https
   if protocol == "https"
     http.use_ssl = true
+    http.verify_mode = OpenSSL::SSL::VERIFY_NONE
   end
 
   # Build out the required header info

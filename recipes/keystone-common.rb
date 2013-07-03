@@ -90,6 +90,20 @@ db_info = {
   "name" => settings["db"]["name"],
   "ipaddress" => mysql_info["host"] }
 
+# Setup SSL if "scheme" is set to https
+if ks_service_bind["scheme"] == "https" or ks_admin_bind["scheme"] == "https"
+  include_recipe "keystone::keystone-ssl"
+else
+  apache_site "openstack-keystone" do
+    enable false
+    notifies :run, "execute[restore-selinux-context]", :immediately
+    notifies :restart, "service[apache2]", :immediately
+  end
+  service "keystone" do
+    action [ :enable, :restart ]
+  end
+end
+
 template "/etc/keystone/keystone.conf" do
   source "keystone.conf.erb"
   owner "keystone"
@@ -116,7 +130,11 @@ template "/etc/keystone/keystone.conf" do
   end
   # FIXME: Workaround for https://bugs.launchpad.net/keystone/+bug/1176270
   subscribes :create, "keystone_role[Get Member role-id]", :delayed
-  notifies :restart, "service[keystone]", :immediately
+  unless ks_service_bind["scheme"] == "https" or ks_admin_bind["scheme"] == "https"
+    notifies :restart, "service[keystone]", :immediately
+  else
+    notifies :restart, "service[apache2]", :immediately
+  end
 end
 
 file "/var/lib/keystone/keystone.db" do

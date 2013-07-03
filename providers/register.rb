@@ -24,6 +24,7 @@ action :create_service do
   # Check to see if connection is http or https
   if new_resource.auth_protocol == "https"
     http.use_ssl = true
+    http.verify_mode = OpenSSL::SSL::VERIFY_NONE
   end
 
   # Build out the required header info
@@ -69,6 +70,7 @@ action :delete_service do
   # Check to see if connection is http or https
   if new_resource.auth_protocol == "https"
     http.use_ssl = true
+    http.verify_mode = OpenSSL::SSL::VERIFY_NONE
   end
 
   # Build out the required header info
@@ -116,6 +118,7 @@ action :create_endpoint do
   # Check to see if connection is http or https
   if new_resource.auth_protocol == "https"
     http.use_ssl = true
+    http.verify_mode = OpenSSL::SSL::VERIFY_NONE
   end
 
   # Build out the required header info
@@ -185,6 +188,7 @@ action :delete_endpoint do
   # Check to see if connection is http or https
   if new_resource.auth_protocol == "https"
     http.use_ssl = true
+    http.verify_mode = OpenSSL::SSL::VERIFY_NONE
   end
 
   # Build out the required header info
@@ -265,6 +269,7 @@ action :recreate_endpoint do
   # Check to see if connection is http or https
   if new_resource.auth_protocol == "https"
     http.use_ssl = true
+    http.verify_mode = OpenSSL::SSL::VERIFY_NONE
   end
 
   # Build out the required header info
@@ -377,6 +382,7 @@ action :create_tenant do
   # Check to see if connection is http or https
   if new_resource.auth_protocol == "https"
     http.use_ssl = true
+    http.verify_mode = OpenSSL::SSL::VERIFY_NONE
   end
 
   # Build out the required header info
@@ -420,6 +426,7 @@ action :create_role do
   # Check to see if connection is http or https
   if new_resource.auth_protocol == "https"
     http.use_ssl = true
+    http.verify_mode = OpenSSL::SSL::VERIFY_NONE
   end
 
   # Build out the required header info
@@ -460,6 +467,7 @@ action :create_user do
   # Check to see if connection is http or https
   if new_resource.auth_protocol == "https"
     http.use_ssl = true
+    http.verify_mode = OpenSSL::SSL::VERIFY_NONE
   end
 
   # Build out the required header info
@@ -527,6 +535,7 @@ action :grant_role do
   # Check to see if connection is http or https
   if new_resource.auth_protocol == "https"
     http.use_ssl = true
+    http.verify_mode = OpenSSL::SSL::VERIFY_NONE
   end
 
   # Build out the required header info
