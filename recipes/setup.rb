@@ -61,43 +61,26 @@ end
 # The indexing has been added into Havana.
 # Up stream fix:
 # https://github.com/openstack/keystone/commit/9faf255cf54c1386527c67a2d75074c547aa407a
-execute "keystone token_index_valid" do
-  user "keystone"
-  group "keystone"
-  environment ({'PATH' => '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'})
-  command <<-EOH
-    mysql -u #{node["keystone"]["db"]["username"]} \
-    -p#{node["keystone"]["db"]["password"]} \
-    -e "create index \"rax_ix_token_valid\" on token (valid);" \
-    #{node["keystone"]["db"]["name"]}
-  EOH
-  not_if <<-EOH
-    mysql -s -N -u#{node["keystone"]["db"]["username"]} \
-    -p#{node["keystone"]["db"]["password"]} \
-    -e "show index from token where key_name = 'rax_ix_token_valid'" \
-    #{node["keystone"]["db"]["name"]} | grep -o rax_ix_token_valid
-    EOH
+add_index_stopgap(
+  "mysql",
+  node["keystone"]["db"]["name"],
+  node["keystone"]["db"]["username"],
+  node["keystone"]["db"]["password"],
+  "rax_ix_token_valid",
+  "token",
+  "valid") do
   action :nothing
   subscribes :run, "execute[keystone-manage db_sync]", :immediately
 end
 
-# This is the second part to the previous hack
-execute "keystone token_index_expires" do
-  user "keystone"
-  group "keystone"
-  environment ({'PATH' => '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'})
-  command <<-EOH
-    mysql -u#{node["keystone"]["db"]["username"]} \
-    -p#{node["keystone"]["db"]["password"]} \
-    -e "create index \"rax_ix_token_expires\" on token (expires);" \
-    #{node["keystone"]["db"]["name"]}
-  EOH
-  not_if <<-EOH
-    mysql -s -N -u#{node["keystone"]["db"]["username"]} \
-    -p#{node["keystone"]["db"]["password"]} \
-    -e "show index from token where key_name = 'rax_ix_token_expires'" \
-    #{node["keystone"]["db"]["name"]} | grep -o rax_ix_token_expires
-    EOH
+add_index_stopgap(
+  "mysql",
+  node["keystone"]["db"]["name"],
+  node["keystone"]["db"]["username"],
+  node["keystone"]["db"]["password"],
+  "rax_ix_token_expires",
+  "token",
+  "expires") do
   action :nothing
   subscribes :run, "execute[keystone-manage db_sync]", :immediately
 end
