@@ -59,31 +59,28 @@ end
 
 # This execute block and its referenced notifier is only required in Grizzly.
 # The indexing has been added into Havana.
+# Defined in osops-utils/libraries
 # Up stream fix:
 # https://github.com/openstack/keystone/commit/9faf255cf54c1386527c67a2d75074c547aa407a
-add_index_stopgap(
-  "mysql",
-  node["keystone"]["db"]["name"],
-  node["keystone"]["db"]["username"],
-  node["keystone"]["db"]["password"],
-  "rax_ix_token_valid",
-  "token",
-  "valid") do
-  action :nothing
-  subscribes :run, "execute[keystone-manage db_sync]", :immediately
-end
+add_index_stopgap("mysql",
+                  node["keystone"]["db"]["name"],
+                  node["keystone"]["db"]["username"],
+                  node["keystone"]["db"]["password"],
+                  "rax_ix_token_valid",
+                  "token",
+                  "valid",
+                  "execute[keystone-manage db_sync]",
+                  :run)
 
-add_index_stopgap(
-  "mysql",
-  node["keystone"]["db"]["name"],
-  node["keystone"]["db"]["username"],
-  node["keystone"]["db"]["password"],
-  "rax_ix_token_expires",
-  "token",
-  "expires") do
-  action :nothing
-  subscribes :run, "execute[keystone-manage db_sync]", :immediately
-end
+add_index_stopgap("mysql",
+                  node["keystone"]["db"]["name"],
+                  node["keystone"]["db"]["username"],
+                  node["keystone"]["db"]["password"],
+                  "rax_ix_token_expires",
+                  "token",
+                  "expires",
+                  "execute[keystone-manage db_sync]",
+                  :run)
 
 # Setting attributes inside ruby_block means they'll get set at run time
 # rather than compile time; these files do not exist at compile time when chef
