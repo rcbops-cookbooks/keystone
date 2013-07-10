@@ -64,11 +64,13 @@ end
 # Setup SSL if "scheme" is set to https
 if ks_service_bind["scheme"] == "https" or ks_admin_bind["scheme"] == "https"
   include_recipe "keystone::keystone-ssl"
-  else
+else
+  if node.recipe?"apache2"
     apache_site "openstack-keystone" do
       enable false
       notifies :run, "execute[restore-selinux-context]", :immediately
       notifies :restart, "service[apache2]", :immediately
+    end
   end
 end
 
