@@ -27,18 +27,12 @@ end
 
 platform_options = node["keystone"]["platform"]
 
-package_list = platform_options["keystone_packages"] +
-  platform_options["keystone_ldap_packages"] +
-  platform_options["mysql_python_packages"]
+pkgs = platform_options["keystone_packages"] +
 
-package_list.each do |pkg|
+pkgs.each do |pkg|
   package pkg do
-    if node["osops"]["do_package_upgrades"]
-      action :upgrade
-    else
-      action :install
-    end
-    options platform_options["package_options"]
+    action node["osops"]["do_package_upgrades"] == true ? :upgrade : :install
+    options platform_options["package_overrides"]
   end
 end
 
