@@ -20,6 +20,7 @@ include_recipe "apache2"
 include_recipe "apache2::mod_wsgi"
 include_recipe "apache2::mod_rewrite"
 include_recipe "osops-utils::mod_ssl"
+include_recipe "osops-utils::ssl_packages"
 
 # Remove monit conf file if it exists
 if node.attribute?"monit"
@@ -146,4 +147,5 @@ apache_site "openstack-keystone" do
   enable true
   notifies :run, "execute[restore-selinux-context]", :immediately
   notifies :restart, "service[apache2]", :immediately
+  notifies :run, "execute[Keystone: sleep]", :immediately
 end
