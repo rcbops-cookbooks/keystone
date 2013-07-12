@@ -27,19 +27,18 @@ end
 
 platform_options = node["keystone"]["platform"]
 
-package_list = platform_options["keystone_packages"] +
-  platform_options["keystone_ldap_packages"] +
-  platform_options["mysql_python_packages"]
+keystone_pkgs = platform_options["keystone_packages"]
+supporting_pkgs = platform_options["supporting_packages"]
 
-package_list.each do |pkg|
+keystone_pkgs.each do |pkg|
   package pkg do
-    if node["osops"]["do_package_upgrades"]
-      action :upgrade
-    else
-      action :install
-    end
-    options platform_options["package_options"]
+    action node["osops"]["do_package_upgrades"] == true ? :upgrade : :install
+    options platform_options["package_overrides"]
   end
+end
+
+supporting_pkgs.each do |pkg|
+  include_recipe "osops-utils::#{pkg}"
 end
 
 execute "Keystone: sleep" do
