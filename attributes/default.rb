@@ -209,8 +209,7 @@ default["keystone"]["users"] = {                                            # no
 case platform
 when "fedora", "redhat", "centos"                                 # :pragma-foodcritic: ~FC024 - won't fix this
   default["keystone"]["platform"] = {                                       # node_attribute
-    "mysql_python_packages" => [ "MySQL-python" ],
-    "keystone_ldap_packages" => [ "python-ldap" ],
+    "supporting_packages" =>  [ "MySQL-python", "python-ldap", "python-keystoneclient", "python-keystone" ],
     "keystone_packages" => [ "openstack-keystone", "python-iso8601" ],
     "keystone_service" => "openstack-keystone",
     "keystone_process_name" => "keystone-all",
@@ -219,9 +218,8 @@ when "fedora", "redhat", "centos"                                 # :pragma-food
   default["keystone"]["ssl"]["dir"] = "/etc/pki/tls"
 when "ubuntu"
   default["keystone"]["platform"] = {                                       # node_attribute
-    "mysql_python_packages" => [ "python-mysqldb" ],
-    "keystone_ldap_packages" => [ "python-ldap" ],
-    "keystone_packages" => [ "python-keystone", "keystone", "python-keystoneclient" ],
+    "supporting_packages" => [ "python-mysqldb", "python-ldap", "python-keystoneclient", "python-keystone" ],
+    "keystone_packages" => [ "keystone" ],
     "keystone_service" => "keystone",
     "keystone_process_name" => "keystone-all",
     "package_options" => "-o Dpkg::Options::='--force-confold' -o Dpkg::Options::='--force-confdef'"
