@@ -17,6 +17,9 @@
 # limitations under the License.
 #
 
+ks_setup_role = node["keystone"]["setup_role"]
+ks_mysql_role = node["keystone"]["mysql_role"]
+
 # fixup the keystone.log ownership if it exists
 file "/var/log/keystone/keystone.log" do
   owner "keystone"
@@ -64,7 +67,7 @@ end
 if ks_service_bind["scheme"] == "https" or ks_admin_bind["scheme"] == "https"
   include_recipe "keystone::keystone-ssl"
 else
-  if node.recipe?"apache2"
+  if node.recipe? "apache2"
     apache_site "openstack-keystone" do
       enable false
       notifies :run, "execute[restore-selinux-context]", :immediately
@@ -87,8 +90,8 @@ execute "keystone-manage pki_setup" do
   action :nothing
 end
 
-settings = get_settings_by_role("keystone-setup", "keystone")
-mysql_info = get_access_endpoint("mysql-master", "mysql", "db")
+settings = get_settings_by_role(ks_setup_role, "keystone")
+mysql_info = get_access_endpoint(ks_mysql_role, "mysql", "db")
 
 # only bind to 0.0.0.0 if we're not using openstack-ha w/ a keystone-admin-api VIP,
 # otherwise HAProxy will fail to start when trying to bind to keystone VIP
