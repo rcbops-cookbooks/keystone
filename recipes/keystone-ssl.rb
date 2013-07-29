@@ -23,7 +23,7 @@ include_recipe "osops-utils::mod_ssl"
 include_recipe "osops-utils::ssl_packages"
 
 # Remove monit conf file if it exists
-if node.attribute?"monit"
+if node.attribute? "monit"
   if node["monit"].attribute?"conf.d_dir"
     file "#{node['monit']['conf.d_dir']}/keystone.conf" do
       action :delete

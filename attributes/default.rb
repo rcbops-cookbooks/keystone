@@ -22,6 +22,11 @@ default["keystone"]["member_role_id"] = "9fe2ff9ee4384b1894a90878d3e92bab"
 # Auth type = sql, ldap (use ad for active directory), pam
 default["keystone"]["auth_type"] == "sql"                                   # node_attribute
 
+default["keystone"]["setup_role"] = "keystone-setup"
+default["keystone"]["mysql_role"] = "mysql-master"
+default["keystone"]["api_role"] = "keystone-api"
+
+
 # ldap - base configuration
 default["keystone"]["ldap"]["url"] = nil
 default["keystone"]["ldap"]["user"] = nil

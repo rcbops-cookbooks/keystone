@@ -16,6 +16,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+ks_setup_role = node["keystone"]["setup_role"]
+ks_api_role = node["keystone"]["api_role"]
+
 ::Chef::Recipe.send(:include, Opscode::OpenSSL::Password)
 include_recipe "osops-utils"
 
@@ -23,7 +26,7 @@ include_recipe "keystone::keystone-common"
 
 platform_options = node["keystone"]["platform"]
 
-keystone = get_settings_by_role("keystone-setup", "keystone")
+keystone = get_settings_by_role(ks_setup_role, "keystone")
 
 %w{ssl ssl/certs}.each do |dir|
   directory "/etc/keystone/#{dir}" do
@@ -64,7 +67,6 @@ if node["keystone"]["pki"]["enabled"] == true
   end
 end
 
-ks_api_role = "keystone-api"
 ks_ns = "keystone"
 ks_admin_endpoint = get_access_endpoint(ks_api_role, ks_ns, "admin-api")
 ks_service_endpoint = get_access_endpoint(ks_api_role, ks_ns, "service-api")

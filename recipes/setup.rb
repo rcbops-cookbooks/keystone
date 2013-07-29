@@ -17,8 +17,12 @@
 # limitations under the License.
 #
 
+ks_setup_role = node["keystone"]["setup_role"]
+ks_mysql_role = node["keystone"]["mysql_role"]
+ks_api_role = node["keystone"]["api_role"]
+
 # make sure we die early if there are keystone-setups other than us
-if get_role_count("keystone-setup", false) > 0
+if get_role_count(ks_setup_role, false) > 0
   msg = "You can only have one node with the keystone-setup role"
   Chef::Application.fatal! msg
 end
@@ -41,12 +45,12 @@ else
 end
 
 #creates db and user, returns connection info, defined in osops-utils/libraries
-mysql_info = create_db_and_user(
-  "mysql",
-  node["keystone"]["db"]["name"],
-  node["keystone"]["db"]["username"],
-  node["keystone"]["db"]["password"])
-mysql_connect_ip = get_access_endpoint('mysql-master', 'mysql', 'db')["host"]
+mysql_info = create_db_and_user("mysql",
+                                node["keystone"]["db"]["name"],
+                                node["keystone"]["db"]["username"],
+                                node["keystone"]["db"]["password"],
+                                :role => ks_mysql_role)
+mysql_connect_ip = get_access_endpoint(ks_mysql_role, 'mysql', 'db')["host"]
 
 include_recipe "keystone::keystone-common"
 
@@ -70,7 +74,8 @@ add_index_stopgap("mysql",
                   "token",
                   "valid",
                   "execute[keystone-manage db_sync]",
-                  :run)
+                  :run,
+                  :role => ks_mysql_role)
 
 add_index_stopgap("mysql",
                   node["keystone"]["db"]["name"],
@@ -80,7 +85,8 @@ add_index_stopgap("mysql",
                   "token",
                   "expires",
                   "execute[keystone-manage db_sync]",
-                  :run)
+                  :run,
+                  :role => ks_mysql_role)
 
 # Setting attributes inside ruby_block means they'll get set at run time
 # rather than compile time; these files do not exist at compile time when chef
@@ -95,7 +101,6 @@ ruby_block "store key and certs in attributes" do
   end
 end
 
-ks_api_role = "keystone-api"
 ks_ns = "keystone"
 ks_admin_endpoint = get_access_endpoint(ks_api_role, ks_ns, "admin-api")
 ks_service_endpoint = get_access_endpoint(ks_api_role, ks_ns, "service-api")
