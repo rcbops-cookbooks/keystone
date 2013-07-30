@@ -109,6 +109,31 @@ else
   service_ip = "*"
 end
 
+unless node["keystone"]["services"]["admin-api"].attribute?"cert_override"
+  admin_cert_location = "#{node["keystone"]["ssl"]["dir"]}/certs/#{node["keystone"]["services"]["admin-api"]["cert_file"]}"
+else
+  admin_cert_location = node["keystone"]["services"]["admin-api"]["cert_override"]
+end
+
+unless node["keystone"]["services"]["admin-api"].attribute?"key_override"
+  admin_key_location = "#{node["keystone"]["ssl"]["dir"]}/private/#{node["keystone"]["services"]["admin-api"]["key_file"]}"
+else
+  admin_key_location = node["keystone"]["services"]["admin-api"]["key_override"]
+end
+
+unless node["keystone"]["services"]["service-api"].attribute?"cert_override"
+  service_cert_location = "#{node["keystone"]["ssl"]["dir"]}/certs/#{node["keystone"]["services"]["service-api"]["cert_file"]}"
+else
+  service_cert_location = node["keystone"]["services"]["service-api"]["cert_override"]
+end
+
+unless node["keystone"]["services"]["service-api"].attribute?"key_override"
+  service_key_location = "#{node["keystone"]["ssl"]["dir"]}/private/#{node["keystone"]["services"]["service-api"]["key_file"]}"
+else
+  service_key_location = node["keystone"]["services"]["service-api"]["key_override"]
+end
+
+
 template value_for_platform(
   ["ubuntu", "debian", "fedora"] => {
     "default" => "#{node["apache"]["dir"]}/sites-available/openstack-keystone"
@@ -130,13 +155,13 @@ template value_for_platform(
   variables(
     :service_ip => service_ip,
     :service_port => node["keystone"]["services"]["service-api"]["port"],
-    :service_cert_file => "#{node["keystone"]["ssl"]["dir"]}/certs/#{node["keystone"]["services"]["service-api"]["cert_file"]}",
-    :service_key_file => "#{node["keystone"]["ssl"]["dir"]}/private/#{node["keystone"]["services"]["service-api"]["key_file"]}",
+    :service_cert_file => service_cert_location,
+    :service_key_file => service_key_location,
     :service_wsgi_file  => "#{node["apache"]["dir"]}/wsgi/#{node["keystone"]["services"]["service-api"]["wsgi_file"]}",
     :admin_ip => admin_ip,
     :admin_port => node["keystone"]["services"]["admin-api"]["port"],
-    :admin_cert_file => "#{node["keystone"]["ssl"]["dir"]}/certs/#{node["keystone"]["services"]["admin-api"]["cert_file"]}",
-    :admin_key_file => "#{node["keystone"]["ssl"]["dir"]}/private/#{node["keystone"]["services"]["admin-api"]["key_file"]}",
+    :admin_cert_file => admin_cert_location,
+    :admin_key_file => admin_key_location,
     :admin_wsgi_file => "#{node["apache"]["dir"]}/wsgi/#{node["keystone"]["services"]["admin-api"]["wsgi_file"]}"
   )
   notifies :run, "execute[restore-selinux-context]", :immediately

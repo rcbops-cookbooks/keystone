@@ -337,10 +337,14 @@ Attributes
 * `keystone["services"]["admin-api"]["network"]` - Network to connect to the admin-api over
 * `keystone["services"]["admin-api"]["port"]` - Port for the admin-api service to listen on
 * `keystone["services"]["admin-api"]["path"]` - Keystone version path
+* `keystone["services"]["admin-api"]["cert_override"]` - For SSL - custom location of cert file
+* `keystone["services"]["admin-api"]["key_override"]` - For SSL - custom location of key file
 * `keystone["services"]["service-api"]["scheme"]` - Protocol to use when connecting to the service-api
 * `keystone["services"]["service-api"]["network"]` - Network to connect to the service-api over
 * `keystone["services"]["service-api"]["port"]` - Port for the service-api service to listen on
 * `keystone["services"]["service-api"]["path"]` - Keystone version path
+* `keystone["services"]["service-api"]["cert_override"]` - For SSL - custom location of cert file
+* `keystone["services"]["service-api"]["key_override"]` - For SSL - custom location of key file
 * `keystone["roles"]` - Array of roles to create
 * `keystone["tenants"]` - Array of tenants to create
 * `keystone["config"]["log_verbosity"]` - Logging verbosity.  Valid options are DEBUG, INFO, WARNING, ERROR, CRITICAL.  Default is INFO
