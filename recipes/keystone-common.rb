@@ -127,7 +127,8 @@ template "/etc/keystone/keystone.conf" do
     :member_role_id => node["keystone"]["member_role_id"],
     :auth_type => settings["auth_type"],
     :ldap_options => settings["ldap"],
-    :pki_token_signing => settings["pki"]["enabled"]
+    :pki_token_signing => settings["pki"]["enabled"],
+    :token_expiration => settings["token_expiration"]
   )
   # The pki_setup runs via postinst on Ubuntu, but doesn't run via package
   # installation on CentOS.
@@ -141,6 +142,19 @@ template "/etc/keystone/keystone.conf" do
   else
     notifies :restart, "service[apache2]", :immediately
   end
+end
+
+# set up a token cleaning job
+template "/etc/cron.d/keystone-token-cleanup" do
+  source "keystone-token-cleanup.erb"
+  owner "root"
+  group "root"
+  mode "0600"
+
+  variables("keystone_db_user" => db_info["user"],
+            "keystone_db_password" => db_info["pass"],
+            "keystone_db_host" => db_info["ipaddress"],
+            "keystone_db_name" => db_info["name"])
 end
 
 file "/var/lib/keystone/keystone.db" do

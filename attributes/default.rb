@@ -26,6 +26,7 @@ default["keystone"]["setup_role"] = "keystone-setup"
 default["keystone"]["mysql_role"] = "mysql-master"
 default["keystone"]["api_role"] = "keystone-api"
 
+default["keystone"]["token_expiration"] = 86400
 
 # ldap - base configuration
 default["keystone"]["ldap"]["url"] = nil
