@@ -128,6 +128,7 @@ template "/etc/keystone/keystone.conf" do
     :auth_type => settings["auth_type"],
     :ldap_options => settings["ldap"],
     :pki_token_signing => settings["pki"]["enabled"]
+    :token_expiration => settings["token_expiration"]
   )
   # The pki_setup runs via postinst on Ubuntu, but doesn't run via package
   # installation on CentOS.
