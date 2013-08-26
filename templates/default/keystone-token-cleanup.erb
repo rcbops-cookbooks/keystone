@@ -1,0 +1,3 @@
+#
+#
+11 23 * * * root mysql -u<%= @keystone_db_user %> -p<%= @keystone_db_password %> -h<%= @keystone_db_host %> -e 'use <%= @keystone_db_name %>; delete from token where expires < now();'

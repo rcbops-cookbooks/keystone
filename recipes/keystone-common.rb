@@ -144,6 +144,19 @@ template "/etc/keystone/keystone.conf" do
   end
 end
 
+# set up a token cleaning job
+template "/etc/cron.d/keystone-token-cleanup" do
+  source "keystone-token-cleanup.erb"
+  owner "root"
+  group "root"
+  mode "0600"
+
+  variables("keystone_db_user" => db_info["user"],
+            "keystone_db_password" => db_info["pass"],
+            "keystone_db_host" => db_info["ipaddress"],
+            "keystone_db_name" => db_info["name"])
+end
+
 file "/var/lib/keystone/keystone.db" do
   action :delete
 end
