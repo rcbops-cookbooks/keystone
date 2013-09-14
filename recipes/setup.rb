@@ -104,6 +104,7 @@ end
 ks_ns = "keystone"
 ks_admin_endpoint = get_access_endpoint(ks_api_role, ks_ns, "admin-api")
 ks_service_endpoint = get_access_endpoint(ks_api_role, ks_ns, "service-api")
+ks_internal_endpoint = get_access_endpoint(ks_api_role, ks_ns, "internal-api")
 
 # TODO(shep): this should probably be derived from keystone.users hash keys
 node["keystone"]["tenants"].each do |tenant_name|
@@ -209,4 +210,17 @@ node["keystone"]["published_services"].each do |service|
       end
     end
   end
+end
+
+#Verify if switch was made to https||http
+keystone_endpoint "update endpoint url" do
+  auth_host ks_admin_endpoint["host"]
+  auth_port ks_admin_endpoint["port"]
+  auth_protocol ks_admin_endpoint["scheme"]
+  auth_token node["keystone"]["admin_token"]
+  service_type "identity"
+  endpoint_adminurl ks_admin_endpoint["uri"]
+  endpoint_internalurl ks_internal_endpoint["uri"]
+  endpoint_publicurl ks_service_endpoint["uri"]
+  action :recreate
 end
