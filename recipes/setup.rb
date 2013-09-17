@@ -52,8 +52,6 @@ mysql_info = create_db_and_user("mysql",
                                 :role => ks_mysql_role)
 mysql_connect_ip = get_access_endpoint(ks_mysql_role, 'mysql', 'db')["host"]
 
-
-
 include_recipe "keystone::keystone-common"
 
 execute "keystone-manage db_sync" do
