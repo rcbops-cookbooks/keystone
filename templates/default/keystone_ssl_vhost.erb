@@ -2,42 +2,106 @@
 # Do not edit, changes will be overwritten
 
 WSGIDaemonProcess keystone user=keystone group=keystone processes=3 threads=10
-Listen <%= @service_ip %>:<%= @service_port %>
-<VirtualHost <%= @service_ip %>:<%= @service_port %>>
-LogLevel warn
-ErrorLog /var/log/keystone/service_error.log
-CustomLog /var/log/keystone/service_ssl_access.log combined
 
-SSLEngine on
-SSLCertificateFile <%= @service_cert_file %>
-SSLCertificateKeyFile <%= @service_key_file %>
+<%if @service_ip == @internal_ip and @service_port == @internal_port %>
+    
+    <%# IP and port are equal than if either is set for SSL we will setup both to be SSL %>
+    
+    <% if [@service_scheme, @internal_scheme].any? {|scheme| scheme == "https"} %>
+    Listen <%= @service_ip %>:<%= @service_port %>
+    <VirtualHost <%= @service_ip %>:<%= @service_port %>>
+    LogLevel warn
+    ErrorLog /var/log/keystone/service_error.log
+    CustomLog /var/log/keystone/service_ssl_access.log combined
+    
+    SSLEngine on
+    SSLCertificateFile <%= @service_cert_file %>
+    SSLCertificateKeyFile <%= @service_key_file %>
+    
+    SSLVerifyClient optional
+    SSLVerifyDepth 10
+    SSLProtocol all -SSLv2
+    SSLCipherSuite ALL:!ADH:!EXPORT:!SSLv2:RC4+RSA:+HIGH:+MEDIUM:+LOW
+    SSLOptions +StdEnvVars +ExportCertData
+    
+    WSGIScriptAlias / <%= @service_wsgi_file %>
+    WSGIProcessGroup keystone
+    </VirtualHost>
+    <%# Setup both internal and service for http %>
+    
+    <%else %>
+        Listen <%= @service_ip %>:<%= @service_port %>
+        <VirtualHost <%= @service_ip %>:<%= @service_port %>>
+        LogLevel warn
+        ErrorLog /var/log/keystone/service_error.log
+        CustomLog /var/log/keystone/service_ssl_access.log combined
+        
+        WSGIScriptAlias / <%= @service_wsgi_file %>
+        WSGIProcessGroup keystone
+        
+        </VirtualHost>
+    <%end %>
 
-SSLVerifyClient optional
-SSLVerifyDepth 10
-SSLProtocol all -SSLv2
-SSLCipherSuite ALL:!ADH:!EXPORT:!SSLv2:RC4+RSA:+HIGH:+MEDIUM:+LOW
-SSLOptions +StdEnvVars +ExportCertData
-
-WSGIScriptAlias / <%= @service_wsgi_file %>
-WSGIProcessGroup keystone
-
-</VirtualHost>
+<% else %>
+<%#Setup service URI %>
+    Listen <%= @service_ip %>:<%= @service_port %>
+    <VirtualHost <%= @service_ip %>:<%= @service_port %>>
+    LogLevel warn
+    ErrorLog /var/log/keystone/service_error.log
+    CustomLog /var/log/keystone/service_ssl_access.log combined
+    <% if @service_scheme == "https" %>
+    SSLEngine on
+    SSLCertificateFile <%= @service_cert_file %>
+    SSLCertificateKeyFile <%= @service_key_file %>
+    
+    SSLVerifyClient optional
+    SSLVerifyDepth 10
+    SSLProtocol all -SSLv2
+    SSLCipherSuite ALL:!ADH:!EXPORT:!SSLv2:RC4+RSA:+HIGH:+MEDIUM:+LOW
+    SSLOptions +StdEnvVars +ExportCertData       
+    <% end %>
+    
+    WSGIScriptAlias / <%= @service_wsgi_file %>
+    WSGIProcessGroup keystone
+    </VirtualHost>
+    <%# Setup internal URI %>
+    <VirtualHost <%= @internal_ip %>:<%= @internal_port %>>
+    LogLevel warn
+    ErrorLog /var/log/keystone/internal_error.log
+    CustomLog /var/log/keystone/internal_ssl_access.log combined
+    <% if @internal_scheme == "https" %>
+        SSLEngine on
+        SSLCertificateFile <%= @internal_cert_file %>
+        SSLCertificateKeyFile <%= @internal_key_file %>
+        
+        SSLVerifyClient optional
+        SSLVerifyDepth 10
+        SSLProtocol all -SSLv2
+        SSLCipherSuite ALL:!ADH:!EXPORT:!SSLv2:RC4+RSA:+HIGH:+MEDIUM:+LOW
+        SSLOptions +StdEnvVars +ExportCertData       
+    <% end %>
+    
+    WSGIScriptAlias / <%= @internal_wsgi_file %>
+    WSGIProcessGroup keystone
+    
+<% end %>
 
 Listen <%= @admin_ip %>:<%= @admin_port %>
 <VirtualHost <%= @admin_ip %>:<%= @admin_port %>>
 LogLevel warn
 ErrorLog /var/log/keystone/admin_error.log
 CustomLog /var/log/keystone/admin_ssl_access.log combined
-
-SSLEngine on
-SSLCertificateFile <%= @admin_cert_file %>
-SSLCertificateKeyFile <%= @admin_key_file %>
-
-SSLVerifyClient optional
-SSLVerifyDepth 10
-SSLProtocol all -SSLv2
-SSLCipherSuite ALL:!ADH:!EXPORT:!SSLv2:RC4+RSA:+HIGH:+MEDIUM:+LOW
-SSLOptions +StdEnvVars +ExportCertData
+<% if @admin_scheme == "https" %>
+    SSLEngine on
+    SSLCertificateFile <%= @admin_cert_file %>
+    SSLCertificateKeyFile <%= @admin_key_file %>
+    
+    SSLVerifyClient optional
+    SSLVerifyDepth 10
+    SSLProtocol all -SSLv2
+    SSLCipherSuite ALL:!ADH:!EXPORT:!SSLv2:RC4+RSA:+HIGH:+MEDIUM:+LOW
+    SSLOptions +StdEnvVars +ExportCertData
+<% end %>
 
 WSGIScriptAlias / <%= @admin_wsgi_file %>
 WSGIProcessGroup keystone
