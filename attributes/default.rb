@@ -153,7 +153,9 @@ default["keystone"]["services"]["internal-api"]["scheme"] = "http"           # n
 default["keystone"]["services"]["internal-api"]["network"] = "management"        # node_attribute
 default["keystone"]["services"]["internal-api"]["port"] = "5000"             # node_attribute
 default["keystone"]["services"]["internal-api"]["path"] = "/v2.0"            # node_attribute
-
+default["keystone"]["services"]["internal-api"]["cert_file"] = "keystone.pem"
+default["keystone"]["services"]["internal-api"]["key_file"] = "keystone.key"
+default["keystone"]["services"]["internal-api"]["wsgi_file"] = "main"
 # Logging stuff
 default["keystone"]["syslog"]["use"] = true                                 # node_attribute
 default["keystone"]["syslog"]["facility"] = "LOG_LOCAL3"                    # node_attribute

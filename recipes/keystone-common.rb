@@ -27,6 +27,30 @@ file "/var/log/keystone/keystone.log" do
   mode "0600"
   only_if { ::File.exists?("/var/log/keystone/keystone.log") }
 end
+# Used if SSL was or is enabled
+vhost_location = value_for_platform(
+  ["ubuntu", "debian", "fedora"] => {
+    "default" => "#{node["apache"]["dir"]}/sites-enabled/openstack-keystone"
+  },
+  "fedora" => {
+    "default" => "#{node["apache"]["dir"]}/vhost.d/openstack-keystone"
+  },
+  ["redhat", "centos"] => {
+    "default" => "#{node["apache"]["dir"]}/conf.d/openstack-keystone"
+  },
+  "default" => {
+    "default" => "#{node["apache"]["dir"]}/openstack-keystone"
+  }
+)
+# If no URI is SSL enabled check to see if vhost existed,
+# delete it and bounce httpd
+# Used when going from https -> http
+execute "Disable https"do
+  command "rm -f #{vhost_location}"
+  notifies :restart, "service[apache2]", :immediately
+  only_if { ::File.exists?(vhost_location) }
+  action :nothing
+end
 
 platform_options = node["keystone"]["platform"]
 
@@ -51,11 +75,17 @@ end
 
 ks_admin_bind = get_bind_endpoint("keystone", "admin-api")
 ks_service_bind = get_bind_endpoint("keystone", "service-api")
+ks_internal_bind = get_bind_endpoint("keystone", "internal-api")
+end_point_schemes = [
+                     ks_service_bind["scheme"],
+                     ks_admin_bind["scheme"],
+                     ks_internal_bind["scheme"]]
 
 service "keystone" do
   service_name platform_options["keystone_service"]
   supports :status => true, :restart => true
-  unless ks_admin_bind["scheme"] == "https" or ks_service_bind["scheme"] == "https"
+  unless end_point_schemes.any? {|scheme| scheme == "https"}
+    notifies :run, "execute[Disable https]", :immediately
     action [:enable]
     notifies :run, "execute[Keystone: sleep]", :immediately
   else
@@ -64,7 +94,7 @@ service "keystone" do
 end
 
 # Setup SSL if "scheme" is set to https
-if ks_service_bind["scheme"] == "https" or ks_admin_bind["scheme"] == "https"
+if end_point_schemes.any? {|scheme| scheme == "https"}
   include_recipe "keystone::keystone-ssl"
 else
   if node.recipe? "apache2"
@@ -137,7 +167,7 @@ template "/etc/keystone/keystone.conf" do
   end
   # FIXME: Workaround for https://bugs.launchpad.net/keystone/+bug/1176270
   subscribes :create, "keystone_role[Get Member role-id]", :delayed
-  unless ks_service_bind["scheme"] == "https" or ks_admin_bind["scheme"] == "https"
+  unless end_point_schemes.any? {|scheme| scheme == "https"}
     notifies :restart, "service[keystone]", :immediately
   else
     notifies :restart, "service[apache2]", :immediately

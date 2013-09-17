@@ -39,7 +39,7 @@ when "ubuntu", "debian"
 else
   grp = "root"
 end
-
+#admin API
 cookbook_file "#{node["keystone"]["ssl"]["dir"]}/certs/#{node["keystone"]["services"]["admin-api"]["cert_file"]}" do
   source "keystone_admin.pem"
   mode 0644
@@ -55,7 +55,7 @@ cookbook_file "#{node["keystone"]["ssl"]["dir"]}/private/#{node["keystone"]["ser
   group grp
   notifies :run, "execute[restore-selinux-context]", :immediately
 end
-
+#Service API
 cookbook_file "#{node["keystone"]["ssl"]["dir"]}/certs/#{node["keystone"]["services"]["service-api"]["cert_file"]}" do
   source "keystone_service.pem"
   mode 0644
@@ -71,7 +71,22 @@ cookbook_file "#{node["keystone"]["ssl"]["dir"]}/private/#{node["keystone"]["ser
   group grp
   notifies :run, "execute[restore-selinux-context]", :immediately
 end
+#Internal URI
+cookbook_file "#{node["keystone"]["ssl"]["dir"]}/certs/#{node["keystone"]["services"]["internal-api"]["cert_file"]}" do
+  source "keystone_internal.pem"
+  mode 0644
+  owner "root"
+  group "root"
+  notifies :run, "execute[restore-selinux-context]", :immediately
+end
 
+cookbook_file "#{node["keystone"]["ssl"]["dir"]}/private/#{node["keystone"]["services"]["internal-api"]["key_file"]}" do
+  source "keystone_internal.key"
+  mode 0644
+  owner "root"
+  group grp
+  notifies :run, "execute[restore-selinux-context]", :immediately
+end
 # setup wsgi file
 
 directory "#{node["apache"]["dir"]}/wsgi" do
@@ -95,15 +110,23 @@ cookbook_file "#{node["apache"]["dir"]}/wsgi/#{node["keystone"]["services"]["ser
   group "root"
 end
 
+cookbook_file "#{node["apache"]["dir"]}/wsgi/#{node["keystone"]["services"]["internal-api"]["wsgi_file"]}" do
+  source "keystone_modwsgi.py"
+  mode 0644
+  owner "root"
+  group "root"
+end
 # Get the IP to bind to, "*" if only 1 node
 ks_admin_bind = get_bind_endpoint("keystone", "admin-api")
 ks_service_bind = get_bind_endpoint("keystone", "service-api")
+ks_internal_bind = get_bind_endpoint("keystone", "internal-api")
 
 ha_role = "openstack-ha"
 vip_key = "vips.keystone-admin-api"
 if get_role_count(ha_role) > 0 and rcb_safe_deref(node, vip_key)
   admin_ip = ks_admin_bind["host"]
   service_ip = ks_service_bind["host"]
+  internal_ip = ks_internal_bind["host"]
 else
   admin_ip = "*"
   service_ip = "*"
@@ -133,6 +156,17 @@ else
   service_key_location = node["keystone"]["services"]["service-api"]["key_override"]
 end
 
+unless node["keystone"]["services"]["internal-api"].attribute?"cert_override"
+  internal_cert_location = "#{node["keystone"]["ssl"]["dir"]}/certs/#{node["keystone"]["services"]["service-api"]["cert_file"]}"
+else
+  internal_cert_location = node["keystone"]["services"]["internal-api"]["cert_override"]
+end
+
+unless node["keystone"]["services"]["internal-api"].attribute?"key_override"
+  internal_key_location = "#{node["keystone"]["ssl"]["dir"]}/private/#{node["keystone"]["services"]["internal-api"]["key_file"]}"
+else
+  internal_key_location = node["keystone"]["services"]["internal-api"]["key_override"]
+end
 
 template value_for_platform(
   ["ubuntu", "debian", "fedora"] => {
@@ -154,23 +188,33 @@ template value_for_platform(
   mode "0644"
   variables(
     :service_ip => service_ip,
+    :service_scheme => node["keystone"]["services"]["service-api"]["scheme"],
     :service_port => node["keystone"]["services"]["service-api"]["port"],
     :service_cert_file => service_cert_location,
     :service_key_file => service_key_location,
     :service_wsgi_file  => "#{node["apache"]["dir"]}/wsgi/#{node["keystone"]["services"]["service-api"]["wsgi_file"]}",
     :admin_ip => admin_ip,
+    :admin_scheme => node["keystone"]["services"]["admin-api"]["scheme"],
     :admin_port => node["keystone"]["services"]["admin-api"]["port"],
     :admin_cert_file => admin_cert_location,
     :admin_key_file => admin_key_location,
-    :admin_wsgi_file => "#{node["apache"]["dir"]}/wsgi/#{node["keystone"]["services"]["admin-api"]["wsgi_file"]}"
+    :admin_wsgi_file => "#{node["apache"]["dir"]}/wsgi/#{node["keystone"]["services"]["admin-api"]["wsgi_file"]}",
+    :internal_scheme => node["keystone"]["services"]["internal-api"]["scheme"],
+    :internal_ip => internal_ip || service_ip,
+    :internal_port => node["keystone"]["services"]["internal-api"]["port"],
+    :internal_cert_file => internal_cert_location,
+    :internal_key_file => internal_key_location,
+    :internal_wsgi_file  => "#{node["apache"]["dir"]}/wsgi/#{node["keystone"]["services"]["internal-api"]["wsgi_file"]}"
   )
   notifies :run, "execute[restore-selinux-context]", :immediately
-  notifies :reload, "service[apache2]", :delayed
+  notifies :run, "execute[Keystone: sleep]", :immediately
 end
 
 apache_site "openstack-keystone" do
   enable true
-  notifies :run, "execute[restore-selinux-context]", :immediately
-  notifies :restart, "service[apache2]", :immediately
-  notifies :run, "execute[Keystone: sleep]", :immediately
 end
+
+service "apache2" do
+  action :restart
+end
+
