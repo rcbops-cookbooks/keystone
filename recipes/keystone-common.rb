@@ -27,29 +27,32 @@ file "/var/log/keystone/keystone.log" do
   mode "0600"
   only_if { ::File.exists?("/var/log/keystone/keystone.log") }
 end
-# Used if SSL was or is enabled
-vhost_location = value_for_platform(
-  ["ubuntu", "debian", "fedora"] => {
-    "default" => "#{node["apache"]["dir"]}/sites-enabled/openstack-keystone"
-  },
-  "fedora" => {
-    "default" => "#{node["apache"]["dir"]}/vhost.d/openstack-keystone"
-  },
-  ["redhat", "centos"] => {
-    "default" => "#{node["apache"]["dir"]}/conf.d/openstack-keystone"
-  },
-  "default" => {
-    "default" => "#{node["apache"]["dir"]}/openstack-keystone"
-  }
-)
-# If no URI is SSL enabled check to see if vhost existed,
-# delete it and bounce httpd
-# Used when going from https -> http
-execute "Disable https"do
-  command "rm -f #{vhost_location}"
-  notifies :restart, "service[apache2]", :immediately
-  only_if { ::File.exists?(vhost_location) }
-  action :nothing
+
+if node.recipe? "apache2"
+  # Used if SSL was or is enabled
+  vhost_location = value_for_platform(
+    ["ubuntu", "debian", "fedora"] => {
+      "default" => "#{node["apache"]["dir"]}/sites-enabled/openstack-keystone"
+    },
+    "fedora" => {
+      "default" => "#{node["apache"]["dir"]}/vhost.d/openstack-keystone"
+    },
+    ["redhat", "centos"] => {
+      "default" => "#{node["apache"]["dir"]}/conf.d/openstack-keystone"
+    },
+    "default" => {
+      "default" => "#{node["apache"]["dir"]}/openstack-keystone"
+    }
+  )
+  # If no URI is SSL enabled check to see if vhost existed,
+  # delete it and bounce httpd
+  # Used when going from https -> http
+  execute "Disable https" do
+    command "rm -f #{vhost_location}"
+    only_if { File.exists?(vhost_location) }
+    notifies :restart, "service[apache2]", :immediately
+    action :nothing
+  end
 end
 
 platform_options = node["keystone"]["platform"]
@@ -85,7 +88,9 @@ service "keystone" do
   service_name platform_options["keystone_service"]
   supports :status => true, :restart => true
   unless end_point_schemes.any? {|scheme| scheme == "https"}
-    notifies :run, "execute[Disable https]", :immediately
+    if node.recipe? "apache2"
+      notifies :run, "execute[Disable https]", :immediately
+    end
     action [:enable]
     notifies :run, "execute[Keystone: sleep]", :immediately
   else
