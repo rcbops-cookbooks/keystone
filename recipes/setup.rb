@@ -212,6 +212,10 @@ node["keystone"]["published_services"].each do |service|
   end
 end
 
+if ks_service_endpoint["name"]
+  ks_service_endpoint["uri"] = "#{ks_service_endpoint["scheme"]}://#{ks_service_endpoint["name"]}:#{ks_service_endpoint["port"]}#{ks_service_endpoint["path"]}"
+end
+
 #Verify if switch was made to https||http
 keystone_endpoint "update endpoint url" do
   auth_host ks_admin_endpoint["host"]
@@ -219,6 +223,7 @@ keystone_endpoint "update endpoint url" do
   auth_protocol ks_admin_endpoint["scheme"]
   auth_token node["keystone"]["admin_token"]
   service_type "identity"
+  endpoint_region node["nova"]["compute"]["region"]
   endpoint_adminurl ks_admin_endpoint["uri"]
   endpoint_internalurl ks_internal_endpoint["uri"]
   endpoint_publicurl ks_service_endpoint["uri"]
