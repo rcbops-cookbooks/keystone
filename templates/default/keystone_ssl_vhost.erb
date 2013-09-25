@@ -81,7 +81,8 @@ SSLOptions +StdEnvVars +ExportCertData
     
 WSGIScriptAlias / <%= @internal_wsgi_file %>
 WSGIProcessGroup keystone
-    
+</VirtualHost>
+
 <% end %>
 
 Listen <%= @admin_ip %>:<%= @admin_port %>
