@@ -63,6 +63,7 @@ WSGIScriptAlias / <%= @service_wsgi_file %>
 WSGIProcessGroup keystone
 </VirtualHost>
     <%# Setup internal URI %>
+Listen <%= @internal_ip %>:<%= @internal_port %>
 <VirtualHost <%= @internal_ip %>:<%= @internal_port %>>
 LogLevel warn
 ErrorLog /var/log/keystone/internal_error.log
