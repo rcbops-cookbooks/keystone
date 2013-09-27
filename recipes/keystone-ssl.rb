@@ -45,7 +45,6 @@ cookbook_file "#{node["keystone"]["ssl"]["dir"]}/certs/#{node["keystone"]["servi
   mode 0644
   owner "root"
   group "root"
-  notifies :run, "execute[restore-selinux-context]", :immediately
 end
 
 cookbook_file "#{node["keystone"]["ssl"]["dir"]}/private/#{node["keystone"]["services"]["admin-api"]["key_file"]}" do
@@ -53,7 +52,6 @@ cookbook_file "#{node["keystone"]["ssl"]["dir"]}/private/#{node["keystone"]["ser
   mode 0644
   owner "root"
   group grp
-  notifies :run, "execute[restore-selinux-context]", :immediately
 end
 #Service API
 cookbook_file "#{node["keystone"]["ssl"]["dir"]}/certs/#{node["keystone"]["services"]["service-api"]["cert_file"]}" do
@@ -61,7 +59,6 @@ cookbook_file "#{node["keystone"]["ssl"]["dir"]}/certs/#{node["keystone"]["servi
   mode 0644
   owner "root"
   group "root"
-  notifies :run, "execute[restore-selinux-context]", :immediately
 end
 
 cookbook_file "#{node["keystone"]["ssl"]["dir"]}/private/#{node["keystone"]["services"]["service-api"]["key_file"]}" do
@@ -69,7 +66,6 @@ cookbook_file "#{node["keystone"]["ssl"]["dir"]}/private/#{node["keystone"]["ser
   mode 0644
   owner "root"
   group grp
-  notifies :run, "execute[restore-selinux-context]", :immediately
 end
 #Internal URI
 cookbook_file "#{node["keystone"]["ssl"]["dir"]}/certs/#{node["keystone"]["services"]["internal-api"]["cert_file"]}" do
@@ -77,7 +73,6 @@ cookbook_file "#{node["keystone"]["ssl"]["dir"]}/certs/#{node["keystone"]["servi
   mode 0644
   owner "root"
   group "root"
-  notifies :run, "execute[restore-selinux-context]", :immediately
 end
 
 cookbook_file "#{node["keystone"]["ssl"]["dir"]}/private/#{node["keystone"]["services"]["internal-api"]["key_file"]}" do
@@ -85,7 +80,6 @@ cookbook_file "#{node["keystone"]["ssl"]["dir"]}/private/#{node["keystone"]["ser
   mode 0644
   owner "root"
   group grp
-  notifies :run, "execute[restore-selinux-context]", :immediately
 end
 # setup wsgi file
 
@@ -206,7 +200,6 @@ template value_for_platform(
     :internal_key_file => internal_key_location,
     :internal_wsgi_file  => "#{node["apache"]["dir"]}/wsgi/#{node["keystone"]["services"]["internal-api"]["wsgi_file"]}"
   )
-  notifies :run, "execute[restore-selinux-context]", :immediately
   notifies :run, "execute[Keystone: sleep]", :immediately
 end
 
