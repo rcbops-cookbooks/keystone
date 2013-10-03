@@ -67,6 +67,13 @@ cookbook_file "#{node["keystone"]["ssl"]["dir"]}/private/#{node["keystone"]["ser
   owner "root"
   group grp
 end
+
+cookbook_file "#{node["keystone"]["ssl"]["dir"]}/certs/#{node["keystone"]["services"]["service-api"]["chain_file"]}" do
+  source "keystone_service.chain"
+  mode 0644
+  owner "root"
+  group "root"
+end
 #Internal URI
 cookbook_file "#{node["keystone"]["ssl"]["dir"]}/certs/#{node["keystone"]["services"]["internal-api"]["cert_file"]}" do
   source "keystone_internal.pem"
@@ -144,6 +151,12 @@ else
   service_cert_location = node["keystone"]["services"]["service-api"]["cert_override"]
 end
 
+unless node["keystone"]["services"]["service-api"].attribute?"chain_override"
+  service_chain_location = "#{node["keystone"]["ssl"]["dir"]}/certs/#{node["keystone"]["services"]["service-api"]["chain_file"]}"
+else
+  service_chain_location = node["keystone"]["services"]["service-api"]["chain_override"]
+end
+
 unless node["keystone"]["services"]["service-api"].attribute?"key_override"
   service_key_location = "#{node["keystone"]["ssl"]["dir"]}/private/#{node["keystone"]["services"]["service-api"]["key_file"]}"
 else
@@ -186,6 +199,7 @@ template value_for_platform(
     :service_port => node["keystone"]["services"]["service-api"]["port"],
     :service_cert_file => service_cert_location,
     :service_key_file => service_key_location,
+    :service_chain_file => service_chain_location,
     :service_wsgi_file  => "#{node["apache"]["dir"]}/wsgi/#{node["keystone"]["services"]["service-api"]["wsgi_file"]}",
     :admin_ip => admin_ip,
     :admin_scheme => node["keystone"]["services"]["admin-api"]["scheme"],
