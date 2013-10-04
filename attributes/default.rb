@@ -147,7 +147,6 @@ default["keystone"]["services"]["service-api"]["port"] = "5000"             # no
 default["keystone"]["services"]["service-api"]["path"] = "/v2.0"            # node_attribute
 default["keystone"]["services"]["service-api"]["cert_file"] = "keystone.pem"
 default["keystone"]["services"]["service-api"]["key_file"] = "keystone.key"
-default["keystone"]["services"]["service-api"]["chain_file"] = "keystone.chain"
 default["keystone"]["services"]["service-api"]["wsgi_file"] = "main"
 
 default["keystone"]["services"]["internal-api"]["scheme"] = "http"           # node_attribute
