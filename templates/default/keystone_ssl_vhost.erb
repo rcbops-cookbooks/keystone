@@ -15,7 +15,7 @@ CustomLog /var/log/keystone/service_ssl_access.log combined
 SSLEngine on
 SSLCertificateFile <%= @service_cert_file %>
 SSLCertificateKeyFile <%= @service_key_file %>
-<% if @service_chain_file %>
+<% unless @service_chain_file == "donotset" %>
 SSLCertificateChainFile <%= @service_chain_file %>
 <%end %>
 
@@ -54,7 +54,7 @@ CustomLog /var/log/keystone/service_ssl_access.log combined
 SSLEngine on
 SSLCertificateFile <%= @service_cert_file %>
 SSLCertificateKeyFile <%= @service_key_file %>
-<% if @service_chain_file %>
+<% unless @service_chain_file == "donotset" %>
 SSLCertificateChainFile <%= @service_chain_file %>
 <%end %>
 
@@ -78,7 +78,7 @@ CustomLog /var/log/keystone/internal_ssl_access.log combined
 SSLEngine on
 SSLCertificateFile <%= @internal_cert_file %>
 SSLCertificateKeyFile <%= @internal_key_file %>
-<% if @internal_chain_file %>
+<% unless @internal_chain_file == "donotset" %>
 SSLCertificateChainFile <%= @internal_chain_file %>
 <%end %>
 
@@ -104,7 +104,7 @@ CustomLog /var/log/keystone/admin_ssl_access.log combined
 SSLEngine on
 SSLCertificateFile <%= @admin_cert_file %>
 SSLCertificateKeyFile <%= @admin_key_file %>
-<% if @admin_chain_file %>
+<% unless @admin_chain_file == "donotset" %>
 SSLCertificateChainFile <%= @admin_chain_file %>
 <%end %>
 
