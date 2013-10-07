@@ -39,6 +39,7 @@ when "ubuntu", "debian"
 else
   grp = "root"
 end
+
 #admin API
 cookbook_file "#{node["keystone"]["ssl"]["dir"]}/certs/#{node["keystone"]["services"]["admin-api"]["cert_file"]}" do
   source "keystone_admin.pem"
@@ -46,13 +47,21 @@ cookbook_file "#{node["keystone"]["ssl"]["dir"]}/certs/#{node["keystone"]["servi
   owner "root"
   group "root"
 end
-
 cookbook_file "#{node["keystone"]["ssl"]["dir"]}/private/#{node["keystone"]["services"]["admin-api"]["key_file"]}" do
   source "keystone_admin.key"
   mode 0644
   owner "root"
   group grp
 end
+unless node["keystone"]["services"]["admin-api"]["chain_file"].nil?
+  cookbook_file "#{node["keystone"]["ssl"]["dir"]}/certs/#{node["keystone"]["services"]["admin-api"]["chain_file"]}" do
+    source node["keystone"]["services"]["admin-api"]["chain_file"]
+    mode 0644
+    owner "root"
+    group "root"
+  end
+end
+
 #Service API
 cookbook_file "#{node["keystone"]["ssl"]["dir"]}/certs/#{node["keystone"]["services"]["service-api"]["cert_file"]}" do
   source "keystone_service.pem"
@@ -60,13 +69,21 @@ cookbook_file "#{node["keystone"]["ssl"]["dir"]}/certs/#{node["keystone"]["servi
   owner "root"
   group "root"
 end
-
 cookbook_file "#{node["keystone"]["ssl"]["dir"]}/private/#{node["keystone"]["services"]["service-api"]["key_file"]}" do
   source "keystone_service.key"
   mode 0644
   owner "root"
   group grp
 end
+unless node["keystone"]["services"]["service-api"]["chain_file"].nil?
+  cookbook_file "#{node["keystone"]["ssl"]["dir"]}/certs/#{node["keystone"]["services"]["service-api"]["chain_file"]}" do
+    source node["keystone"]["services"]["service-api"]["chain_file"]
+    mode 0644
+    owner "root"
+    group "root"
+  end
+end
+
 #Internal URI
 cookbook_file "#{node["keystone"]["ssl"]["dir"]}/certs/#{node["keystone"]["services"]["internal-api"]["cert_file"]}" do
   source "keystone_internal.pem"
@@ -74,13 +91,21 @@ cookbook_file "#{node["keystone"]["ssl"]["dir"]}/certs/#{node["keystone"]["servi
   owner "root"
   group "root"
 end
-
 cookbook_file "#{node["keystone"]["ssl"]["dir"]}/private/#{node["keystone"]["services"]["internal-api"]["key_file"]}" do
   source "keystone_internal.key"
   mode 0644
   owner "root"
   group grp
 end
+unless node["keystone"]["services"]["internal-api"]["chain_file"].nil?
+  cookbook_file "#{node["keystone"]["ssl"]["dir"]}/certs/#{node["keystone"]["services"]["internal-api"]["chain_file"]}" do
+    source node["keystone"]["services"]["internal-api"]["chain_file"]
+    mode 0644
+    owner "root"
+    group "root"
+  end
+end
+
 # setup wsgi file
 
 directory "#{node["apache"]["dir"]}/wsgi" do
@@ -126,40 +151,55 @@ else
   service_ip = "*"
 end
 
+# Admin API
 unless node["keystone"]["services"]["admin-api"].attribute?"cert_override"
   admin_cert_location = "#{node["keystone"]["ssl"]["dir"]}/certs/#{node["keystone"]["services"]["admin-api"]["cert_file"]}"
 else
   admin_cert_location = node["keystone"]["services"]["admin-api"]["cert_override"]
 end
-
 unless node["keystone"]["services"]["admin-api"].attribute?"key_override"
   admin_key_location = "#{node["keystone"]["ssl"]["dir"]}/private/#{node["keystone"]["services"]["admin-api"]["key_file"]}"
 else
   admin_key_location = node["keystone"]["services"]["admin-api"]["key_override"]
 end
+unless node["keystone"]["services"]["admin-api"]["chain_file"].nil?
+  admin_chain_location = "#{node["keystone"]["ssl"]["dir"]}/certs/#{node["keystone"]["services"]["admin-api"]["chain_file"]}"
+else
+  admin_chain_location = "donotset"
+end
 
+# Service API
 unless node["keystone"]["services"]["service-api"].attribute?"cert_override"
   service_cert_location = "#{node["keystone"]["ssl"]["dir"]}/certs/#{node["keystone"]["services"]["service-api"]["cert_file"]}"
 else
   service_cert_location = node["keystone"]["services"]["service-api"]["cert_override"]
 end
-
 unless node["keystone"]["services"]["service-api"].attribute?"key_override"
   service_key_location = "#{node["keystone"]["ssl"]["dir"]}/private/#{node["keystone"]["services"]["service-api"]["key_file"]}"
 else
   service_key_location = node["keystone"]["services"]["service-api"]["key_override"]
 end
+unless node["keystone"]["services"]["service-api"]["chain_file"].nil?
+  service_chain_location = "#{node["keystone"]["ssl"]["dir"]}/certs/#{node["keystone"]["services"]["service-api"]["chain_file"]}"
+else
+  service_chain_location = "donotset"
+end
 
+# Internal API
 unless node["keystone"]["services"]["internal-api"].attribute?"cert_override"
   internal_cert_location = "#{node["keystone"]["ssl"]["dir"]}/certs/#{node["keystone"]["services"]["service-api"]["cert_file"]}"
 else
   internal_cert_location = node["keystone"]["services"]["internal-api"]["cert_override"]
 end
-
 unless node["keystone"]["services"]["internal-api"].attribute?"key_override"
   internal_key_location = "#{node["keystone"]["ssl"]["dir"]}/private/#{node["keystone"]["services"]["internal-api"]["key_file"]}"
 else
   internal_key_location = node["keystone"]["services"]["internal-api"]["key_override"]
+end
+unless node["keystone"]["services"]["internal-api"]["chain_file"].nil?
+  internal_chain_location = "#{node["keystone"]["ssl"]["dir"]}/certs/#{node["keystone"]["services"]["internal-api"]["chain_file"]}"
+else
+  internal_chain_location = "donotset"
 end
 
 template value_for_platform(
@@ -186,18 +226,21 @@ template value_for_platform(
     :service_port => node["keystone"]["services"]["service-api"]["port"],
     :service_cert_file => service_cert_location,
     :service_key_file => service_key_location,
+    :service_chain_file => service_chain_location,
     :service_wsgi_file  => "#{node["apache"]["dir"]}/wsgi/#{node["keystone"]["services"]["service-api"]["wsgi_file"]}",
     :admin_ip => admin_ip,
     :admin_scheme => node["keystone"]["services"]["admin-api"]["scheme"],
     :admin_port => node["keystone"]["services"]["admin-api"]["port"],
     :admin_cert_file => admin_cert_location,
     :admin_key_file => admin_key_location,
+    :admin_chain_file => admin_chain_location,
     :admin_wsgi_file => "#{node["apache"]["dir"]}/wsgi/#{node["keystone"]["services"]["admin-api"]["wsgi_file"]}",
     :internal_scheme => node["keystone"]["services"]["internal-api"]["scheme"],
     :internal_ip => internal_ip || service_ip,
     :internal_port => node["keystone"]["services"]["internal-api"]["port"],
     :internal_cert_file => internal_cert_location,
     :internal_key_file => internal_key_location,
+    :internal_chain_file => internal_chain_location,
     :internal_wsgi_file  => "#{node["apache"]["dir"]}/wsgi/#{node["keystone"]["services"]["internal-api"]["wsgi_file"]}"
   )
   notifies :run, "execute[Keystone: sleep]", :immediately
