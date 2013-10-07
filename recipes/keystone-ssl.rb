@@ -53,9 +53,9 @@ cookbook_file "#{node["keystone"]["ssl"]["dir"]}/private/#{node["keystone"]["ser
   owner "root"
   group grp
 end
-unless node["keystone"]["services"]["service-api"]["chain_file"].nil?
-  cookbook_file "#{node["keystone"]["ssl"]["dir"]}/certs/#{node["keystone"]["services"]["service-api"]["chain_file"]}" do
-    source node["keystone"]["services"]["service-api"]["chain_file"]
+unless node["keystone"]["services"]["admin-api"]["chain_file"].nil?
+  cookbook_file "#{node["keystone"]["ssl"]["dir"]}/certs/#{node["keystone"]["services"]["admin-api"]["chain_file"]}" do
+    source node["keystone"]["services"]["admin-api"]["chain_file"]
     mode 0644
     owner "root"
     group "root"
@@ -97,9 +97,9 @@ cookbook_file "#{node["keystone"]["ssl"]["dir"]}/private/#{node["keystone"]["ser
   owner "root"
   group grp
 end
-unless node["keystone"]["services"]["service-api"]["chain_file"].nil?
-  cookbook_file "#{node["keystone"]["ssl"]["dir"]}/certs/#{node["keystone"]["services"]["service-api"]["chain_file"]}" do
-    source node["keystone"]["services"]["service-api"]["chain_file"]
+unless node["keystone"]["services"]["internal-api"]["chain_file"].nil?
+  cookbook_file "#{node["keystone"]["ssl"]["dir"]}/certs/#{node["keystone"]["services"]["internal-api"]["chain_file"]}" do
+    source node["keystone"]["services"]["internal-api"]["chain_file"]
     mode 0644
     owner "root"
     group "root"
