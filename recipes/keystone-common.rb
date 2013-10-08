@@ -86,6 +86,12 @@ end_point_schemes = [
 
 service "keystone" do
   service_name platform_options["keystone_service"]
+  # TODO(breu): this may need to be an attribute if it breaks on others..
+  case node["platform"]
+  when "ubuntu"
+      provider Chef::Provider::Service::Upstart
+  end
+  # end TODO
   supports :status => true, :restart => true
   unless end_point_schemes.any? {|scheme| scheme == "https"}
     if node.recipe? "apache2"
