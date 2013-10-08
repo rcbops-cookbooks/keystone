@@ -15,6 +15,9 @@ CustomLog /var/log/keystone/service_ssl_access.log combined
 SSLEngine on
 SSLCertificateFile <%= @service_cert_file %>
 SSLCertificateKeyFile <%= @service_key_file %>
+<% unless @service_chain_file == "donotset" %>
+SSLCertificateChainFile <%= @service_chain_file %>
+<%end %>
 
 SSLVerifyClient optional
 SSLVerifyDepth 10
@@ -51,6 +54,9 @@ CustomLog /var/log/keystone/service_ssl_access.log combined
 SSLEngine on
 SSLCertificateFile <%= @service_cert_file %>
 SSLCertificateKeyFile <%= @service_key_file %>
+<% unless @service_chain_file == "donotset" %>
+SSLCertificateChainFile <%= @service_chain_file %>
+<%end %>
 
 SSLVerifyClient optional
 SSLVerifyDepth 10
@@ -63,6 +69,7 @@ WSGIScriptAlias / <%= @service_wsgi_file %>
 WSGIProcessGroup keystone
 </VirtualHost>
     <%# Setup internal URI %>
+Listen <%= @internal_ip %>:<%= @internal_port %>
 <VirtualHost <%= @internal_ip %>:<%= @internal_port %>>
 LogLevel warn
 ErrorLog /var/log/keystone/internal_error.log
@@ -71,6 +78,9 @@ CustomLog /var/log/keystone/internal_ssl_access.log combined
 SSLEngine on
 SSLCertificateFile <%= @internal_cert_file %>
 SSLCertificateKeyFile <%= @internal_key_file %>
+<% unless @internal_chain_file == "donotset" %>
+SSLCertificateChainFile <%= @internal_chain_file %>
+<%end %>
 
 SSLVerifyClient optional
 SSLVerifyDepth 10
@@ -81,7 +91,8 @@ SSLOptions +StdEnvVars +ExportCertData
     
 WSGIScriptAlias / <%= @internal_wsgi_file %>
 WSGIProcessGroup keystone
-    
+</VirtualHost>
+
 <% end %>
 
 Listen <%= @admin_ip %>:<%= @admin_port %>
@@ -93,6 +104,9 @@ CustomLog /var/log/keystone/admin_ssl_access.log combined
 SSLEngine on
 SSLCertificateFile <%= @admin_cert_file %>
 SSLCertificateKeyFile <%= @admin_key_file %>
+<% unless @admin_chain_file == "donotset" %>
+SSLCertificateChainFile <%= @admin_chain_file %>
+<%end %>
 
 SSLVerifyClient optional
 SSLVerifyDepth 10
