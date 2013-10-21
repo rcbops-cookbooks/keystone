@@ -86,6 +86,12 @@ end_point_schemes = [
 
 service "keystone" do
   service_name platform_options["keystone_service"]
+  # TODO(breu): this may need to be an attribute if it breaks on others..
+  case node["platform"]
+  when "ubuntu"
+      provider Chef::Provider::Service::Upstart
+  end
+  # end TODO
   supports :status => true, :restart => true
   unless end_point_schemes.any? {|scheme| scheme == "https"}
     if node.recipe? "apache2"
@@ -105,7 +111,6 @@ else
   if node.recipe? "apache2"
     apache_site "openstack-keystone" do
       enable false
-      notifies :run, "execute[restore-selinux-context]", :immediately
       notifies :restart, "service[apache2]", :immediately
     end
   end

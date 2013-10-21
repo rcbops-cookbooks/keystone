@@ -139,6 +139,7 @@ default["keystone"]["services"]["admin-api"]["port"] = "35357"              # no
 default["keystone"]["services"]["admin-api"]["path"] = "/v2.0"              # node_attribute
 default["keystone"]["services"]["admin-api"]["cert_file"] = "keystone.pem"
 default["keystone"]["services"]["admin-api"]["key_file"] = "keystone.key"
+default["keystone"]["services"]["admin-api"]["chain_file"] = ""
 default["keystone"]["services"]["admin-api"]["wsgi_file"] = "admin"
 
 default["keystone"]["services"]["service-api"]["scheme"] = "http"           # node_attribute
@@ -147,6 +148,7 @@ default["keystone"]["services"]["service-api"]["port"] = "5000"             # no
 default["keystone"]["services"]["service-api"]["path"] = "/v2.0"            # node_attribute
 default["keystone"]["services"]["service-api"]["cert_file"] = "keystone.pem"
 default["keystone"]["services"]["service-api"]["key_file"] = "keystone.key"
+default["keystone"]["services"]["service-api"]["chain_file"] = ""
 default["keystone"]["services"]["service-api"]["wsgi_file"] = "main"
 
 default["keystone"]["services"]["internal-api"]["scheme"] = "http"           # node_attribute
@@ -155,6 +157,7 @@ default["keystone"]["services"]["internal-api"]["port"] = "5000"             # n
 default["keystone"]["services"]["internal-api"]["path"] = "/v2.0"            # node_attribute
 default["keystone"]["services"]["internal-api"]["cert_file"] = "keystone.pem"
 default["keystone"]["services"]["internal-api"]["key_file"] = "keystone.key"
+default["keystone"]["services"]["internal-api"]["chain_file"] = ""
 default["keystone"]["services"]["internal-api"]["wsgi_file"] = "main"
 # Logging stuff
 default["keystone"]["syslog"]["use"] = true                                 # node_attribute

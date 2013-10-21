@@ -33,7 +33,7 @@ attribute :auth_port, :kind_of => String, :required => true
 attribute :api_ver, :kind_of => String, :default => "/v2.0", :required => true
 attribute :auth_token, :kind_of => String, :required => true
 
-attribute :service_type, :kind_of => String, :equal_to => ["image", "identity", "compute", "storage", "network", "ec2", "volume", "object-store", "metering"], :required => true
+attribute :service_type, :kind_of => String, :equal_to => ["image", "identity", "compute", "storage", "network", "ec2", "volume", "object-store", "metering", "orchestration", "cloudformation"], :required => true
 
 # :create_endpoint specific attributes
 attribute :endpoint_region, :kind_of => String, :default => "RegionOne", :required => true
