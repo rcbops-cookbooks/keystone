@@ -63,7 +63,7 @@ supporting_pkgs = platform_options["supporting_packages"]
 keystone_pkgs.each do |pkg|
   package pkg do
     action node["osops"]["do_package_upgrades"] == true ? :upgrade : :install
-    options platform_options["package_overrides"]
+    options platform_options["package_options"]
   end
 end
 
