@@ -215,6 +215,9 @@ default["keystone"]["users"] = {                                            # no
     }
 }
 
+# Generic regex for process pattern matching (to be used as a base pattern).
+# Works for both Grizzly and Havana packages on Ubuntu and CentOS.
+procmatch_base = '^((/usr/bin/)?python\d? )?(/usr/bin/)?'
 
 # platform defaults
 case platform
@@ -223,7 +226,7 @@ when "fedora", "redhat", "centos"                                 # :pragma-food
     "supporting_packages" =>  [ "MySQL-python", "python-ldap", "python-keystoneclient", "python-keystone" ],
     "keystone_packages" => [ "openstack-keystone", "python-iso8601" ],
     "keystone_service" => "openstack-keystone",
-    "keystone_process_name" => "keystone-all",
+    "keystone_procmatch" => procmatch_base + 'keystone-all\b',
     "package_options" => ""
   }
   default["keystone"]["ssl"]["dir"] = "/etc/pki/tls"
@@ -232,7 +235,7 @@ when "ubuntu"
     "supporting_packages" => [ "python-mysqldb", "python-ldap", "python-keystoneclient", "python-keystone" ],
     "keystone_packages" => [ "keystone" ],
     "keystone_service" => "keystone",
-    "keystone_process_name" => "keystone-all",
+    "keystone_procmatch" => procmatch_base + 'keystone-all\b',
     "package_options" => "-o Dpkg::Options::='--force-confold' -o Dpkg::Options::='--force-confdef'"
   }
   default["keystone"]["ssl"]["dir"] = "/etc/ssl"
