@@ -150,6 +150,9 @@ db_info = {
   "name" => settings["db"]["name"],
   "ipaddress" => mysql_info["host"] }
 
+ks_admin_endpoint = get_access_endpoint("keystone-api", "keystone", "admin-api")
+ks_service_endpoint = get_access_endpoint("keystone-api", "keystone", "service-api")
+
 template "/etc/keystone/keystone.conf" do
   source "keystone.conf.erb"
   owner "keystone"
@@ -168,7 +171,9 @@ template "/etc/keystone/keystone.conf" do
     :auth_type => settings["auth_type"],
     :ldap_options => settings["ldap"],
     :pki_token_signing => settings["pki"]["enabled"],
-    :token_expiration => settings["token_expiration"]
+    :token_expiration => settings["token_expiration"],
+    :admin_endpoint => "#{ks_admin_endpoint['scheme']}://#{ks_admin_endpoint['host']}:#{ks_admin_endpoint['port']}",
+    :public_endpoint => "#{ks_service_endpoint['scheme']}://#{ks_service_endpoint['host']}:#{ks_service_endpoint['port']}"
   )
   # The pki_setup runs via postinst on Ubuntu, but doesn't run via package
   # installation on CentOS.

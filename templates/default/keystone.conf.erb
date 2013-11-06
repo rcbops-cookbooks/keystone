@@ -18,8 +18,8 @@ admin_port = <%= @admin_port %>
 
 # The base endpoint URLs for keystone that are advertised to clients
 # (NOTE: this does NOT affect how keystone listens for connections)
-# public_endpoint = http://localhost:%(public_port)d/
-# admin_endpoint = http://localhost:%(admin_port)d/
+public_endpoint = <%= @public_endpoint %>
+admin_endpoint = <%= @admin_endpoint %>
 
 # The port number which the OpenStack Compute service listens on
 # This is only used in testing
