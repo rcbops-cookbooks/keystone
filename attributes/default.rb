@@ -224,7 +224,7 @@ when "fedora", "redhat", "centos"                                 # :pragma-food
     "keystone_packages" => [ "openstack-keystone", "python-iso8601" ],
     "keystone_service" => "openstack-keystone",
     "keystone_process_name" => "keystone-all",
-    "package_options" => ""
+    "package_overrides" => ""
   }
   default["keystone"]["ssl"]["dir"] = "/etc/pki/tls"
 when "ubuntu"
@@ -233,7 +233,7 @@ when "ubuntu"
     "keystone_packages" => [ "keystone" ],
     "keystone_service" => "keystone",
     "keystone_process_name" => "keystone-all",
-    "package_options" => "-o Dpkg::Options::='--force-confold' -o Dpkg::Options::='--force-confdef'"
+    "package_overrides" => "-o Dpkg::Options::='--force-confold' -o Dpkg::Options::='--force-confdef'"
   }
   default["keystone"]["ssl"]["dir"] = "/etc/ssl"
 end
