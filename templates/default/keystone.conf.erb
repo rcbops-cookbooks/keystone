@@ -3,6 +3,7 @@
 <% if not node["custom_template_banner"].nil? %>
 <%= node["custom_template_banner"] %>
 <% end %>
+
 [DEFAULT]
 # A "shared secret" between keystone and other openstack services
 admin_token = <%= @admin_token %>
@@ -40,6 +41,8 @@ admin_endpoint = <%= @admin_endpoint %>
 # member_role_id = 9fe2ff9ee4384b1894a90878d3e92bab
 # member_role_name = _member_
 member_role_id = <%= @member_role_id %>
+
+<%= render "partials/notification-rpc-options.erb" %>
 
 # === Logging Options ===
 # Print debugging output
