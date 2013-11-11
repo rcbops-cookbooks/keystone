@@ -19,6 +19,7 @@
 
 ks_setup_role = node["keystone"]["setup_role"]
 ks_mysql_role = node["keystone"]["mysql_role"]
+ks_api_role = node["keystone"]["api_role"]
 
 # fixup the keystone.log ownership if it exists
 file "/var/log/keystone/keystone.log" do
@@ -150,8 +151,8 @@ db_info = {
   "name" => settings["db"]["name"],
   "ipaddress" => mysql_info["host"] }
 
-ks_admin_endpoint = get_access_endpoint("keystone-api", "keystone", "admin-api")
-ks_service_endpoint = get_access_endpoint("keystone-api", "keystone", "service-api")
+ks_admin_endpoint = get_access_endpoint(ks_api_role, "keystone", "admin-api")
+ks_service_endpoint = get_access_endpoint(ks_api_role, "keystone", "service-api")
 
 template "/etc/keystone/keystone.conf" do
   source "keystone.conf.erb"
