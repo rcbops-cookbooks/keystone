@@ -154,6 +154,19 @@ db_info = {
 ks_admin_endpoint = get_access_endpoint(ks_api_role, "keystone", "admin-api")
 ks_service_endpoint = get_access_endpoint(ks_api_role, "keystone", "service-api")
 
+notification_provider = node["keystone"]["notification"]["driver"]
+case notification_provider
+when "no_op"
+  notification_driver = "keystone.openstack.common.notifier.no_op_notifier"
+when "rpc"
+  notification_driver = "keystone.openstack.common.notifier.rpc_notifier"
+when "log"
+  notification_driver = "keystone.openstack.common.notifier.log_notifier"
+else
+  msg = "#{notification_provider}, is not currently supported by these cookbooks."
+  Chef::Application.fatal! msg
+end
+
 template "/etc/keystone/keystone.conf" do
   source "keystone.conf.erb"
   owner "keystone"
@@ -174,7 +187,9 @@ template "/etc/keystone/keystone.conf" do
     :pki_token_signing => settings["pki"]["enabled"],
     :token_expiration => settings["token_expiration"],
     :admin_endpoint => "#{ks_admin_endpoint['scheme']}://#{ks_admin_endpoint['host']}:#{ks_admin_endpoint['port']}",
-    :public_endpoint => "#{ks_service_endpoint['scheme']}://#{ks_service_endpoint['host']}:#{ks_service_endpoint['port']}"
+    :public_endpoint => "#{ks_service_endpoint['scheme']}://#{ks_service_endpoint['host']}:#{ks_service_endpoint['port']}",
+    :notification_driver => notification_driver,
+    :notification_topics => node["keystone"]["notification"]["topics"]
   )
   # The pki_setup runs via postinst on Ubuntu, but doesn't run via package
   # installation on CentOS.

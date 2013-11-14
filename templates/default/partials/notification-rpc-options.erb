@@ -1,0 +1,10 @@
+##### NOTIFICATION OPTIONS #####
+notification_driver = <%= @notification_driver %>
+notification_topics = <%= @notification_topics %>
+
+<% if node["keystone"]["notification"]["driver"] == "rpc" %>
+##### RPC Options #####
+rpc_backend = keystone.openstack.common.rpc.impl_kombu
+allowed_rpc_exception_modules = keystone.openstack.common.exception,nova.exception,cinder.exception,exceptions
+control_exchange = keystone
+<% end %>
