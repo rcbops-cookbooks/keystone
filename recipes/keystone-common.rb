@@ -132,7 +132,7 @@ execute "keystone-manage pki_setup" do
 end
 
 settings = get_settings_by_role(ks_setup_role, "keystone")
-mysql_info = get_access_endpoint(ks_mysql_role, "mysql", "db")
+mysql_info = get_mysql_endpoint(ks_mysql_role)
 
 # only bind to 0.0.0.0 if we're not using openstack-ha w/ a keystone-admin-api VIP,
 # otherwise HAProxy will fail to start when trying to bind to keystone VIP
