@@ -50,7 +50,7 @@ mysql_info = create_db_and_user("mysql",
                                 node["keystone"]["db"]["username"],
                                 node["keystone"]["db"]["password"],
                                 :role => ks_mysql_role)
-mysql_connect_ip = get_access_endpoint(ks_mysql_role, 'mysql', 'db')["host"]
+mysql_connect_ip = get_mysql_endpoint(ks_mysql_role)["host"]
 
 include_recipe "keystone::keystone-common"
 
