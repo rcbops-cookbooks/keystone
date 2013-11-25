@@ -101,7 +101,7 @@ keystone_endpoint "Create Identity Endpoint" do
   api_ver ks_admin_endpoint["path"]
   auth_token keystone["admin_token"]
   service_type "identity"
-  endpoint_region "RegionOne"
+  endpoint_region node["osops"]["region"]
   endpoint_adminurl node["keystone"]["adminURL"]
   endpoint_internalurl node["keystone"]["internalURL"]
   endpoint_publicurl node["keystone"]["publicURL"]
