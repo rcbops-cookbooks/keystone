@@ -223,6 +223,7 @@ keystone_endpoint "update endpoint url" do
   auth_protocol ks_admin_endpoint["scheme"]
   auth_token node["keystone"]["admin_token"]
   service_type "identity"
+  endpoint_region node["region"]
   endpoint_adminurl ks_admin_endpoint["uri"]
   endpoint_internalurl ks_internal_endpoint["uri"]
   endpoint_publicurl ks_service_endpoint["uri"]
