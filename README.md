@@ -260,7 +260,7 @@ Handles creating, deleting, and recreating of Keystone Endpoints.
       api_ver "/v2.0"
       auth_token "123456789876"
       service_type "identity"
-      endpoint_region node["region"]
+      endpoint_region node["osops"]["region"]
       endpoint_adminurl "http://192.168.1.10:35357/v2.0"
       endpoint_internalurl "http://192.168.1.10:5001/v2.0"
       endpoint_publicurl "http://1.2.3.4:5001/v2.0"
