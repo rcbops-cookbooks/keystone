@@ -217,15 +217,14 @@ if ks_service_endpoint["name"]
 end
 
 #Verify if switch was made to https||http
-keystone_endpoint "update endpoint url" do
-  auth_host ks_admin_endpoint["host"]
-  auth_port ks_admin_endpoint["port"]
-  auth_protocol ks_admin_endpoint["scheme"]
-  auth_token node["keystone"]["admin_token"]
-  service_type "identity"
-  endpoint_region node["osops"]["region"]
-  endpoint_adminurl ks_admin_endpoint["uri"]
-  endpoint_internalurl ks_internal_endpoint["uri"]
-  endpoint_publicurl ks_service_endpoint["uri"]
-  action :recreate
-end
+#keystone_endpoint "update endpoint url" do
+#  auth_host ks_admin_endpoint["host"]
+#  auth_port ks_admin_endpoint["port"]
+#  auth_protocol ks_admin_endpoint["scheme"]
+#  auth_token node["keystone"]["admin_token"]
+#  service_type "identity"
+#  endpoint_adminurl ks_admin_endpoint["uri"]
+#  endpoint_internalurl ks_internal_endpoint["uri"]
+#  endpoint_publicurl ks_service_endpoint["uri"]
+#  action :recreate
+#end

@@ -267,8 +267,6 @@ action :recreate do
       new_resource.endpoint_publicurl,
       new_resource.endpoint_internalurl,
       new_resource.endpoint_adminurl)
-    Chef::Log::debug("payload contains: #{payload}")
-    Chef::Log::debug("path is: #{path}")
     resp = http.send_request('POST', path, JSON.generate(payload), headers)
     if resp.is_a?(Net::HTTPOK)
       Chef::Log.info("Created endpoint for service type '#{new_resource.service_type}'")

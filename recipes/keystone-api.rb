@@ -94,7 +94,7 @@ Chef::Log.info "Keystone AdminURL: #{ks_admin_endpoint["uri"]}"
 Chef::Log.info "Keystone InternalURL: #{ks_internal_endpoint["uri"]}"
 Chef::Log.info "Keystone PublicURL: #{ks_service_endpoint["uri"]}"
 
-keystone_endpoint "Create Identity Endpoint" do
+keystone_endpoint "Create/Update Identity Endpoint" do
   auth_host ks_admin_endpoint["host"]
   auth_port ks_admin_endpoint["port"]
   auth_protocol ks_admin_endpoint["scheme"]
@@ -102,10 +102,10 @@ keystone_endpoint "Create Identity Endpoint" do
   auth_token keystone["admin_token"]
   service_type "identity"
   endpoint_region node["osops"]["region"]
-  endpoint_adminurl node["keystone"]["adminURL"]
-  endpoint_internalurl node["keystone"]["internalURL"]
-  endpoint_publicurl node["keystone"]["publicURL"]
-  action :create
+  endpoint_adminurl ks_admin_endpoint["uri"]
+  endpoint_internalurl ks_internal_endpoint["uri"]
+  endpoint_publicurl ks_service_endpoint["uri"]
+  action :recreate
 end
 
 # TODO(shep): this could probably come from the search result (keystone)
