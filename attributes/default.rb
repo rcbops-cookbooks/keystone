@@ -139,6 +139,7 @@ default["keystone"]["services"]["admin-api"]["port"] = "35357"              # no
 default["keystone"]["services"]["admin-api"]["path"] = "/v2.0"              # node_attribute
 default["keystone"]["services"]["admin-api"]["cert_file"] = "keystone.pem"
 default["keystone"]["services"]["admin-api"]["key_file"] = "keystone.key"
+default["keystone"]["services"]["admin-api"]["chain_file"] = ""
 default["keystone"]["services"]["admin-api"]["wsgi_file"] = "admin"
 
 default["keystone"]["services"]["service-api"]["scheme"] = "http"           # node_attribute
@@ -147,13 +148,17 @@ default["keystone"]["services"]["service-api"]["port"] = "5000"             # no
 default["keystone"]["services"]["service-api"]["path"] = "/v2.0"            # node_attribute
 default["keystone"]["services"]["service-api"]["cert_file"] = "keystone.pem"
 default["keystone"]["services"]["service-api"]["key_file"] = "keystone.key"
+default["keystone"]["services"]["service-api"]["chain_file"] = ""
 default["keystone"]["services"]["service-api"]["wsgi_file"] = "main"
 
 default["keystone"]["services"]["internal-api"]["scheme"] = "http"           # node_attribute
 default["keystone"]["services"]["internal-api"]["network"] = "management"        # node_attribute
 default["keystone"]["services"]["internal-api"]["port"] = "5000"             # node_attribute
 default["keystone"]["services"]["internal-api"]["path"] = "/v2.0"            # node_attribute
-
+default["keystone"]["services"]["internal-api"]["cert_file"] = "keystone.pem"
+default["keystone"]["services"]["internal-api"]["key_file"] = "keystone.key"
+default["keystone"]["services"]["internal-api"]["chain_file"] = ""
+default["keystone"]["services"]["internal-api"]["wsgi_file"] = "main"
 # Logging stuff
 default["keystone"]["syslog"]["use"] = true                                 # node_attribute
 default["keystone"]["syslog"]["facility"] = "LOG_LOCAL3"                    # node_attribute
@@ -210,6 +215,9 @@ default["keystone"]["users"] = {                                            # no
     }
 }
 
+# Generic regex for process pattern matching (to be used as a base pattern).
+# Works for both Grizzly and Havana packages on Ubuntu and CentOS.
+procmatch_base = '^((/usr/bin/)?python\d? )?(/usr/bin/)?'
 
 # platform defaults
 case platform
@@ -218,7 +226,7 @@ when "fedora", "redhat", "centos"                                 # :pragma-food
     "supporting_packages" =>  [ "MySQL-python", "python-ldap", "python-keystoneclient", "python-keystone" ],
     "keystone_packages" => [ "openstack-keystone", "python-iso8601" ],
     "keystone_service" => "openstack-keystone",
-    "keystone_process_name" => "keystone-all",
+    "keystone_procmatch" => procmatch_base + 'keystone-all\b',
     "package_options" => ""
   }
   default["keystone"]["ssl"]["dir"] = "/etc/pki/tls"
@@ -227,7 +235,7 @@ when "ubuntu"
     "supporting_packages" => [ "python-mysqldb", "python-ldap", "python-keystoneclient", "python-keystone" ],
     "keystone_packages" => [ "keystone" ],
     "keystone_service" => "keystone",
-    "keystone_process_name" => "keystone-all",
+    "keystone_procmatch" => procmatch_base + 'keystone-all\b',
     "package_options" => "-o Dpkg::Options::='--force-confold' -o Dpkg::Options::='--force-confdef'"
   }
   default["keystone"]["ssl"]["dir"] = "/etc/ssl"

@@ -1,6 +1,10 @@
 import os
+
+from keystone.openstack.common.gettextutils import install
+install('keystone', True)
+
 from paste import deploy
-from keystone.common import logging
+from keystone.openstack.common import log as logging
 from keystone import config
 
 LOG = logging.getLogger(__name__)
