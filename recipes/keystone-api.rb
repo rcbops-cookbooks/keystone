@@ -121,4 +121,3 @@ node["keystone"]["users"].each do |username, user_info|
   end
 end
 
-include_recipe "keystone::keystoneclient-patch"
